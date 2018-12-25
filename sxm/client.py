@@ -1,9 +1,15 @@
+import base64
 import datetime
 import json
 import time
 import urllib.parse
 
 import requests
+
+__all__ = ['HLS_AES_KEY', 'SiriusXMClient']
+
+
+HLS_AES_KEY = base64.b64decode('0Nsco7MAgxowGvkUT8aYag==')
 
 
 class SiriusXMClient:
