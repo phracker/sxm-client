@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', ]
+requirements = ['click>=6.0', 'requests', ]
 
 setup_requirements = ['pytest-runner', ]
 
@@ -25,10 +25,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
@@ -40,6 +37,9 @@ setup(
         ],
     },
     install_requires=requirements,
+    extras_require={
+        'async':  ['aiohttp', ],
+    },
     license="MIT license",
     long_description=readme + '\n\n' + history,
     include_package_data=True,
