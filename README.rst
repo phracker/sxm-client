@@ -5,17 +5,27 @@ SiriusXM live radio playback
 
 * Free software: MIT license
 
+Installation
+------------
+
+Installing `sxm` is quick and easy. You can do it by running:
+
+    pip install git+https://github.com/andrew0/SiriusXM.git@master#egg=sxm
+
 Features
 --------
 
-This script creates a server that serves HLS streams for SiriusXM channels. To use it, pass your SiriusXM username and password and a port to run the server on. For example, you start the server by running:
+This script creates a server that serves HLS streams for SiriusXM channels. To use it, pass your SiriusXM username and password and a port to run the server on (default port is 9999). For example, you start the server by running:
 
-    python3 sxm.py myuser mypassword -p 8888
+    sxm --username myuser --password mypassword -p 8888
+
+If you do not password your user or password you will be prompted:
+
+    sxm --username myuser
 
 You can see a list of the channels by setting the -l or --list flag:
 
-    python3 sxm.py myuser mypassword -l
-
+    sxm -l
 
 Then in a player that supports HLS (QuickTime, VLC, ffmpeg, etc) you can access a channel at http://127.0.0.1:8888/channel.m3u8 where "channel" is the channel name, ID, or Sirius channel number.
 
