@@ -1,11 +1,13 @@
 import argparse
-import requests
 import base64
-import urllib.parse
+import datetime
 import json
-import time, datetime
-import sys
+import time
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+import requests
+
 
 class SiriusXM:
     USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6'
@@ -35,10 +37,12 @@ class SiriusXM:
         return 'SXMAUTH' in self.session.cookies
 
     def is_session_authenticated(self):
-        return 'AWSELB' in self.session.cookies and 'JSESSIONID' in self.session.cookies
+        return 'AWSELB' in self.session.cookies and \
+            'JSESSIONID' in self.session.cookies
 
     def get(self, method, params, authenticate=True):
-        if authenticate and not self.is_session_authenticated() and not self.authenticate():
+        if authenticate and not self.is_session_authenticated() and \
+                not self.authenticate():
             self.log('Unable to authenticate')
             return None
 
@@ -54,11 +58,15 @@ class SiriusXM:
             return None
 
     def post(self, method, postdata, authenticate=True):
-        if authenticate and not self.is_session_authenticated() and not self.authenticate():
+        if authenticate and not self.is_session_authenticated() and \
+                not self.authenticate():
             self.log('Unable to authenticate')
             return None
 
-        res = self.session.post(self.REST_FORMAT.format(method), data=json.dumps(postdata))
+        res = self.session.post(
+            self.REST_FORMAT.format(method),
+            data=json.dumps(postdata)
+        )
         if res.status_code != 200:
             self.log('Received status code {} for method \'{}\''.format(res.status_code, method))
             return None
@@ -100,7 +108,8 @@ class SiriusXM:
             return False
 
         try:
-            return data['ModuleListResponse']['status'] == 1 and self.is_logged_in()
+            return data['ModuleListResponse']['status'] == 1 \
+                and self.is_logged_in()
         except KeyError:
             self.log('Error decoding json response for login')
             return False
@@ -136,24 +145,28 @@ class SiriusXM:
             return False
 
         try:
-            return data['ModuleListResponse']['status'] == 1 and self.is_session_authenticated()
+            return data['ModuleListResponse']['status'] == 1 \
+                and self.is_session_authenticated()
         except KeyError:
             self.log('Error parsing json response for authentication')
             return False
 
     def get_sxmak_token(self):
         try:
-            return self.session.cookies['SXMAKTOKEN'].split('=', 1)[1].split(',', 1)[0]
+            token = self.session.cookies['SXMAKTOKEN']
+            return token.split('=', 1)[1].split(',', 1)[0]
         except (KeyError, IndexError):
             return None
 
     def get_gup_id(self):
         try:
-            return json.loads(urllib.parse.unquote(self.session.cookies['SXMDATA']))['gupId']
+            data = self.session.cookies['SXMDATA']
+            return json.loads(urllib.parse.unquote(data))['gupId']
         except (KeyError, ValueError):
             return None
 
-    def get_playlist_url(self, guid, channel_id, use_cache=True, max_attempts=5):
+    def get_playlist_url(self, guid, channel_id,
+                         use_cache=True, max_attempts=5):
         now = time.time()
 
         if use_cache and channel_id in self.playlists:
@@ -194,7 +207,8 @@ class SiriusXM:
                 self.log('Session expired, logging in and authenticating')
                 if self.authenticate():
                     self.log('Successfully authenticated')
-                    return self.get_playlist_url(guid, channel_id, use_cache, max_attempts - 1)
+                    return self.get_playlist_url(
+                        guid, channel_id, use_cache, max_attempts - 1)
                 else:
                     self.log('Failed to authenticate')
                     return None
@@ -213,14 +227,16 @@ class SiriusXM:
             return None
         for playlist_info in playlists:
             if playlist_info['size'] == 'LARGE':
-                playlist_url = playlist_info['url'].replace('%Live_Primary_HLS%', self.LIVE_PRIMARY_HLS)
-                self.playlists[channel_id] = self.get_playlist_variant_url(playlist_url)
+                playlist_url = playlist_info['url'].replace(
+                    '%Live_Primary_HLS%', self.LIVE_PRIMARY_HLS)
+                playlist = self.get_playlist_variant_url(playlist_url)
+
+                self.playlists[channel_id] = playlist
                 self.last_renew = time.time()
 
                 if self.update_handler is not None:
                     self.update_handler(data)
                 return self.playlists[channel_id]
-
         return None
 
     def get_playlist_variant_url(self, url):
@@ -329,9 +345,12 @@ class SiriusXM:
     def get_channel(self, name):
         name = name.lower()
         for x in self.get_channels():
-            if x.get('name', '').lower() == name or x.get('channelId', '').lower() == name or x.get('siriusChannelNumber') == name:
+            if x.get('name', '').lower() == name or \
+                    x.get('channelId', '').lower() == name or \
+                    x.get('siriusChannelNumber') == name:
                 return (x['channelGuid'], x['channelId'])
         return (None, None)
+
 
 def make_sirius_handler(sxm):
     class SiriusHandler(BaseHTTPRequestHandler):
@@ -368,12 +387,15 @@ def make_sirius_handler(sxm):
                 self.end_headers()
     return SiriusHandler
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='SiriusXM proxy')
     parser.add_argument('username')
     parser.add_argument('password')
-    parser.add_argument('-l', '--list', required=False, action='store_true', default=False)
-    parser.add_argument('-p', '--port', required=False, default=9999, type=int)
+    parser.add_argument('-l', '--list', required=False,
+                        action='store_true', default=False)
+    parser.add_argument('-p', '--port', required=False,
+                        default=9999, type=int)
     args = vars(parser.parse_args())
 
     sxm = SiriusXM(args['username'], args['password'])
