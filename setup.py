@@ -38,7 +38,7 @@ setup(
     },
     install_requires=requirements,
     extras_require={
-        'async':  ['aiohttp', ],
+        'async':  ['aiohttp<3.5.0', ],
     },
     license="MIT license",
     long_description=readme + '\n\n' + history,
