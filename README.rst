@@ -10,7 +10,7 @@ Installation
 
 Installing `sxm` is quick and easy. You can do it by running:
 
-    pip install git+https://github.com/andrew0/SiriusXM.git@master#egg=sxm
+    pip install git+https://github.com/AngellusMortis/SiriusXM.git@master#egg=sxm
 
 Features
 --------
