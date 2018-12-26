@@ -352,7 +352,7 @@ class SiriusXMClient:
                 self.last_renew = time.time()
 
                 if self.update_handler is not None:
-                    self.update_handler(data)
+                    self.update_handler(data['ModuleListResponse']['moduleList']['modules'][0]['moduleResponse']['liveChannelData'])
                 return self.playlists[channel_id]
         return None
 
