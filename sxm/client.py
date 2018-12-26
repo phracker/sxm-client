@@ -6,6 +6,9 @@ import urllib.parse
 
 import requests
 
+from .models import XMLiveChannel, REST_FORMAT, LIVE_PRIMARY_HLS
+
+
 __all__ = ['HLS_AES_KEY', 'SiriusXMClient']
 
 
@@ -14,8 +17,7 @@ HLS_AES_KEY = base64.b64decode('0Nsco7MAgxowGvkUT8aYag==')
 
 class SiriusXMClient:
     USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6'
-    REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
-    LIVE_PRIMARY_HLS = 'https://siriusxm-priprodlive.akamaized.net'
+
 
     def __init__(self, username, password, update_handler=None):
         self.session = requests.Session()
@@ -86,7 +88,7 @@ class SiriusXMClient:
                 return (None, None)
 
             try:
-                self._channels = data['ModuleListResponse']['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']['channels']
+                self._channels = data['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']['channels']
             except (KeyError, IndexError):
                 self.log('Error parsing json response for channels')
                 return []
@@ -136,7 +138,7 @@ class SiriusXMClient:
             return False
 
         try:
-            return data['ModuleListResponse']['status'] == 1 \
+            return data['status'] == 1 \
                 and self.is_logged_in
         except KeyError:
             self.log('Error decoding json response for login')
@@ -173,7 +175,7 @@ class SiriusXMClient:
             return False
 
         try:
-            return data['ModuleListResponse']['status'] == 1 \
+            return data['status'] == 1 \
                 and self.is_session_authenticated
         except KeyError:
             self.log('Error parsing json response for authentication')
@@ -213,7 +215,7 @@ class SiriusXMClient:
         return '\n'.join(lines)
 
     def get_segment(self, path, max_attempts=5):
-        url = '{}/{}'.format(self.LIVE_PRIMARY_HLS, path)
+        url = '{}/{}'.format(LIVE_PRIMARY_HLS, path)
         params = {
             'token': self.sxmak_token,
             'consumer': 'k2',
@@ -251,14 +253,14 @@ class SiriusXMClient:
             self.log('Unable to authenticate')
             return None
 
-        res = self.session.get(self.REST_FORMAT.format(method), params=params)
+        res = self.session.get(REST_FORMAT.format(method), params=params)
         if res.status_code != 200:
             self.log('Received status code {} for method \'{}\''.format(res.status_code, method))
             return None
 
         try:
-            return res.json()
-        except ValueError:
+            return res.json()['ModuleListResponse']
+        except (KeyError, ValueError):
             self.log('Error decoding json for method \'{}\''.format(method))
             return None
 
@@ -269,7 +271,7 @@ class SiriusXMClient:
             return None
 
         res = self.session.post(
-            self.REST_FORMAT.format(method),
+            REST_FORMAT.format(method),
             data=json.dumps(postdata)
         )
         if res.status_code != 200:
@@ -277,13 +279,13 @@ class SiriusXMClient:
             return None
 
         try:
-            return res.json()
-        except ValueError:
+            return res.json()['ModuleListResponse']
+        except (KeyError, ValueError):
             self.log('Error decoding json for method \'{}\''.format(method))
             return None
 
     def _get_playlist_url(self, guid, channel_id,
-                         use_cache=True, max_attempts=5):
+                          use_cache=True, max_attempts=5):
         now = time.time()
 
         if use_cache and channel_id in self.playlists:
@@ -307,13 +309,15 @@ class SiriusXMClient:
         if not data:
             return None
 
-        # get status
+        # parse response
         try:
             self.update_interval = int(
-                data['ModuleListResponse']['moduleList']['modules'][0]['updateFrequency']
+                data['moduleList']['modules'][0]['updateFrequency']
             )
-            message = data['ModuleListResponse']['messages'][0]['message']
-            message_code = data['ModuleListResponse']['messages'][0]['code']
+            message = data['messages'][0]['message']
+            message_code = data['messages'][0]['code']
+            live_channel_raw = data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']  # noqa
+            live_channel = XMLiveChannel(live_channel_raw)
         except (KeyError, IndexError):
             self.log('Error parsing json response for playlist')
             return None
@@ -337,22 +341,15 @@ class SiriusXMClient:
             return None
 
         # get m3u8 url
-        try:
-            playlists = data['ModuleListResponse']['moduleList']['modules'][0]['moduleResponse']['liveChannelData']['hlsAudioInfos']
-        except (KeyError, IndexError):
-            self.log('Error parsing json response for playlist')
-            return None
-        for playlist_info in playlists:
-            if playlist_info['size'] == 'LARGE':
-                playlist_url = playlist_info['url'].replace(
-                    '%Live_Primary_HLS%', self.LIVE_PRIMARY_HLS)
-                playlist = self._get_playlist_variant_url(playlist_url)
+        for playlist_info in live_channel.hls_infos:
+            if playlist_info.size == 'LARGE':
+                playlist = self._get_playlist_variant_url(playlist_info.url)
 
                 self.playlists[channel_id] = playlist
                 self.last_renew = time.time()
 
                 if self.update_handler is not None:
-                    self.update_handler(data['ModuleListResponse']['moduleList']['modules'][0]['moduleResponse']['liveChannelData'])
+                    self.update_handler(live_channel_raw)
                 return self.playlists[channel_id]
         return None
 
