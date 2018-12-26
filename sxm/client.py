@@ -190,6 +190,9 @@ class SiriusXMClient:
             return None
 
         url = self._get_playlist_url(guid, channel_id, use_cache)
+        if url is None:
+            return None
+
         params = {
             'token': self.sxmak_token,
             'consumer': 'k2',
@@ -345,12 +348,13 @@ class SiriusXMClient:
             if playlist_info.size == 'LARGE':
                 playlist = self._get_playlist_variant_url(playlist_info.url)
 
-                self.playlists[channel_id] = playlist
-                self.last_renew = time.time()
+                if playlist is not None:
+                    self.playlists[channel_id] = playlist
+                    self.last_renew = time.time()
 
-                if self.update_handler is not None:
-                    self.update_handler(live_channel_raw)
-                return self.playlists[channel_id]
+                    if self.update_handler is not None:
+                        self.update_handler(live_channel_raw)
+                    return self.playlists[channel_id]
         return None
 
     def _get_playlist_variant_url(self, url):
