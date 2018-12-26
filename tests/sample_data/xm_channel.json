@@ -1,0 +1,356 @@
+{
+    "channelGuid": "194adbca-34d6-cb94-b153-3488ee563308",
+    "channelId": "siriushits1",
+    "name": "SiriusXM Hits 1",
+    "streamingName": "Today\\'s Pop Hits",
+    "sortOrder": 10,
+    "shortDescription": "Today\\'s Pop Hits",
+    "mediumDescription": "The Most Hit Music, featuring The Morning Mash Up, The Weekend Countdown, Hit-Bound and The YouTube 15.",
+    "url": "http://www.siriusxm.com/siriusxmhits1",
+    "clientBufferDuration": 18000,
+    "inactivityTimeout": 28800,
+    "isAvailable": true,
+    "isMature": false,
+    "isMySxm": false,
+    "isFavorite": false,
+    "isPersonalized": false,
+    "spanishContent": false,
+    "isBizMature": false,
+    "channelNumber": "2",
+    "siriusChannelNumber": "2",
+    "xmChannelNumber": "2",
+    "xmServiceId": "13",
+    "images": {
+        "images": [
+            {
+                "name": "background",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-1-06-3840x910.JPEG",
+                "platform": "RESPONSIVE",
+                "height": 910,
+                "width": 3840
+            },
+            {
+                "name": "background",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-1-06-1920x455.JPEG",
+                "platform": "RESPONSIVE",
+                "height": 455,
+                "width": 1920
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-367x248.png",
+                "height": 248,
+                "width": 424
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-260x176.png",
+                "height": 176,
+                "width": 300
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-183x124.png",
+                "height": 124,
+                "width": 212
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-137x93.png",
+                "height": 93,
+                "width": 159
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-130x88.png",
+                "height": 88,
+                "width": 150
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-97x66.png",
+                "height": 66,
+                "width": 113
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-91x62.png",
+                "height": 62,
+                "width": 106
+            },
+            {
+                "name": "black logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-15-00-65x44.png",
+                "height": 44,
+                "width": 75
+            },
+            {
+                "name": "black logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-19-00-180x140.png",
+                "height": 140,
+                "width": 240
+            },
+            {
+                "name": "black logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-19-00-90x70.png",
+                "height": 70,
+                "width": 120
+            },
+            {
+                "name": "black logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-19-00-68x53.png",
+                "height": 53,
+                "width": 90
+            },
+            {
+                "name": "black logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-19-00-45x35.png",
+                "height": 35,
+                "width": 60
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-720x720.png",
+                "height": 720,
+                "width": 720
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-360x360.png",
+                "height": 360,
+                "width": 360
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-270x270.png",
+                "height": 270,
+                "width": 270
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-240x240.png",
+                "height": 240,
+                "width": 240
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-180x180.png",
+                "height": 180,
+                "width": 180
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-160x160.png",
+                "height": 160,
+                "width": 160
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-120x120.png",
+                "height": 120,
+                "width": 120
+            },
+            {
+                "name": "color logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-21-00-80x80.png",
+                "height": 80,
+                "width": 80
+            },
+            {
+                "name": "list view channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-17-00-320x320.png",
+                "height": 320,
+                "width": 320
+            },
+            {
+                "name": "list view channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-17-00-240x240.png",
+                "height": 240,
+                "width": 240
+            },
+            {
+                "name": "list view channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-17-00-160x160.png",
+                "height": 160,
+                "width": 160
+            },
+            {
+                "name": "list view channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-17-00-120x120.png",
+                "height": 120,
+                "width": 120
+            },
+            {
+                "name": "list view channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-17-00-80x80.png",
+                "height": 80,
+                "width": 80
+            },
+            {
+                "name": "lock screen logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/logo_lock/siriushits1-lock-720x720.PNG",
+                "height": 720,
+                "width": 720
+            },
+            {
+                "name": "lock screen logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/logo_lock/siriushits1-lock-640x640.PNG",
+                "height": 640,
+                "width": 640
+            },
+            {
+                "name": "lock screen logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/logo_lock/siriushits1-lock-320x320.PNG",
+                "height": 320,
+                "width": 320
+            },
+            {
+                "name": "logo on white background",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/type17a/siriushits1-17-300x300.png",
+                "height": 300,
+                "width": 300
+            },
+            {
+                "name": "radio channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-200-00-160x86.png",
+                "height": 86,
+                "width": 160
+            },
+            {
+                "name": "radio channel logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-200-00-70x38.png",
+                "height": 38,
+                "width": 70
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-369x248.png",
+                "height": 248,
+                "width": 424
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-261x176.png",
+                "height": 176,
+                "width": 300
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-184x124.png",
+                "height": 124,
+                "width": 212
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-138x93.png",
+                "height": 93,
+                "width": 159
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-130x88.png",
+                "height": 88,
+                "width": 150
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-98x66.png",
+                "height": 66,
+                "width": 113
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-92x62.png",
+                "height": 62,
+                "width": 106
+            },
+            {
+                "name": "white logo",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-16-00-65x44.png",
+                "height": 44,
+                "width": 75
+            },
+            {
+                "name": "white logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-20-00-208x140.png",
+                "height": 140,
+                "width": 240
+            },
+            {
+                "name": "white logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-20-00-104x70.png",
+                "height": 70,
+                "width": 120
+            },
+            {
+                "name": "white logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-20-00-78x53.png",
+                "height": 53,
+                "width": 90
+            },
+            {
+                "name": "white logo thumbnail",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-20-00-52x35.png",
+                "height": 35,
+                "width": 60
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-720x720.png",
+                "height": 720,
+                "width": 720
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-520x520.png",
+                "height": 520,
+                "width": 520
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-360x360.png",
+                "height": 360,
+                "width": 360
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-270x270.png",
+                "height": 270,
+                "width": 270
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-260x260.png",
+                "height": 260,
+                "width": 260
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-180x180.png",
+                "height": 180,
+                "width": 180
+            },
+            {
+                "name": "color channel logo (on dark)",
+                "url": "http://pri.art.prod.streaming.siriusxm.com/images/channel/20180725/siriushits1-1-31-00-80x80.png",
+                "height": 80,
+                "width": 80
+            }
+        ]
+    },
+    "geoRestrictions": "0",
+    "categories": {
+        "categories": [
+            {
+                "categoryGuid": "d3c6a7ae-d66b-f033-72e1-61c6217702a0",
+                "name": "Pop",
+                "key": "pop",
+                "isPrimary": true
+            }
+        ]
+    },
+    "disableRecommendations": false,
+    "isPlayByPlay": false,
+    "aodShowCount": 7,
+    "ipOnly": false
+}
