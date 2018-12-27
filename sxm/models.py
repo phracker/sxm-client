@@ -1,8 +1,7 @@
+import datetime
 import time
-
 from dataclasses import dataclass
 from typing import List
-
 
 REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
 LIVE_PRIMARY_HLS = 'https://siriusxm-priprodlive.akamaized.net'
@@ -227,16 +226,34 @@ class XMCutMarker(XMMarker):
 
 
 @dataclass
+class XMPosition:
+    timestamp: datetime.datetime = None
+    position: str = None
+
+    def __init__(self, pos_dict):
+        dt_string = pos_dict['timestamp'].replace('+0000', '')
+        dt = datetime.datetime.fromisoformat(dt_string)
+
+        self.timestamp = dt.replace(tzinfo=datetime.timezone.utc)
+        self.position = pos_dict['position']
+
+
+@dataclass
 class XMHLSInfo:
     name: str = None
     url: str = None
     size: str = None
+    position: XMPosition = None
+    # + unused chunks
 
     def __init__(self, hls_dict):
         self.name = hls_dict['name']
         self.url = hls_dict['url'].replace(
             '%Live_Primary_HLS%', LIVE_PRIMARY_HLS)
         self.size = hls_dict['size']
+
+        if 'position' in hls_dict:
+            self.position = XMPosition(hls_dict['position'])
 
 
 @dataclass
@@ -245,20 +262,33 @@ class XMLiveChannel:
 
     id: str = None
     hls_infos: List[XMHLSInfo] = None
+    custom_hls_infos: List[XMHLSInfo] = None
     episode_markers: List[XMEpisodeMarker] = None
     cut_markers: List[XMCutMarker] = None
     _song_cuts: List[XMCutMarker] = None
+    tune_time: int = None
     # ... plus many unused
 
     def __init__(self, live_dict):
         self.id = live_dict['channelId']
 
         self.hls_infos = []
+        self.custom_hls_infos = []
         self.episode_markers = []
         self.cut_markers = []
 
         for info in live_dict['hlsAudioInfos']:
             self.hls_infos.append(XMHLSInfo(info))
+
+        for info in live_dict['customAudioInfos']:
+            self.custom_hls_infos.append(XMHLSInfo(info))
+
+        for hls_info in self.custom_hls_infos:
+            if hls_info.position is not None and \
+                hls_info.position.position == 'TUNE_START':
+
+                timestamp = hls_info.position.timestamp.timestamp()
+                self.tune_time = int(timestamp * 1000)
 
         for marker_list in live_dict['markerLists']:
             # not including future-episodes as they are missing metadata
