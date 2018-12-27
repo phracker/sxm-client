@@ -261,17 +261,17 @@ class XMLiveChannel:
             self.hls_infos.append(XMHLSInfo(info))
 
         for marker_list in live_dict['markerLists']:
+            # not including future-episodes as they are missing metadata
             if marker_list['layer'] == 'episode':
-                self.episode_markers = []
                 for marker in marker_list['markers']:
                     self.episode_markers.append(XMEpisodeMarker(marker))
-                self.episode_markers = self.sort_markers(self.episode_markers)
 
             elif marker_list['layer'] == 'cut':
-                self.cut_markers = []
                 for marker in marker_list['markers']:
                     self.cut_markers.append(XMCutMarker(marker))
-                self.cut_markers = self.sort_markers(self.cut_markers)
+
+        self.cut_markers = self.sort_markers(self.cut_markers)
+        self.episode_markers = self.sort_markers(self.episode_markers)
 
     @property
     def song_cuts(self):
@@ -289,12 +289,13 @@ class XMLiveChannel:
             key=lambda x: x.time
         )
 
-    def _latest_marker(self, marker_attr) -> XMMarker:
+    def _latest_marker(self, marker_attr, now=None) -> XMMarker:
         markers = getattr(self, marker_attr)
         if markers is None:
             return None
 
-        now = int(time.time() * 1000)
+        if now is None:
+            now = int(time.time() * 1000)
         latest = None
         for marker in markers:
             if now > marker.time:
@@ -303,8 +304,8 @@ class XMLiveChannel:
                 break
         return latest
 
-    def get_latest_episode(self) -> XMEpisodeMarker:
-        return self._latest_marker('episode_markers')
+    def get_latest_episode(self, now=None) -> XMEpisodeMarker:
+        return self._latest_marker('episode_markers', now)
 
-    def get_latest_cut(self) -> XMCutMarker:
-        return self._latest_marker('cut_markers')
+    def get_latest_cut(self, now=None) -> XMCutMarker:
+        return self._latest_marker('cut_markers', now)
