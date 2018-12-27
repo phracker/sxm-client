@@ -247,12 +247,16 @@ class XMLiveChannel:
     hls_infos: List[XMHLSInfo] = None
     episode_markers: List[XMEpisodeMarker] = None
     cut_markers: List[XMCutMarker] = None
+    _song_cuts: List[XMCutMarker] = None
     # ... plus many unused
 
     def __init__(self, live_dict):
         self.id = live_dict['channelId']
 
         self.hls_infos = []
+        self.episode_markers = []
+        self.cut_markers = []
+
         for info in live_dict['hlsAudioInfos']:
             self.hls_infos.append(XMHLSInfo(info))
 
@@ -268,6 +272,15 @@ class XMLiveChannel:
                 for marker in marker_list['markers']:
                     self.cut_markers.append(XMCutMarker(marker))
                 self.cut_markers = self.sort_markers(self.cut_markers)
+
+    @property
+    def song_cuts(self):
+        if self._song_cuts is None:
+            self._song_cuts = []
+            for cut in self.cut_markers:
+                if isinstance(cut.cut, XMSong):
+                    self._song_cuts.append(cut)
+        return self._song_cuts
 
     @staticmethod
     def sort_markers(markers):
