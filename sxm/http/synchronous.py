@@ -1,12 +1,21 @@
 import logging
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from ..client import HLS_AES_KEY, SegmentRetrievalException
+from ..client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
 
 logger = logging.getLogger(__file__)
 
 
-def make_sync_http_handler(sxm):
+def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
+    """
+    Creates and returns a configured `http.server.BaseHTTPRequestHandler`
+    ready to be used by a `http.server.HTTPServer` instance with your
+    `SiriusXMClient`.
+
+    Really useful if you want to create your own HTTP server as part
+    of another application.
+    """
+
     class SiriusHandler(BaseHTTPRequestHandler):
         def do_GET(self):
             if self.path.endswith('.m3u8'):
@@ -47,8 +56,16 @@ def make_sync_http_handler(sxm):
     return SiriusHandler
 
 
-def run_sync_http_server(sxm, port, ip='0.0.0.0'):
-    httpd = ThreadingHTTPServer((ip, port), make_sync_http_handler(sxm))
+def run_sync_http_server(sxm: SiriusXMClient, port: int, ip='0.0.0.0') -> None:
+    """
+    Creates and runs an instance of `http.server.HTTPServer` to proxy SiriusXM
+    requests without authentication.
+
+    You still need a valid SiriusXM account with streaming rights,
+    via the `SiriusXMClient`.
+    """
+
+    httpd = HTTPServer((ip, port), make_sync_http_handler(sxm))
     try:
         logger.info(f'running SiriusXM proxy server on http://{ip}:{port}')
         httpd.serve_forever()

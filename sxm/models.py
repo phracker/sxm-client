@@ -13,7 +13,7 @@ class XMArt:
     url: str = None
     art_type: str = None
 
-    def __init__(self, art_dict):
+    def __init__(self, art_dict: dict):
         self.name = art_dict.get('name', None)
         self.url = art_dict['url']
         self.art_type = art_dict['type']
@@ -26,7 +26,7 @@ class XMImage(XMArt):
     width: int = None
     size: str = None
 
-    def __init__(self, image_dict):
+    def __init__(self, image_dict: dict):
         image_dict['type'] = 'IMAGE'
         super().__init__(image_dict)
 
@@ -41,59 +41,13 @@ class XMCategory:
     guid: str = None
     name: str = None
     key: str = None
-    is_primary = True
+    is_primary: bool = True
 
-    def __init__(self, category_dict):
+    def __init__(self, category_dict: dict):
         self.guid = category_dict['categoryGuid']
         self.name = category_dict['name']
         self.key = category_dict['key']
         self.is_primary = category_dict['isPrimary']
-
-
-@dataclass
-class XMChannel:
-    """See sample_data/xm_channel.json for sample"""
-    guid: str = None
-    id: str = None
-    name: str = None
-    streaming_name: str = None
-    sort_order: int = None
-    short_description: str = None
-    medium_description: str = None
-    url: str = None
-    is_available: bool = True
-    is_favorite: bool = False
-    is_mature: bool = True
-    channel_number: int = None  # actually siriusChannelNumber
-    images: List[XMImage] = None
-    categories: List[XMCategory] = None
-    # ... plus many unused
-
-    def __init__(self, channel_dict):
-        self.guid = channel_dict['channelGuid']
-        self.id = channel_dict['channelId']
-        self.name = channel_dict['name']
-        self.streaming_name = channel_dict['streamingName']
-        self.sort_order = channel_dict['sortOrder']
-        self.short_description = channel_dict['shortDescription']
-        self.medium_description = channel_dict['mediumDescription']
-        self.url = channel_dict['url']
-        self.is_available = channel_dict['isAvailable']
-        self.is_favorite = channel_dict['isFavorite']
-        self.is_mature = channel_dict['isMature']
-        self.channel_number = channel_dict['siriusChannelNumber']
-
-        self.images = []
-        for image in channel_dict['images']['images']:
-            self.images.append(XMImage(image))
-
-        self.categories = []
-        for category in channel_dict['categories']['categories']:
-            self.categories.append(XMCategory(category))
-
-    @property
-    def pretty_name(self):
-        return f'#{self.channel_number} {self.name}'
 
 
 @dataclass
@@ -102,7 +56,7 @@ class XMMarker:
     time: int = None
     duration: int = None
 
-    def __init__(self, marker_dict):
+    def __init__(self, marker_dict: dict):
         self.guid = marker_dict['assetGUID']
         self.time = marker_dict['time']
         self.duration = marker_dict['duration']
@@ -118,7 +72,7 @@ class XMShow:
     arts: List[XMArt] = None
     # ... plus many unused
 
-    def __init__(self, show_dict):
+    def __init__(self, show_dict: dict):
         self.guid = show_dict['showGUID']
         self.medium_title = show_dict['mediumTitle']
         self.long_title = show_dict['longTitle']
@@ -141,7 +95,7 @@ class XMEpisode:
     show: XMShow = None
     # ... plus many unused
 
-    def __init__(self, episode_dict):
+    def __init__(self, episode_dict: dict):
         self.guid = episode_dict['episodeGUID']
         self.medium_title = episode_dict['mediumTitle']
         self.long_title = episode_dict['longTitle']
@@ -154,7 +108,7 @@ class XMEpisode:
 class XMEpisodeMarker(XMMarker):
     episode: XMEpisode = None
 
-    def __init__(self, marker_dict):
+    def __init__(self, marker_dict: dict):
         super().__init__(marker_dict)
 
         self.episode = XMEpisode(marker_dict['episode'])
@@ -164,7 +118,7 @@ class XMEpisodeMarker(XMMarker):
 class XMArtist:
     name: str = None
 
-    def __init__(self, artist_dict):
+    def __init__(self, artist_dict: dict):
         self.name = artist_dict['name']
 
 
@@ -173,7 +127,7 @@ class XMAlbum:
     title: str = None
     arts: List[XMArt] = None
 
-    def __init__(self, album_dict):
+    def __init__(self, album_dict: dict):
         self.title = album_dict.get('title', None)
 
         self.arts = []
@@ -188,7 +142,7 @@ class XMCut:
     artists: List[XMArtist] = None
     cut_type: str = None
 
-    def __init__(self, cut_dict):
+    def __init__(self, cut_dict: dict):
         self.title = cut_dict['title']
         self.cut_type = cut_dict.get('cutContentType', None)
 
@@ -202,7 +156,7 @@ class XMSong(XMCut):
     album: XMAlbum = None
     itunes_id: str = None
 
-    def __init__(self, song_dict):
+    def __init__(self, song_dict: dict):
         super().__init__(song_dict)
 
         if 'album' in song_dict:
@@ -217,7 +171,7 @@ class XMSong(XMCut):
 class XMCutMarker(XMMarker):
     cut: XMCut = None
 
-    def __init__(self, marker_dict):
+    def __init__(self, marker_dict: dict):
         super().__init__(marker_dict)
 
         if marker_dict['cut'].get('cutContentType', None) == 'Song':
@@ -232,7 +186,7 @@ class XMPosition:
     timestamp: datetime.datetime = None
     position: str = None
 
-    def __init__(self, pos_dict):
+    def __init__(self, pos_dict: dict):
         dt_string = pos_dict['timestamp'].replace('+0000', '')
         dt = datetime.datetime.fromisoformat(dt_string)
 
@@ -248,7 +202,7 @@ class XMHLSInfo:
     position: XMPosition = None
     # + unused chunks
 
-    def __init__(self, hls_dict):
+    def __init__(self, hls_dict: dict):
         self.name = hls_dict['name']
         self.url = hls_dict['url'].replace(
             '%Live_Primary_HLS%', LIVE_PRIMARY_HLS)
@@ -256,6 +210,53 @@ class XMHLSInfo:
 
         if 'position' in hls_dict:
             self.position = XMPosition(hls_dict['position'])
+
+
+@dataclass
+class XMChannel:
+    """See sample_data/xm_channel.json for sample"""
+    guid: str = None
+    id: str = None
+    name: str = None
+    streaming_name: str = None
+    sort_order: int = None
+    short_description: str = None
+    medium_description: str = None
+    url: str = None
+    is_available: bool = True
+    is_favorite: bool = False
+    is_mature: bool = True
+    channel_number: int = None  # actually siriusChannelNumber
+    images: List[XMImage] = None
+    categories: List[XMCategory] = None
+    # ... plus many unused
+
+    def __init__(self, channel_dict: dict):
+        self.guid = channel_dict['channelGuid']
+        self.id = channel_dict['channelId']
+        self.name = channel_dict['name']
+        self.streaming_name = channel_dict['streamingName']
+        self.sort_order = channel_dict['sortOrder']
+        self.short_description = channel_dict['shortDescription']
+        self.medium_description = channel_dict['mediumDescription']
+        self.url = channel_dict['url']
+        self.is_available = channel_dict['isAvailable']
+        self.is_favorite = channel_dict['isFavorite']
+        self.is_mature = channel_dict['isMature']
+        self.channel_number = channel_dict['siriusChannelNumber']
+
+        self.images = []
+        for image in channel_dict['images']['images']:
+            self.images.append(XMImage(image))
+
+        self.categories = []
+        for category in channel_dict['categories']['categories']:
+            self.categories.append(XMCategory(category))
+
+    @property
+    def pretty_name(self) -> str:
+        """ Returns a formated version of channel number + channel name """
+        return f'#{self.channel_number} {self.name}'
 
 
 @dataclass
@@ -271,7 +272,7 @@ class XMLiveChannel:
     tune_time: int = None
     # ... plus many unused
 
-    def __init__(self, live_dict):
+    def __init__(self, live_dict: dict):
         self.id = live_dict['channelId']
 
         self.hls_infos = []
@@ -306,7 +307,8 @@ class XMLiveChannel:
         self.episode_markers = self.sort_markers(self.episode_markers)
 
     @property
-    def song_cuts(self):
+    def song_cuts(self) -> List[XMCutMarker]:
+        """ Returns a list of all `XMCut` objects that are for songs """
         if self._song_cuts is None:
             self._song_cuts = []
             for cut in self.cut_markers:
@@ -315,13 +317,15 @@ class XMLiveChannel:
         return self._song_cuts
 
     @staticmethod
-    def sort_markers(markers):
+    def sort_markers(markers) -> List[XMMarker]:
+        """ Sorts a list of `XMMarker` objects """
         return sorted(
             markers,
             key=lambda x: x.time
         )
 
-    def _latest_marker(self, marker_attr, now=None) -> XMMarker:
+    def _latest_marker(self, marker_attr: str, now: int = None) -> XMMarker:
+        """ Returns the latest `XMMarker` based on type relative to now """
         markers = getattr(self, marker_attr)
         if markers is None:
             return None
@@ -336,8 +340,12 @@ class XMLiveChannel:
                 break
         return latest
 
-    def get_latest_episode(self, now=None) -> XMEpisodeMarker:
+    def get_latest_episode(self, now: int = None) -> XMEpisodeMarker:
+        """ Returns the latest `XMEpisodeMarker` based
+        on type relative to now """
         return self._latest_marker('episode_markers', now)
 
-    def get_latest_cut(self, now=None) -> XMCutMarker:
+    def get_latest_cut(self, now: int = None) -> XMCutMarker:
+        """ Returns the latest `XMCutMarker` based
+        on type relative to now """
         return self._latest_marker('cut_markers', now)

@@ -5,6 +5,7 @@ import logging
 import re
 import time
 import urllib.parse
+from typing import Callable, List, Optional, Union
 
 import requests
 
@@ -24,16 +25,23 @@ FALLBACK_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5
 
 
 class AuthenticationError(Exception):
+    """ SiriusXM Authentication failed, renew session """
     pass
 
 
 class SegmentRetrievalException(Exception):
+    """ failed to get HLS segment, renew session """
     pass
 
 
 class SiriusXMClient:
-    def __init__(self, username, password,
-                 user_agent=None, update_handler=None):
+    """ Class to interface with SiriusXM api and access HLS
+    live streams of audio """
+
+    def __init__(self, username: str, password: str,
+                 user_agent: Optional[str] = None,
+                 update_handler: Optional[Callable[[dict], None]] = None):
+
         self._log = logging.getLogger(__file__)
 
         if user_agent is not None:
@@ -62,16 +70,20 @@ class SiriusXMClient:
         self.update_handler = update_handler
 
     @property
-    def is_logged_in(self):
+    def is_logged_in(self) -> bool:
+        """ Returns if account is logged into SiriusXM's servers """
+
         return 'SXMAUTH' in self.session.cookies
 
     @property
-    def is_session_authenticated(self):
+    def is_session_authenticated(self) -> bool:
+        """ Returns if session is valid and ready to use """
+
         return 'AWSELB' in self.session.cookies and \
             'JSESSIONID' in self.session.cookies
 
     @property
-    def sxmak_token(self):
+    def sxmak_token(self) -> Union[str, None]:
         try:
             token = self.session.cookies['SXMAKTOKEN']
             return token.split('=', 1)[1].split(',', 1)[0]
@@ -79,7 +91,7 @@ class SiriusXMClient:
             return None
 
     @property
-    def gup_id(self):
+    def gup_id(self) -> Union[str, None]:
         try:
             data = self.session.cookies['SXMDATA']
             return json.loads(urllib.parse.unquote(data))['gupId']
@@ -87,7 +99,10 @@ class SiriusXMClient:
             return None
 
     @property
-    def channels(self):
+    def channels(self) -> List[XMChannel]:
+        """ Retrieves and returns a full list of all `XMChannel`
+        available to the logged in account """
+
         # download channel list if necessary
         if self._channels is None:
             channels = self.get_channels()
@@ -105,14 +120,19 @@ class SiriusXMClient:
         return self._channels
 
     @property
-    def favorite_channels(self):
+    def favorite_channels(self) -> List[XMChannel]:
+        """ Retrieves and returns a full list of all `XMChannel`
+        available to the logged in account that are marked as favorited"""
+
         if self._favorite_channels is None:
             self._favorite_channels = [
                 c for c in self.channels if c.is_favorite
             ]
         return self._favorite_channels
 
-    def login(self):
+    def login(self) -> bool:
+        """ Attempts to log into SiriusXM with stored username/password """
+
         postdata = self._get_device_info()
         postdata.update({
             'standardAuth': {
@@ -136,7 +156,9 @@ class SiriusXMClient:
             return False
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(10))
-    def authenticate(self):
+    def authenticate(self) -> bool:
+        """ Attempts to create a valid session for use with the client """
+
         if not self.is_logged_in and not self.login():
             self._log.error('Unable to authenticate because login failed')
             self._reset_session()
@@ -158,11 +180,14 @@ class SiriusXMClient:
             return False
 
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
-    def get_playlist(self, name, use_cache=True):
-        channel = self.get_channel(name)
+    def get_playlist(self, channel_id: str,
+                     use_cache: bool = True) -> Union[List[str], None]:
+        """ Gets playlist of HLS stream URLs for given channel ID """
+
+        channel = self.get_channel(channel_id)
 
         if channel is None:
-            self._log.info(f'No channel for {name}')
+            self._log.info(f'No channel for {channel_id}')
             return None
 
         url = self._get_playlist_url(channel, use_cache)
@@ -175,7 +200,7 @@ class SiriusXMClient:
             if res.status_code == 403:
                 self._log.info(
                     'Received status code 403 on playlist, renewing session')
-                return self.get_playlist(name, False)
+                return self.get_playlist(channel_id, False)
 
             if not res.ok:
                 self._log.warn(
@@ -203,7 +228,10 @@ class SiriusXMClient:
         return "\n".join(playlist_entries)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(5))
-    def get_segment(self, path, max_attempts=5):
+    def get_segment(self, path: str,
+                    max_attempts: int = 5) -> Union[bytes, None]:
+        """ Gets raw HLS segment for give path """
+
         url = f'{LIVE_PRIMARY_HLS}/{path}'
         res = self.session.get(url, params=self._token_params())
 
@@ -219,7 +247,11 @@ class SiriusXMClient:
 
         return res.content
 
-    def get_channels(self):
+    def get_channels(self) -> List[dict]:
+        """ Gets raw list of channel dictionaries from SiriusXM. Each channel
+        dict can be pass into the constructor of `XMChannel` to turn it
+        into an object """
+
         channels = []
 
         postdata = {
@@ -241,7 +273,9 @@ class SiriusXMClient:
             return []
         return channels
 
-    def get_channel(self, name):
+    def get_channel(self, name: str) -> Union[XMChannel, None]:
+        """ Retrieves a specific channel from `self.channels` """
+
         name = name.lower()
         for x in self.channels:
             if x.name.lower() == name or \
@@ -250,19 +284,46 @@ class SiriusXMClient:
                 return x
         return None
 
-    def _reset_session(self):
+    def get_now_playing(self, channel: XMChannel) -> dict:
+        """ Gets raw dictionary of response data for the live channel.
+
+        `data['messages'][0]['code']` will have the status response code from
+        SiriusXM
+
+        `data['moduleList']['modules'][0]['moduleResponse']['liveChannelData'] `
+        will have the raw data that can be passed into `XMLiveChannel`
+        constructor to create an object """
+
+        params = {
+            "assetGUID": channel.guid,
+            "ccRequestType": "AUDIO_VIDEO",
+            "channelId": channel.id,
+            "hls_output_mode": "custom",
+            "marker_mode": "all_separate_cue_points",
+            "result-template": "web",
+            "time": int(round(time.time() * 1000.0)),
+            "timestamp": datetime.datetime.utcnow().isoformat("T") + "Z",
+        }
+
+        return self._get("tune/now-playing-live", params)
+
+    def _reset_session(self) -> None:
+        """ Resets session used by client """
+
         self.session = requests.Session()
         self.session.headers.update(
             {'User-Agent': self._ua['string']})
 
-    def _token_params(self):
+    def _token_params(self) -> None:
         return {
             "token": self.sxmak_token,
             "consumer": "k2",
             "gupId": self.gup_id,
         }
 
-    def _get_device_info(self):
+    def _get_device_info(self) -> dict:
+        """ Generates a dict of device info to pass to SiriusXM """
+
         browser_version = self._ua['user_agent']['major']
         if self._ua['user_agent']['minor'] is not None:
             browser_version = \
@@ -270,22 +331,6 @@ class SiriusXMClient:
         if self._ua['user_agent']['patch'] is not None:
             browser_version = \
                 f'{browser_version}.{self._ua["user_agent"]["patch"]}'
-
-        return {
-            "resultTemplate": "web",
-            "deviceInfo": {
-                "osVersion": "Mac",
-                "platform": "Web",
-                "sxmAppVersion": "3.1802.10011.0",
-                "browser": "Safari",
-                "browserVersion": "11.0.3",
-                "appRegion": "US",
-                "deviceModel": "K2WebClient",
-                "clientDeviceId": "null",
-                "player": "html5",
-                "clientDeviceType": "web",
-            }
-        }
 
         return {
             'resultTemplate': 'web',
@@ -303,7 +348,10 @@ class SiriusXMClient:
             }
         }
 
-    def _request(self, method, path, params, authenticate=True):
+    def _request(self, method: str, path: str, params: dict,
+                 authenticate: bool = True) -> Union[dict, None]:
+        """ Makes a GET or POST request to SiriusXM servers """
+
         method = method.upper()
 
         if authenticate and \
@@ -344,10 +392,14 @@ class SiriusXMClient:
             self._log.error(f'Error decoding json for path \'{path}\'')
             return None
 
-    def _get(self, path, params, authenticate=True):
+    def _get(self, path: str, params: str, authenticate: bool = True) -> dict:
+        """ Makes a GET request to SiriusXM servers """
+
         return self._request('GET', path, params, authenticate)
 
-    def _post(self, path, postdata, channel_list=False, authenticate=True):
+    def _post(self, path: str, postdata: dict, channel_list: bool = False,
+              authenticate: bool = True) -> dict:
+        """ Makes a POST request to SiriusXM servers """
         postdata = {
             'moduleList': {
                 'modules': [{
@@ -364,21 +416,10 @@ class SiriusXMClient:
 
         return self._request('POST', path, postdata, authenticate)
 
-    def get_now_playing(self, channel):
-        params = {
-            "assetGUID": channel.guid,
-            "ccRequestType": "AUDIO_VIDEO",
-            "channelId": channel.id,
-            "hls_output_mode": "custom",
-            "marker_mode": "all_separate_cue_points",
-            "result-template": "web",
-            "time": int(round(time.time() * 1000.0)),
-            "timestamp": datetime.datetime.utcnow().isoformat("T") + "Z",
-        }
+    def _get_playlist_url(self, channel: XMChannel, use_cache: bool = True,
+                          max_attempts: int = 5) -> Union[str, None]:
+        """ Returns HLS live stream URL for a given `XMChannel` """
 
-        return self._get("tune/now-playing-live", params)
-
-    def _get_playlist_url(self, channel, use_cache=True, max_attempts=5):
         now = time.time()
 
         if use_cache and channel.id in self.playlists:
@@ -442,7 +483,7 @@ class SiriusXMClient:
                     return self.playlists[channel.id]
         return None
 
-    def _get_playlist_variant_url(self, url):
+    def _get_playlist_variant_url(self, url: str) -> Union[str, None]:
         res = self.session.get(url, params=self._token_params())
 
         if not res.ok:
