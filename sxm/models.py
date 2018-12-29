@@ -1,7 +1,7 @@
 import datetime
 import time
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
 LIVE_PRIMARY_HLS = 'https://siriusxm-priprodlive.akamaized.net'
@@ -288,7 +288,7 @@ class XMLiveChannel:
 
         for hls_info in self.custom_hls_infos:
             if hls_info.position is not None and \
-                hls_info.position.position == 'TUNE_START':
+                    hls_info.position.position == 'TUNE_START':
 
                 timestamp = hls_info.position.timestamp.timestamp()
                 self.tune_time = int(timestamp * 1000)
@@ -324,7 +324,8 @@ class XMLiveChannel:
             key=lambda x: x.time
         )
 
-    def _latest_marker(self, marker_attr: str, now: int = None) -> XMMarker:
+    def _latest_marker(self, marker_attr: str,
+                       now: Optional[int] = None) -> XMMarker:
         """ Returns the latest `XMMarker` based on type relative to now """
         markers = getattr(self, marker_attr)
         if markers is None:
@@ -340,12 +341,12 @@ class XMLiveChannel:
                 break
         return latest
 
-    def get_latest_episode(self, now: int = None) -> XMEpisodeMarker:
+    def get_latest_episode(self, now: Optional[int] = None) -> XMEpisodeMarker:
         """ Returns the latest `XMEpisodeMarker` based
         on type relative to now """
         return self._latest_marker('episode_markers', now)
 
-    def get_latest_cut(self, now: int = None) -> XMCutMarker:
+    def get_latest_cut(self, now: Optional[int] = None) -> XMCutMarker:
         """ Returns the latest `XMCutMarker` based
         on type relative to now """
         return self._latest_marker('cut_markers', now)

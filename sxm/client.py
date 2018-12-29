@@ -215,12 +215,12 @@ class SiriusXMClient:
 
         # add base path to segments
         playlist_entries = []
-        aac_path = re.findall("AAC_Data.*", url)[0]
+        aac_path = re.findall('AAC_Data.*', url)[0]
         for line in res.text.split("\n"):
             line = line.strip()
-            if line.endswith(".aac"):
+            if line.endswith('.aac'):
                 playlist_entries.append(
-                    re.sub("[^\/]\w+\.m3u8", line, aac_path)
+                    re.sub(r'[^\/]\w+\.m3u8', line, aac_path)
                 )
             else:
                 playlist_entries.append(line)
@@ -267,7 +267,10 @@ class SiriusXMClient:
             return channels
 
         try:
-            channels = data['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']['channels']
+            channels = (
+                data['moduleList']['modules'][0]['moduleResponse']
+                ['contentData']['channelListing']['channels']
+            )
         except (KeyError, IndexError):
             self._log.error('Error parsing json response for channels')
             return []
@@ -290,7 +293,7 @@ class SiriusXMClient:
         `data['messages'][0]['code']` will have the status response code from
         SiriusXM
 
-        `data['moduleList']['modules'][0]['moduleResponse']['liveChannelData'] `
+        `data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']`
         will have the raw data that can be passed into `XMLiveChannel`
         constructor to create an object """
 

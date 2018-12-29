@@ -27,7 +27,11 @@ def main(username: str, password: str,
         l2 = max(len(str(x.channel_number)) for x in sxm.channels)
         l3 = max(len(x.name) for x in sxm.channels)
 
-        click.echo('{} | {} | {}'.format('ID'.ljust(l1), 'Num'.ljust(l2), 'Name'.ljust(l3)))
+        click.echo('{} | {} | {}'.format(
+            'ID'.ljust(l1),
+            'Num'.ljust(l2),
+            'Name'.ljust(l3))
+        )
 
         for channel in sxm.channels:
             cid = channel.id.ljust(l1)[:l1]
