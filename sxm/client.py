@@ -209,7 +209,7 @@ class SiriusXMClient:
 
         if res.status_code == 403:
             raise SegmentRetrievalException(
-                "Received status code 403 on segment, renewed session"
+                "Received status code 403 on segment, renew session"
             )
 
         if not res.ok:

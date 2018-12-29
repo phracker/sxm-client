@@ -1,6 +1,9 @@
 from aiohttp import web
+import logging
 
-from ..client import HLS_AES_KEY
+from ..client import HLS_AES_KEY, SegmentRetrievalException
+
+logger = logging.getLogger(__file__)
 
 
 def make_async_http_app(sxm):
@@ -30,8 +33,14 @@ def make_async_http_app(sxm):
         if sxm.get_channel(channel_id) is None:
             raise web.HTTPNotFound()
 
-        data = sxm.get_segment(
-            f'/AAC_Data/{channel_id}/{arg_1}/{arg_2}.aac')
+        segment_path = f'/AAC_Data/{channel_id}/{arg_1}/{arg_2}.aac'
+        try:
+            data = sxm.get_segment(segment_path)
+        except SegmentRetrievalException:
+            sxm.reset_session()
+            sxm.authenticate()
+            data = sxm.get_segment(segment_path)
+
         if data:
             response = web.StreamResponse(headers={
                 'Content-Type': 'audio/x-aac'
@@ -60,7 +69,8 @@ def make_async_http_app(sxm):
     return app
 
 
-def run_async_http_server(port, sxm):
+def run_async_http_server(sxm, port, ip='0.0.0.0'):
     app = make_async_http_app(sxm)
 
-    web.run_app(app, port=port)
+    logger.info(f'running SiriusXM proxy server on http://{ip}:{port}')
+    web.run_app(app, port=port, host=ip, print=None, access_log=logger)

@@ -1,6 +1,9 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import logging
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from ..client import HLS_AES_KEY
+from ..client import HLS_AES_KEY, SegmentRetrievalException
+
+logger = logging.getLogger(__file__)
 
 
 def make_sync_http_handler(sxm):
@@ -17,7 +20,14 @@ def make_sync_http_handler(sxm):
                     self.send_response(500)
                     self.end_headers()
             elif self.path.endswith('.aac'):
-                data = sxm.get_segment(self.path[1:])
+                segment_path = self.path[1:]
+                try:
+                    data = sxm.get_segment(segment_path)
+                except SegmentRetrievalException:
+                    sxm.reset_session()
+                    sxm.authenticate()
+                    data = sxm.get_segment(segment_path)
+
                 if data:
                     self.send_response(200)
                     self.send_header('Content-Type', 'audio/x-aac')
@@ -37,9 +47,10 @@ def make_sync_http_handler(sxm):
     return SiriusHandler
 
 
-def run_sync_http_server(port, sxm):
-    httpd = HTTPServer(('', port), make_sync_http_handler(sxm))
+def run_sync_http_server(sxm, port, ip='0.0.0.0'):
+    httpd = ThreadingHTTPServer((ip, port), make_sync_http_handler(sxm))
     try:
+        logger.info(f'running SiriusXM proxy server on http://{ip}:{port}')
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
