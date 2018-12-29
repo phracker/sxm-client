@@ -90,32 +90,16 @@ class SiriusXMClient:
     def channels(self):
         # download channel list if necessary
         if self._channels is None:
-            postdata = {
-                'consumeRequests': [],
-                'resultTemplate': 'responsive',
-                'alerts': [],
-                'profileInfos': []
-            }
+            channels = self.get_channels()
 
-            data = self._post('get', postdata, channel_list=True)
-            if not data:
-                self._log.warn('Unable to get channel list')
-                return (None, None)
-
-            try:
-                channel_listing = data['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']
-
-                self._channels = []
-                for channel in channel_listing['channels']:
-                    self._channels.append(XMChannel(channel))
-            except (KeyError, IndexError):
-                self._log.error('Error parsing json response for channels')
-                return []
-            else:
+            if len(channels) > 0:
+                self._channels = channels
                 self._channels = sorted(
                     self._channels,
                     key=lambda x: int(x.channel_number)
                 )
+            else:
+                return channels
         return self._channels
 
     @property
@@ -232,6 +216,28 @@ class SiriusXMClient:
             return None
 
         return res.content
+
+    def get_channels(self):
+        channels = []
+
+        postdata = {
+            'consumeRequests': [],
+            'resultTemplate': 'responsive',
+            'alerts': [],
+            'profileInfos': []
+        }
+
+        data = self._post('get', postdata, channel_list=True)
+        if not data:
+            self._log.warn('Unable to get channel list')
+            return channels
+
+        try:
+            channels = data['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']
+        except (KeyError, IndexError):
+            self._log.error('Error parsing json response for channels')
+            return []
+        return channels
 
     def get_channel(self, name):
         name = name.lower()
