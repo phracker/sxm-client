@@ -62,6 +62,7 @@ class XMChannel:
     medium_description: str = None
     url: str = None
     is_available: bool = True
+    is_favorite: bool = False
     is_mature: bool = True
     channel_number: int = None  # actually siriusChannelNumber
     images: List[XMImage] = None
@@ -78,6 +79,7 @@ class XMChannel:
         self.medium_description = channel_dict['mediumDescription']
         self.url = channel_dict['url']
         self.is_available = channel_dict['isAvailable']
+        self.is_favorite = channel_dict['isFavorite']
         self.is_mature = channel_dict['isMature']
         self.channel_number = channel_dict['siriusChannelNumber']
 
