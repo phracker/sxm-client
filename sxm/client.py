@@ -93,7 +93,9 @@ class SiriusXMClient:
             channels = self.get_channels()
 
             if len(channels) > 0:
-                self._channels = channels
+                self._channels = []
+                for channel in channels:
+                    self._channels.append(XMChannel(channel))
                 self._channels = sorted(
                     self._channels,
                     key=lambda x: int(x.channel_number)
@@ -233,7 +235,7 @@ class SiriusXMClient:
             return channels
 
         try:
-            channels = data['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']
+            channels = data['moduleList']['modules'][0]['moduleResponse']['contentData']['channelListing']['channels']
         except (KeyError, IndexError):
             self._log.error('Error parsing json response for channels')
             return []
