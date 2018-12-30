@@ -13,6 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'click>=7.0',
+    'dataclasses',
     'fake-useragent',
     'requests',
     'tenacity',
