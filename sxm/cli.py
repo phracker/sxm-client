@@ -10,11 +10,16 @@ from . import SiriusXMClient, run_sync_http_server
 
 
 @click.command()
-@click.option('--username', type=str, prompt=True)
-@click.option('--password', type=str, prompt=True, hide_input=True)
-@click.option('-l', '--list', 'do_list', is_flag=True)
-@click.option('-p', '--port', type=int, default=9999)
-@click.option('-h', '--host', type=str, default='127.0.0.1')
+@click.option('--username', type=str, prompt=True,
+              help='SiriuxXM username')
+@click.option('--password', type=str, prompt=True, hide_input=True,
+              help='SiriuxXM password')
+@click.option('-l', '--list-channels', 'do_list', is_flag=True,
+              help='List all avaiable SiriusXM channels')
+@click.option('-p', '--port', type=int, default=9999,
+              help='Port to run SiriusXM server on')
+@click.option('-h', '--host', type=str, default='127.0.0.1',
+              help='IP address to bind SiriusXM server to')
 def main(username: str, password: str,
          do_list: bool, port: int, host: str) -> int:
     """SiriusXM proxy command line application."""
