@@ -38,7 +38,41 @@ class SegmentRetrievalException(Exception):
 
 class SiriusXMClient:
     """ Class to interface with SiriusXM api and access HLS
-    live streams of audio """
+    live streams of audio
+
+    Parameters
+    ----------
+    username : :class:`str`
+        SiriusXM username
+    password : :class:`str`
+        SiriusXM password
+    user_agent : Optional[:class:`str`]
+        User Agent string to use for making requests to SiriusXM. If `None` is
+        passed, it will attempt to generate one based on real browser usage
+        data. Defaults to `None`.
+    update_handler : Optional[Callable[[:class:`dict`], `None`]]
+        Callback to be called whenever a playlist updates and new
+        Live Channel data is retrieved. Defaults to `None`.
+
+    Attributes
+    ----------
+    is_logged_in : :class:`bool`
+        Returns if account is logged into SiriusXM's servers
+    is_session_authenticated : :class:`bool`
+        Returns if session is valid and ready to use
+    sxmak_token : :class:`str`
+        Needs documentation
+    gup_id : :class:`str`
+        Needs documentation
+    channels : List[:class:`XMChannel`]
+        Retrieves and returns a full list of all :class:`XMChannel`
+        available to the logged in account
+    favorite_channels : List[:class:`XMChannel`]
+        Retrieves and returns a full list of all :class:`XMChannel`
+        available to the logged in account that are marked
+        as favorited
+
+    """
 
     def __init__(self, username: str, password: str,
                  user_agent: Optional[str] = None,
@@ -73,13 +107,11 @@ class SiriusXMClient:
 
     @property
     def is_logged_in(self) -> bool:
-        """ Returns if account is logged into SiriusXM's servers """
 
         return 'SXMAUTH' in self.session.cookies
 
     @property
     def is_session_authenticated(self) -> bool:
-        """ Returns if session is valid and ready to use """
 
         return 'AWSELB' in self.session.cookies and \
             'JSESSIONID' in self.session.cookies
@@ -102,9 +134,6 @@ class SiriusXMClient:
 
     @property
     def channels(self) -> List[XMChannel]:
-        """ Retrieves and returns a full list of all `XMChannel`
-        available to the logged in account """
-
         # download channel list if necessary
         if self._channels is None:
             channels = self.get_channels()
@@ -123,8 +152,6 @@ class SiriusXMClient:
 
     @property
     def favorite_channels(self) -> List[XMChannel]:
-        """ Retrieves and returns a full list of all `XMChannel`
-        available to the logged in account that are marked as favorited"""
 
         if self._favorite_channels is None:
             self._favorite_channels = [
@@ -159,7 +186,13 @@ class SiriusXMClient:
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(10))
     def authenticate(self) -> bool:
-        """ Attempts to create a valid session for use with the client """
+        """ Attempts to create a valid session for use with the client
+
+        Raises
+        ------
+        AuthenticationError
+            If login failed and session now needs to be reset
+        """
 
         if not self.is_logged_in and not self.login():
             self._log.error('Unable to authenticate because login failed')
@@ -184,7 +217,15 @@ class SiriusXMClient:
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
     def get_playlist(self, channel_id: str,
                      use_cache: bool = True) -> Union[List[str], None]:
-        """ Gets playlist of HLS stream URLs for given channel ID """
+        """ Gets playlist of HLS stream URLs for given channel ID
+
+        Parameters
+        ----------
+        channel_id : :class:`str`
+            ID of SiriusXM channel to retrieve playlist for
+        use_cache : :class:`bool`
+            Use cached playlists for force new retrival. Defaults to `True`
+        """
 
         channel = self.get_channel(channel_id)
 
@@ -232,7 +273,21 @@ class SiriusXMClient:
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(5))
     def get_segment(self, path: str,
                     max_attempts: int = 5) -> Union[bytes, None]:
-        """ Gets raw HLS segment for give path """
+        """ Gets raw HLS segment for given path
+
+        Parameters
+        ----------
+        path : :class:`str`
+            SiriusXM path
+        max_attempts : :class:`int`
+            Number of times to try to get segment. Defaults to 5.
+
+        Raises
+        ------
+        SegmentRetrievalException
+            If segments are starting to come back forbidden and session
+            needs reset
+        """
 
         url = f'{LIVE_PRIMARY_HLS}/{path}'
         res = self.session.get(url, params=self._token_params())
@@ -251,7 +306,7 @@ class SiriusXMClient:
 
     def get_channels(self) -> List[dict]:
         """ Gets raw list of channel dictionaries from SiriusXM. Each channel
-        dict can be pass into the constructor of `XMChannel` to turn it
+        dict can be pass into the constructor of :class:`XMChannel` to turn it
         into an object """
 
         channels = []
@@ -279,7 +334,13 @@ class SiriusXMClient:
         return channels
 
     def get_channel(self, name: str) -> Union[XMChannel, None]:
-        """ Retrieves a specific channel from `self.channels` """
+        """ Retrieves a specific channel from `self.channels`
+
+        Parameters
+        ----------
+        name : :class:`str`
+            name, id, or channel number of SiriusXM channel to get
+        """
 
         name = name.lower()
         for x in self.channels:
@@ -292,12 +353,18 @@ class SiriusXMClient:
     def get_now_playing(self, channel: XMChannel) -> dict:
         """ Gets raw dictionary of response data for the live channel.
 
-        `data['messages'][0]['code']` will have the status response code from
-        SiriusXM
+        `data['messages'][0]['code']`
+            will have the status response code from SiriusXM
 
         `data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']`
-        will have the raw data that can be passed into `XMLiveChannel`
-        constructor to create an object """
+            will have the raw data that can be passed into
+            :class:`XMLiveChannel` constructor to create an object
+
+        Parameters
+        ----------
+        channel : :class:`XMChannel`
+            SiriusXM channel to look up live channel data for
+        """
 
         params = {
             "assetGUID": channel.guid,
