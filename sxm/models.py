@@ -3,7 +3,14 @@ import time
 from dataclasses import dataclass
 from typing import List, Optional
 
-REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
+__all__ = [
+    'XMArt', 'XMImage', 'XMCategory', 'XMMarker', 'XMShow',
+    'XMEpisode', 'XMEpisodeMarker', 'XMArtist', 'XMAlbum',
+    'XMCut', 'XMSong', 'XMCutMarker', 'XMPosition', 'XMHLSInfo',
+    'XMChannel', 'XMLiveChannel',
+]
+
+
 LIVE_PRIMARY_HLS = 'https://siriusxm-priprodlive.akamaized.net'
 
 

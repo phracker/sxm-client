@@ -13,15 +13,17 @@ from fake_useragent import FakeUserAgent
 from tenacity import retry, stop_after_attempt, wait_fixed
 from ua_parser import user_agent_parser
 
-from .models import LIVE_PRIMARY_HLS, REST_FORMAT, XMChannel, XMLiveChannel
+from .models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
 
-__all__ = ['HLS_AES_KEY', 'SiriusXMClient']
+__all__ = ['HLS_AES_KEY', 'SiriusXMClient',
+           'AuthenticationError', 'SegmentRetrievalException']
 
 
 SXM_APP_VERSION = '5.15.2183'
 SXM_DEVICE_MODEL = 'EverestWebClient'
 HLS_AES_KEY = base64.b64decode('0Nsco7MAgxowGvkUT8aYag==')
 FALLBACK_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6'  # noqa
+REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
 
 
 class AuthenticationError(Exception):
