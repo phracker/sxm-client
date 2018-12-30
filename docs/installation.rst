@@ -8,7 +8,7 @@ Github
 ------
 
 `sxm` is not avaible on PyPi quite yet, as a result, you currently have to
-    install it from Github directory. You can do this by running:
+install it from Github directory. You can do this by running:
 
 .. code-block:: console
 
