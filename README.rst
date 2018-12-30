@@ -1,6 +1,10 @@
 SiriusXM
 ========
 
+.. image:: https://readthedocs.org/projects/siriusxm/badge/?version=feature-docs
+        :target: https://siriusxm.readthedocs.io/en/feature-docs/?badge=feature-docs
+        :alt: Documentation Status
+
 SiriusXM live radio playback
 
 * Free software: MIT license
