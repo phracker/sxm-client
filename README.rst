@@ -4,7 +4,7 @@ SiriusXM
 SiriusXM live radio playback
 
 * Free software: MIT license
-* Documentation: https://sxm.readthedocs.io.
+* Documentation: http://siriusxm.readthedocs.io/.
 
 Features
 --------
@@ -15,7 +15,7 @@ Features
 
 For details on usage and installation, see the `documentation`_.
 
-.. _documentation: https://sxm.readthedocs.io
+.. _documentation: http://siriusxm.readthedocs.io/
 
 
 Credits
