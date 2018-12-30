@@ -4,6 +4,7 @@ import json
 import logging
 import re
 import time
+import traceback
 import urllib.parse
 from typing import Callable, List, Optional, Union
 
@@ -212,6 +213,7 @@ class SiriusXMClient:
                 and self.is_session_authenticated
         except KeyError:
             self._log.error('Error parsing json response for authentication')
+            self._log.error(traceback.format_exc())
             return False
 
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
@@ -330,6 +332,7 @@ class SiriusXMClient:
             )
         except (KeyError, IndexError):
             self._log.error('Error parsing json response for channels')
+            self._log.error(traceback.format_exc())
             return []
         return channels
 
@@ -520,6 +523,7 @@ class SiriusXMClient:
 
         except (KeyError, IndexError):
             self._log.error('Error parsing json response for playlist')
+            self._log.error(traceback.format_exc())
             return None
 
         # login if session expired

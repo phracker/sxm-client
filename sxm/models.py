@@ -87,7 +87,7 @@ class XMShow:
         self.long_description = show_dict['longDescription']
 
         self.arts = []
-        for art in show_dict['creativeArts']:
+        for art in show_dict.get('creativeArts', []):
             if art['type'] == 'IMAGE':
                 self.arts.append(XMImage(art))
 
