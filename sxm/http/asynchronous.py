@@ -9,12 +9,17 @@ logger = logging.getLogger(__file__)
 
 def make_async_http_app(sxm: SiriusXMClient) -> web.Application:
     """
-    Creates and returns a configured `aiohttp.web.Application` with an
-    instance with your `SiriusXMClient` ready to be ran via
-    `aiohttp.web.run_app` or a custom `aiohttp.web.AppRunner`.
+    Creates and returns a configured :class:`aiohttp.web.Application` with an
+    instance with your :class:`SiriusXMClient` ready to be ran via
+    :class:`aiohttp.web.run_app` or a custom :class:`aiohttp.web.AppRunner`.
 
     Really useful if you want to create your own HTTP server as part
-    of another application that is using `asyncio`.
+    of another application that is using :class:`asyncio`.
+
+    Parameters
+    ----------
+    sxm : :class:`SiriusXMClient`
+        SiriusXM client to use
     """
 
     async def playlist_handler(request: web.Request) -> web.StreamResponse:
@@ -82,11 +87,18 @@ def make_async_http_app(sxm: SiriusXMClient) -> web.Application:
 
 def run_async_http_server(sxm, port, ip='0.0.0.0') -> None:
     """
-    Creates and runs an instance of `aiohttp.web.Application` to proxy SiriusXM
-    requests without authentication.
+    Creates and runs an instance of :class:`aiohttp.web.Application`
+    to proxy SiriusXM requests without authentication.
 
     You still need a valid SiriusXM account with streaming rights,
-    via the `SiriusXMClient`.
+    via the :class:`SiriusXMClient`.
+
+    Parameters
+    ----------
+    port : :class:`int`
+        Port number to bind SiriusXM Proxy server on
+    ip : :class:`str`
+        IP address to bind SiriusXM Proxy server on
     """
 
     app = make_async_http_app(sxm)

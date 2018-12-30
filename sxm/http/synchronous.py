@@ -8,12 +8,18 @@ logger = logging.getLogger(__file__)
 
 def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
     """
-    Creates and returns a configured `http.server.BaseHTTPRequestHandler`
-    ready to be used by a `http.server.HTTPServer` instance with your
-    `SiriusXMClient`.
+    Creates and returns a configured
+    :class:`http.server.BaseHTTPRequestHandler` ready to be used
+    by a :class:`http.server.HTTPServer` instance with your
+    :class:`SiriusXMClient`.
 
     Really useful if you want to create your own HTTP server as part
     of another application.
+
+    Parameters
+    ----------
+    sxm : :class:`SiriusXMClient`
+        SiriusXM client to use
     """
 
     class SiriusHandler(BaseHTTPRequestHandler):
@@ -58,11 +64,18 @@ def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
 
 def run_sync_http_server(sxm: SiriusXMClient, port: int, ip='0.0.0.0') -> None:
     """
-    Creates and runs an instance of `http.server.HTTPServer` to proxy SiriusXM
+    Creates and runs an instance of :class:`http.server.HTTPServer` to proxy SiriusXM
     requests without authentication.
 
     You still need a valid SiriusXM account with streaming rights,
-    via the `SiriusXMClient`.
+    via the :class:`SiriusXMClient`.
+
+    Parameters
+    ----------
+    port : :class:`int`
+        Port number to bind SiriusXM Proxy server on
+    ip : :class:`str`
+        IP address to bind SiriusXM Proxy server on
     """
 
     httpd = HTTPServer((ip, port), make_sync_http_handler(sxm))

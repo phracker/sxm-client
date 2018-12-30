@@ -221,7 +221,7 @@ class XMHLSInfo:
 
 @dataclass
 class XMChannel:
-    """See sample_data/xm_channel.json for sample"""
+    """See `tests/sample_data/xm_channel.json` for sample"""
     guid: str = None
     id: str = None
     name: str = None
@@ -268,7 +268,7 @@ class XMChannel:
 
 @dataclass
 class XMLiveChannel:
-    """See sample_data/xm_live_channel.json for sample"""
+    """See `tests/sample_data/xm_live_channel.json` for sample"""
 
     id: str = None
     hls_infos: List[XMHLSInfo] = None
@@ -349,11 +349,23 @@ class XMLiveChannel:
         return latest
 
     def get_latest_episode(self, now: Optional[int] = None) -> XMEpisodeMarker:
-        """ Returns the latest `XMEpisodeMarker` based
-        on type relative to now """
+        """ Returns the latest :class:`XMEpisodeMarker` based
+        on type relative to now
+
+        Parameters
+        ----------
+        now : Optional[:class:`int`]
+            Timestamp in milliseconds from Epoch to be considered `now`
+        """
         return self._latest_marker('episode_markers', now)
 
     def get_latest_cut(self, now: Optional[int] = None) -> XMCutMarker:
-        """ Returns the latest `XMCutMarker` based
-        on type relative to now """
+        """ Returns the latest :class:`XMCutMarker` based
+        on type relative to now
+
+        Parameters
+        ----------
+        now : Optional[:class:`int`]
+            Timestamp in milliseconds from Epoch to be considered `now`
+        """
         return self._latest_marker('cut_markers', now)
