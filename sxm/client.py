@@ -511,15 +511,8 @@ class SiriusXMClient:
 
         # parse response
         try:
-            self.update_interval = int(
-                data['moduleList']['modules'][0]['updateFrequency']
-            )
-
             message = data['messages'][0]['message']
             message_code = data['messages'][0]['code']
-
-            live_channel_raw = data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']  # noqa
-            live_channel = XMLiveChannel(live_channel_raw)
 
         except (KeyError, IndexError):
             self._log.error('Error parsing json response for playlist')
@@ -544,6 +537,13 @@ class SiriusXMClient:
         elif message_code != 100:
             self._log.warn(f'Received error {message_code} {message}')
             return None
+
+        live_channel_raw = data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']  # noqa
+        live_channel = XMLiveChannel(live_channel_raw)
+
+        self.update_interval = int(
+            data['moduleList']['modules'][0]['updateFrequency']
+        )
 
         # get m3u8 url
         for playlist_info in live_channel.hls_infos:
