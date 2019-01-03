@@ -38,7 +38,7 @@ def make_async_http_app(sxm: SiriusXMClient) -> web.Application:
             await response.write_eof()
             return response
         else:
-            raise web.HTTPBadRequest()
+            raise web.HTTPServiceUnavailable()
 
     async def aac_handler(request: web.Request) -> web.StreamResponse:
         channel_id = request.match_info.get('channel_id', None)
@@ -65,7 +65,7 @@ def make_async_http_app(sxm: SiriusXMClient) -> web.Application:
             await response.write_eof()
             return response
         else:
-            raise web.HTTPBadRequest()
+            raise web.HTTPServiceUnavailable()
 
     async def key_handler(request: web.Request) -> web.StreamResponse:
         response = web.StreamResponse(headers={

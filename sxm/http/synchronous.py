@@ -32,7 +32,7 @@ def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
                     self.end_headers()
                     self.wfile.write(bytes(data, 'utf-8'))
                 else:
-                    self.send_response(500)
+                    self.send_response(503)
                     self.end_headers()
             elif self.path.endswith('.aac'):
                 segment_path = self.path[1:]
@@ -49,7 +49,7 @@ def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
                     self.end_headers()
                     self.wfile.write(data)
                 else:
-                    self.send_response(500)
+                    self.send_response(503)
                     self.end_headers()
             elif self.path.endswith('/key/1'):
                 self.send_response(200)
@@ -57,7 +57,7 @@ def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
                 self.end_headers()
                 self.wfile.write(HLS_AES_KEY)
             else:
-                self.send_response(500)
+                self.send_response(404)
                 self.end_headers()
     return SiriusHandler
 
