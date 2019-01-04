@@ -76,6 +76,7 @@ class SiriusXMClient:
     """
 
     def __init__(self, username: str, password: str,
+                 region: Union['US', 'CA'] = 'US',
                  user_agent: Optional[str] = None,
                  update_handler: Optional[Callable[[dict], None]] = None):
 
@@ -94,6 +95,7 @@ class SiriusXMClient:
 
         self.username = username
         self.password = password
+        self.region = region
 
         self.playlists = {}
         self._channels = None
@@ -415,7 +417,7 @@ class SiriusXMClient:
                 'sxmAppVersion': SXM_APP_VERSION,
                 'browser': self._ua['user_agent']['family'],
                 'browserVersion': browser_version,
-                'appRegion': 'US',
+                'appRegion': self.region,
                 'deviceModel': SXM_DEVICE_MODEL,
                 'clientDeviceId': 'null',
                 'player': 'html5',

@@ -20,13 +20,15 @@ from . import SiriusXMClient, run_sync_http_server
               help='Port to run SiriusXM server on')
 @click.option('-h', '--host', type=str, default='127.0.0.1',
               help='IP address to bind SiriusXM server to')
+@click.option('-r', '--region', type=click.Choice(['US', 'CA']), default='US',
+              help='Sets the SiriusXM client\'s region')
 def main(username: str, password: str,
-         do_list: bool, port: int, host: str) -> int:
+         do_list: bool, port: int, host: str, region: str) -> int:
     """SiriusXM proxy command line application."""
 
     logging.basicConfig(level=logging.INFO)
 
-    sxm = SiriusXMClient(username, password)
+    sxm = SiriusXMClient(username, password, region=region)
     if do_list:
         l1 = max(len(x.id) for x in sxm.channels)
         l2 = max(len(str(x.channel_number)) for x in sxm.channels)
