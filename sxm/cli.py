@@ -11,8 +11,10 @@ from . import SiriusXMClient, run_sync_http_server
 
 @click.command()
 @click.option('--username', type=str, prompt=True,
+              envvar='SXM_USERNAME',
               help='SiriuxXM username')
 @click.option('--password', type=str, prompt=True, hide_input=True,
+              envvar='SXM_PASSWORD',
               help='SiriuxXM password')
 @click.option('-l', '--list-channels', 'do_list', is_flag=True,
               help='List all avaiable SiriusXM channels')
