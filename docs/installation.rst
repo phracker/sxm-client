@@ -4,6 +4,12 @@
 Installation
 ============
 
+Requirements
+------------
+
+`sxm` requires Python 3.6+. It will not work on older version or Python
+2 at all.
+
 Github
 ------
 
@@ -12,7 +18,7 @@ install it from Github directory. You can do this by running:
 
 .. code-block:: console
 
-    $ pip install https://github.com/AngellusMortis/SiriusXM/tarball/feature/docs#egg=sxm-0.1.0
+    $ pip install https://github.com/AngellusMortis/SiriusXM/tarball/master#egg=sxm-0.1.0
 
 From sources
 ------------
