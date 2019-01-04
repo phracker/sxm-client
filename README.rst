@@ -1,8 +1,8 @@
 SiriusXM
 ========
 
-.. image:: https://readthedocs.org/projects/siriusxm/badge/?version=feature-docs
-        :target: https://siriusxm.readthedocs.io/en/feature-docs/?badge=feature-docs
+.. image:: https://readthedocs.org/projects/siriusxm/badge/?version=latest
+        :target: https://siriusxm.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 SiriusXM live radio playback
