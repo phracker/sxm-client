@@ -23,7 +23,10 @@ Create HTTP proxy server to serve HLS streams for SiriusXM channels:
 
     $ sxm --username myuser --password mypassword
 
-This will start a HTTP server that a player that supports HLS (QuickTime, VLC, ffmpeg, etc) you can access a SiriusXM channel at http://127.0.0.1:9999/channel.m3u8 where "channel" is the channel name, ID, or Sirius channel number.
+This will start a HTTP server that a player that supports HLS (QuickTime,
+VLC, ffmpeg, etc) you can access a SiriusXM channel at
+http://127.0.0.1:9999/channel.m3u8 where "channel" is the channel name, ID, or
+Sirius channel number.
 
 Username and password arguments are optional, if you leave one off, you will
 be prompted:
@@ -31,6 +34,22 @@ be prompted:
 .. code-block:: console
 
     $ sxm --username myuser
+
+Username and password can also be passed via the `SXM_USERNAME` and
+`SXM_PASSWORD` environment variables.
+
+.. code-block:: console
+
+    $ export SXM_USERNAME='myuser'
+    $ export SXM_PASSWORD='mypassword'
+    $ sxm
+
+If you are a SiriusXM subscriber in Canada, you will need to change your
+region to `CA`
+
+.. code-block:: console
+
+    $ sxm -r CA
 
 By default the HTTP server serves on `http://127.0.0.1:9999`, you can change this:
 
