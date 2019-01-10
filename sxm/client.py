@@ -25,6 +25,7 @@ SXM_DEVICE_MODEL = 'EverestWebClient'
 HLS_AES_KEY = base64.b64decode('0Nsco7MAgxowGvkUT8aYag==')
 FALLBACK_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6'  # noqa
 REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
+SESSION_MAX_LIFE = 14400
 
 
 class AuthenticationError(Exception):
@@ -111,18 +112,18 @@ class SiriusXMClient:
     @property
     def is_logged_in(self) -> bool:
 
-        return 'SXMAUTH' in self.session.cookies
+        return 'SXMAUTH' in self._session.cookies
 
     @property
     def is_session_authenticated(self) -> bool:
 
-        return 'AWSELB' in self.session.cookies and \
-            'JSESSIONID' in self.session.cookies
+        return 'AWSELB' in self._session.cookies and \
+            'JSESSIONID' in self._session.cookies
 
     @property
     def sxmak_token(self) -> Union[str, None]:
         try:
-            token = self.session.cookies['SXMAKTOKEN']
+            token = self._session.cookies['SXMAKTOKEN']
             return token.split('=', 1)[1].split(',', 1)[0]
         except (KeyError, IndexError):
             return None
@@ -130,7 +131,7 @@ class SiriusXMClient:
     @property
     def gup_id(self) -> Union[str, None]:
         try:
-            data = self.session.cookies['SXMDATA']
+            data = self._session.cookies['SXMDATA']
             return json.loads(urllib.parse.unquote(data))['gupId']
         except (KeyError, ValueError):
             return None
@@ -242,7 +243,7 @@ class SiriusXMClient:
             return None
 
         try:
-            res = self.session.get(url, params=self._token_params())
+            res = self._session.get(url, params=self._token_params())
 
             if res.status_code == 403:
                 self._log.info(
@@ -294,7 +295,7 @@ class SiriusXMClient:
         """
 
         url = f'{LIVE_PRIMARY_HLS}/{path}'
-        res = self.session.get(url, params=self._token_params())
+        res = self._session.get(url, params=self._token_params())
 
         if res.status_code == 403:
             raise SegmentRetrievalException(
@@ -387,8 +388,9 @@ class SiriusXMClient:
     def _reset_session(self) -> None:
         """ Resets session used by client """
 
-        self.session = requests.Session()
-        self.session.headers.update(
+        self._session_start = time.time()
+        self._session = requests.Session()
+        self._session.headers.update(
             {'User-Agent': self._ua['string']})
 
     def _token_params(self) -> None:
@@ -431,20 +433,25 @@ class SiriusXMClient:
 
         method = method.upper()
 
-        if authenticate and \
-                not self.is_session_authenticated and \
-                not self.authenticate():
+        if authenticate:
+            now = time.time()
+            if (now - self._session_start) > SESSION_MAX_LIFE:
+                self._log.info('Session exceed max time, reseting')
+                self._reset_session()
 
-            self._log.error('Unable to authenticate')
-            return None
+            if not self.is_session_authenticated and \
+                    not self.authenticate():
+
+                self._log.error('Unable to authenticate')
+                return None
 
         try:
             url = REST_FORMAT.format(path)
 
             if method == 'GET':
-                res = self.session.get(url, params=params)
+                res = self._session.get(url, params=params)
             elif method == 'POST':
-                res = self.session.post(url, data=json.dumps(params))
+                res = self._session.post(url, data=json.dumps(params))
             else:
                 raise requests.RequestException('only GET and POST')
         except requests.exceptions.ConnectionError as e:
@@ -562,7 +569,7 @@ class SiriusXMClient:
         return None
 
     def _get_playlist_variant_url(self, url: str) -> Union[str, None]:
-        res = self.session.get(url, params=self._token_params())
+        res = self._session.get(url, params=self._token_params())
 
         if not res.ok:
             self._log.warn(
