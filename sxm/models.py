@@ -192,7 +192,7 @@ class XMHLSInfo:
     name: str
     url: str
     size: str
-    position: XMPosition
+    position: Optional[XMPosition] = None
     # + unused chunks
 
     def __init__(self, hls_dict: dict):
