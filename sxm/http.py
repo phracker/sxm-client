@@ -1,7 +1,7 @@
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from ..client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
+from .client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
 
 __all__ = ['make_http_handler', 'run_http_server']
 
