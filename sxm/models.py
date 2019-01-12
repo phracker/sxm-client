@@ -149,7 +149,7 @@ class XMCut:
 
 
 class XMSong(XMCut):
-    album: XMAlbum
+    album: Optional[XMAlbum] = None
     itunes_id: Optional[str] = None
 
     def __init__(self, song_dict: dict):
