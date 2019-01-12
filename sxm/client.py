@@ -6,10 +6,9 @@ import re
 import time
 import traceback
 import urllib.parse
-from typing import Callable, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import requests
-
 from fake_useragent import FakeUserAgent
 from tenacity import retry, stop_after_attempt, wait_fixed
 from ua_parser import user_agent_parser
@@ -72,25 +71,34 @@ class SiriusXMClient:
     favorite_channels : List[:class:`XMChannel`]
         Retrieves and returns a full list of all :class:`XMChannel`
         available to the logged in account that are marked
-        as favorited
-
+        as favorite
     """
 
+    last_renew: Optional[float]
+    password: str
+    region: str
+    update_handler: Optional[Callable[[dict], None]]
+    update_interval: int
+    username: str
+
+    _channels: Optional[List[XMChannel]]
+    _favorite_channels: Optional[List[XMChannel]]
+    _playlists: Dict[str, str]
+    _ua: Dict[str, Any]
+
     def __init__(self, username: str, password: str,
-                 region: Union['US', 'CA'] = 'US',
+                 region: str = 'US',
                  user_agent: Optional[str] = None,
                  update_handler: Optional[Callable[[dict], None]] = None):
 
         self._log = logging.getLogger(__file__)
 
-        if user_agent is not None:
-            self._ua = user_agent
-        else:
+        if user_agent is None:
             try:
-                self._ua = FakeUserAgent().data_browsers['chrome'][0]
+                user_agent = FakeUserAgent().data_browsers['chrome'][0]
             except Exception:
-                self._ua = FALLBACK_UA
-        self._ua = user_agent_parser.Parse(self._ua)
+                user_agent = FALLBACK_UA
+        self._ua = user_agent_parser.Parse(user_agent)
 
         self._reset_session()
 
@@ -98,7 +106,7 @@ class SiriusXMClient:
         self.password = password
         self.region = region
 
-        self.playlists = {}
+        self._playlists = {}
         self._channels = None
         self._favorite_channels = None
 
@@ -151,7 +159,7 @@ class SiriusXMClient:
                     key=lambda x: int(x.channel_number)
                 )
             else:
-                return channels
+                return []
         return self._channels
 
     @property
@@ -221,7 +229,7 @@ class SiriusXMClient:
 
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
     def get_playlist(self, channel_id: str,
-                     use_cache: bool = True) -> Union[List[str], None]:
+                     use_cache: bool = True) -> Union[str, None]:
         """ Gets playlist of HLS stream URLs for given channel ID
 
         Parameters
@@ -314,7 +322,7 @@ class SiriusXMClient:
         dict can be pass into the constructor of :class:`XMChannel` to turn it
         into an object """
 
-        channels = []
+        channels: List[Dict[str, str]] = []
 
         postdata = {
             'consumeRequests': [],
@@ -356,7 +364,8 @@ class SiriusXMClient:
                 return x
         return None
 
-    def get_now_playing(self, channel: XMChannel) -> dict:
+    def get_now_playing(
+            self, channel: XMChannel) -> Union[Dict[str, Any], None]:
         """ Gets raw dictionary of response data for the live channel.
 
         `data['messages'][0]['code']`
@@ -379,7 +388,7 @@ class SiriusXMClient:
             "hls_output_mode": "custom",
             "marker_mode": "all_separate_cue_points",
             "result-template": "web",
-            "time": int(round(time.time() * 1000.0)),
+            "time": str(int(round(time.time() * 1000.0))),
             "timestamp": datetime.datetime.utcnow().isoformat("T") + "Z",
         }
 
@@ -393,7 +402,7 @@ class SiriusXMClient:
         self._session.headers.update(
             {'User-Agent': self._ua['string']})
 
-    def _token_params(self) -> None:
+    def _token_params(self) -> Dict[str, Union[str, None]]:
         return {
             "token": self.sxmak_token,
             "consumer": "k2",
@@ -427,8 +436,8 @@ class SiriusXMClient:
             }
         }
 
-    def _request(self, method: str, path: str, params: dict,
-                 authenticate: bool = True) -> Union[dict, None]:
+    def _request(self, method: str, path: str, params: Dict[str, str],
+                 authenticate: bool = True) -> Union[Dict[str, Any], None]:
         """ Makes a GET or POST request to SiriusXM servers """
 
         method = method.upper()
@@ -451,7 +460,8 @@ class SiriusXMClient:
             if method == 'GET':
                 res = self._session.get(url, params=params)
             elif method == 'POST':
-                res = self._session.post(url, data=json.dumps(params))
+                res = self._session.post(
+                    url, data=json.dumps(params).encode('utf8'))
             else:
                 raise requests.RequestException('only GET and POST')
         except requests.exceptions.ConnectionError as e:
@@ -476,13 +486,14 @@ class SiriusXMClient:
             self._log.error(f'Error decoding json for path \'{path}\'')
             return None
 
-    def _get(self, path: str, params: str, authenticate: bool = True) -> dict:
+    def _get(self, path: str, params: Dict[str, str],
+             authenticate: bool = True) -> Union[Dict[str, Any], None]:
         """ Makes a GET request to SiriusXM servers """
 
         return self._request('GET', path, params, authenticate)
 
     def _post(self, path: str, postdata: dict, channel_list: bool = False,
-              authenticate: bool = True) -> dict:
+              authenticate: bool = True) -> Union[Dict[str, Any], None]:
         """ Makes a POST request to SiriusXM servers """
         postdata = {
             'moduleList': {
@@ -506,13 +517,13 @@ class SiriusXMClient:
 
         now = time.time()
 
-        if use_cache and channel.id in self.playlists:
+        if use_cache and channel.id in self._playlists:
             if self.last_renew is None or \
                     (now - self.last_renew) > self.update_interval:
 
-                del self.playlists[channel.id]
+                del self._playlists[channel.id]
             else:
-                return self.playlists[channel.id]
+                return self._playlists[channel.id]
 
         data = self.get_now_playing(channel)
         if data is None:
@@ -560,12 +571,12 @@ class SiriusXMClient:
                 playlist = self._get_playlist_variant_url(playlist_info.url)
 
                 if playlist is not None:
-                    self.playlists[channel.id] = playlist
+                    self._playlists[channel.id] = playlist
                     self.last_renew = time.time()
 
                     if self.update_handler is not None:
                         self.update_handler(live_channel_raw)
-                    return self.playlists[channel.id]
+                    return self._playlists[channel.id]
         return None
 
     def _get_playlist_variant_url(self, url: str) -> Union[str, None]:

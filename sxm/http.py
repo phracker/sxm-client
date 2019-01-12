@@ -1,5 +1,6 @@
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import Type
 
 from .client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
 
@@ -7,7 +8,7 @@ __all__ = ['make_http_handler', 'run_http_server']
 
 
 def make_http_handler(sxm: SiriusXMClient,
-                      logger: logging.Logger) -> BaseHTTPRequestHandler:
+                      logger: logging.Logger) -> Type[BaseHTTPRequestHandler]:
     """
     Creates and returns a configured
     :class:`http.server.BaseHTTPRequestHandler` ready to be used
@@ -69,8 +70,9 @@ def make_http_handler(sxm: SiriusXMClient,
                 self.end_headers()
     return SiriusHandler
 
+
 def run_http_server(sxm: SiriusXMClient, port: int,
-                         ip='0.0.0.0', logger: logging.Logger = None) -> None:
+                    ip='0.0.0.0', logger: logging.Logger = None) -> None:
     """
     Creates and runs an instance of :class:`http.server.HTTPServer` to proxy
     SiriusXM requests without authentication.
@@ -89,7 +91,7 @@ def run_http_server(sxm: SiriusXMClient, port: int,
     if logger is None:
         logger = logging.getLogger(__file__)
 
-    httpd = HTTPServer((ip, port), make_sync_http_handler(sxm, logger))
+    httpd = HTTPServer((ip, port), make_http_handler(sxm, logger))
     try:
         logger.info(f'running SiriusXM proxy server on http://{ip}:{port}')
         httpd.serve_forever()

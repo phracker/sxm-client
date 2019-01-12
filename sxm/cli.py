@@ -6,7 +6,7 @@ import sys
 
 import click
 
-from . import SiriusXMClient, run_sync_http_server
+from . import SiriusXMClient, run_http_server
 
 
 @click.command()
@@ -48,9 +48,9 @@ def main(username: str, password: str,
             cname = channel.name.ljust(l3)[:l3]
             click.echo('{} | {} | {}'.format(cid, cnum, cname))
     else:
-        run_sync_http_server(sxm, port, ip=host)
+        run_http_server(sxm, port, ip=host)
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    sys.exit(main())  # pragma: no cover, pylint: disable=E1120
