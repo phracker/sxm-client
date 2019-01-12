@@ -3,10 +3,11 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from ..client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
 
-logger = logging.getLogger(__file__)
+__all__ = ['make_http_handler', 'run_http_server']
 
 
-def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
+def make_http_handler(sxm: SiriusXMClient,
+                      logger: logging.Logger) -> BaseHTTPRequestHandler:
     """
     Creates and returns a configured
     :class:`http.server.BaseHTTPRequestHandler` ready to be used
@@ -23,9 +24,16 @@ def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
     """
 
     class SiriusHandler(BaseHTTPRequestHandler):
+        def log_error(self, format, *args):
+            logger.warn(format % args)
+
+        def log_message(self, format, *args):
+            logger.info(format % args)
+
         def do_GET(self):
             if self.path.endswith('.m3u8'):
-                data = sxm.get_playlist(self.path.rsplit('/', 1)[1][:-5])
+                data = sxm.get_playlist(
+                    self.path.rsplit('/', 1)[1][:-5], use_cache=False)
                 if data:
                     self.send_response(200)
                     self.send_header('Content-Type', 'application/x-mpegURL')
@@ -61,11 +69,11 @@ def make_sync_http_handler(sxm: SiriusXMClient) -> BaseHTTPRequestHandler:
                 self.end_headers()
     return SiriusHandler
 
-
-def run_sync_http_server(sxm: SiriusXMClient, port: int, ip='0.0.0.0') -> None:
+def run_http_server(sxm: SiriusXMClient, port: int,
+                         ip='0.0.0.0', logger: logging.Logger = None) -> None:
     """
-    Creates and runs an instance of :class:`http.server.HTTPServer` to proxy SiriusXM
-    requests without authentication.
+    Creates and runs an instance of :class:`http.server.HTTPServer` to proxy
+    SiriusXM requests without authentication.
 
     You still need a valid SiriusXM account with streaming rights,
     via the :class:`SiriusXMClient`.
@@ -78,7 +86,10 @@ def run_sync_http_server(sxm: SiriusXMClient, port: int, ip='0.0.0.0') -> None:
         IP address to bind SiriusXM Proxy server on
     """
 
-    httpd = HTTPServer((ip, port), make_sync_http_handler(sxm))
+    if logger is None:
+        logger = logging.getLogger(__file__)
+
+    httpd = HTTPServer((ip, port), make_sync_http_handler(sxm, logger))
     try:
         logger.info(f'running SiriusXM proxy server on http://{ip}:{port}')
         httpd.serve_forever()
