@@ -33,8 +33,7 @@ def make_http_handler(sxm: SiriusXMClient,
 
         def do_GET(self):
             if self.path.endswith('.m3u8'):
-                data = sxm.get_playlist(
-                    self.path.rsplit('/', 1)[1][:-5], use_cache=False)
+                data = sxm.get_playlist(self.path.rsplit('/', 1)[1][:-5])
                 if data:
                     self.send_response(200)
                     self.send_header('Content-Type', 'application/x-mpegURL')

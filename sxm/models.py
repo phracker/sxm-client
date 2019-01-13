@@ -260,7 +260,7 @@ class XMLiveChannel:
     custom_hls_infos: List[XMHLSInfo]
     episode_markers: List[XMEpisodeMarker]
     cut_markers: List[XMCutMarker]
-    _song_cuts: List[XMCutMarker]
+    _song_cuts: Optional[List[XMCutMarker]] = None
     tune_time: Optional[int] = None
     # ... plus many unused
 
