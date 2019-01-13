@@ -495,17 +495,17 @@ You create your own HTTP proxy server as well:
 .. code-block:: python3
 
     from sxm import SiriusXMClient
-    from sxm import run_sync_http_server
+    from sxm import run_http_server
 
     sxm = SiriusXMClient('username', 'password')
 
     if sxm.authenticate():
         # runs proxy server on http://127.0.0.1:9000
-        run_sync_http_server(sxm, 9000)
+        run_http_server(sxm, 9000)
         # runs proxy server on http://0.0.0.0:9000
-        run_sync_http_server(sxm, 9000, ip='0.0.0.0')
+        run_http_server(sxm, 9000, ip='0.0.0.0')
 
-If you want more control over the HTTP server, `run_sync_http_server` is just
+If you want more control over the HTTP server, `run_http_server` is just
     a shortcut function:
 
 .. code-block:: python3
@@ -513,44 +513,14 @@ If you want more control over the HTTP server, `run_sync_http_server` is just
     from http.server import HTTPServer
 
     from sxm import SiriusXMClient
-    from sxm import make_sync_http_handler
+    from sxm import make_http_handler
 
     sxm = SiriusXMClient('username', 'password')
 
     if sxm.authenticate():
-        httpd = HTTPServer((ip, port), make_sync_http_handler(sxm))
+        httpd = HTTPServer((ip, port), make_http_handler(sxm))
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
             pass
         httpd.server_close()
-
-Async HTTP Proxy Server
------------------------
-
-If your application is using `asyncio`, there are also async versions for the
-    HTTP proxy server. To use this, you need `aiohttp`, which you can get
-    automatically by installing the extra `async`
-
-.. code-block:: console
-
-    $ pip install sxm[async]
-
-.. code-block:: python3
-
-    from aiohttp.web import run_app
-
-    from sxm import SiriusXMClient
-    from sxm import make_async_http_app, run_async_http_server
-
-    sxm = SiriusXMClient('username', 'password')
-
-    if sxm.authenticate():
-        # runs proxy server on http://127.0.0.1:9000
-        run_async_http_server(sxm, 9000)
-        # runs proxy server on http://0.0.0.0:9000
-        run_async_http_server(sxm, 9000, ip='0.0.0.0')
-
-        # run_async_http_server is also a helper
-        app = make_async_http_app(sxm)
-        run_app(app, port=port, host=ip)

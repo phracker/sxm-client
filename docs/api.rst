@@ -26,13 +26,6 @@ SiriusXMClient
 HTTP Server
 ===========
 
-.. autofunction:: make_sync_http_handler
+.. autofunction:: make_http_handler
 
-.. autofunction:: run_sync_http_server
-
-Async HTTP Server
-=================
-
-.. autofunction:: make_async_http_app
-
-.. autofunction:: run_async_http_server
+.. autofunction:: run_http_server
