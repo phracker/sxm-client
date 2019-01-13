@@ -467,7 +467,7 @@ Python API
 ==========
 
 Everything that `sxm` can do via command line is provided via a Python
-    API as well.
+API as well.
 
 
 SiriusXM Client
@@ -506,7 +506,7 @@ You create your own HTTP proxy server as well:
         run_http_server(sxm, 9000, ip='0.0.0.0')
 
 If you want more control over the HTTP server, `run_http_server` is just
-    a shortcut function:
+a shortcut function:
 
 .. code-block:: python3
 
