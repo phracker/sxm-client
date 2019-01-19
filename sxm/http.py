@@ -4,11 +4,12 @@ from typing import Type
 
 from .client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
 
-__all__ = ['make_http_handler', 'run_http_server']
+__all__ = ["make_http_handler", "run_http_server"]
 
 
-def make_http_handler(sxm: SiriusXMClient,
-                      logger: logging.Logger) -> Type[BaseHTTPRequestHandler]:
+def make_http_handler(
+    sxm: SiriusXMClient, logger: logging.Logger
+) -> Type[BaseHTTPRequestHandler]:
     """
     Creates and returns a configured
     :class:`http.server.BaseHTTPRequestHandler` ready to be used
@@ -32,17 +33,17 @@ def make_http_handler(sxm: SiriusXMClient,
             logger.info(format % args)
 
         def do_GET(self):
-            if self.path.endswith('.m3u8'):
-                data = sxm.get_playlist(self.path.rsplit('/', 1)[1][:-5])
+            if self.path.endswith(".m3u8"):
+                data = sxm.get_playlist(self.path.rsplit("/", 1)[1][:-5])
                 if data:
                     self.send_response(200)
-                    self.send_header('Content-Type', 'application/x-mpegURL')
+                    self.send_header("Content-Type", "application/x-mpegURL")
                     self.end_headers()
-                    self.wfile.write(bytes(data, 'utf-8'))
+                    self.wfile.write(bytes(data, "utf-8"))
                 else:
                     self.send_response(503)
                     self.end_headers()
-            elif self.path.endswith('.aac'):
+            elif self.path.endswith(".aac"):
                 segment_path = self.path[1:]
                 try:
                     data = sxm.get_segment(segment_path)
@@ -53,25 +54,27 @@ def make_http_handler(sxm: SiriusXMClient,
 
                 if data:
                     self.send_response(200)
-                    self.send_header('Content-Type', 'audio/x-aac')
+                    self.send_header("Content-Type", "audio/x-aac")
                     self.end_headers()
                     self.wfile.write(data)
                 else:
                     self.send_response(503)
                     self.end_headers()
-            elif self.path.endswith('/key/1'):
+            elif self.path.endswith("/key/1"):
                 self.send_response(200)
-                self.send_header('Content-Type', 'text/plain')
+                self.send_header("Content-Type", "text/plain")
                 self.end_headers()
                 self.wfile.write(HLS_AES_KEY)
             else:
                 self.send_response(404)
                 self.end_headers()
+
     return SiriusHandler
 
 
-def run_http_server(sxm: SiriusXMClient, port: int,
-                    ip='0.0.0.0', logger: logging.Logger = None) -> None:
+def run_http_server(
+    sxm: SiriusXMClient, port: int, ip="0.0.0.0", logger: logging.Logger = None
+) -> None:
     """
     Creates and runs an instance of :class:`http.server.HTTPServer` to proxy
     SiriusXM requests without authentication.
@@ -92,7 +95,7 @@ def run_http_server(sxm: SiriusXMClient, port: int,
 
     httpd = HTTPServer((ip, port), make_http_handler(sxm, logger))
     try:
-        logger.info(f'running SiriusXM proxy server on http://{ip}:{port}')
+        logger.info(f"running SiriusXM proxy server on http://{ip}:{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass

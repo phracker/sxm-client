@@ -15,25 +15,31 @@ from ua_parser import user_agent_parser
 
 from .models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
 
-__all__ = ['HLS_AES_KEY', 'SiriusXMClient',
-           'AuthenticationError', 'SegmentRetrievalException']
+__all__ = [
+    "HLS_AES_KEY",
+    "SiriusXMClient",
+    "AuthenticationError",
+    "SegmentRetrievalException",
+]
 
 
-SXM_APP_VERSION = '5.15.2183'
-SXM_DEVICE_MODEL = 'EverestWebClient'
-HLS_AES_KEY = base64.b64decode('0Nsco7MAgxowGvkUT8aYag==')
-FALLBACK_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6'  # noqa
-REST_FORMAT = 'https://player.siriusxm.com/rest/v2/experience/modules/{}'
+SXM_APP_VERSION = "5.15.2183"
+SXM_DEVICE_MODEL = "EverestWebClient"
+HLS_AES_KEY = base64.b64decode("0Nsco7MAgxowGvkUT8aYag==")
+FALLBACK_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6"  # noqa
+REST_FORMAT = "https://player.siriusxm.com/rest/v2/experience/modules/{}"
 SESSION_MAX_LIFE = 14400
 
 
 class AuthenticationError(Exception):
     """ SiriusXM Authentication failed, renew session """
+
     pass
 
 
 class SegmentRetrievalException(Exception):
     """ failed to get HLS segment, renew session """
+
     pass
 
 
@@ -86,16 +92,20 @@ class SiriusXMClient:
     _playlists: Dict[str, str]
     _ua: Dict[str, Any]
 
-    def __init__(self, username: str, password: str,
-                 region: str = 'US',
-                 user_agent: Optional[str] = None,
-                 update_handler: Optional[Callable[[dict], None]] = None):
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        region: str = "US",
+        user_agent: Optional[str] = None,
+        update_handler: Optional[Callable[[dict], None]] = None,
+    ):
 
         self._log = logging.getLogger(__file__)
 
         if user_agent is None:
             try:
-                user_agent = FakeUserAgent().data_browsers['chrome'][0]
+                user_agent = FakeUserAgent().data_browsers["chrome"][0]
             except Exception:
                 user_agent = FALLBACK_UA
         self._ua = user_agent_parser.Parse(user_agent)
@@ -120,27 +130,29 @@ class SiriusXMClient:
     @property
     def is_logged_in(self) -> bool:
 
-        return 'SXMAUTH' in self._session.cookies
+        return "SXMAUTH" in self._session.cookies
 
     @property
     def is_session_authenticated(self) -> bool:
 
-        return 'AWSELB' in self._session.cookies and \
-            'JSESSIONID' in self._session.cookies
+        return (
+            "AWSELB" in self._session.cookies
+            and "JSESSIONID" in self._session.cookies
+        )
 
     @property
     def sxmak_token(self) -> Union[str, None]:
         try:
-            token = self._session.cookies['SXMAKTOKEN']
-            return token.split('=', 1)[1].split(',', 1)[0]
+            token = self._session.cookies["SXMAKTOKEN"]
+            return token.split("=", 1)[1].split(",", 1)[0]
         except (KeyError, IndexError):
             return None
 
     @property
     def gup_id(self) -> Union[str, None]:
         try:
-            data = self._session.cookies['SXMDATA']
-            return json.loads(urllib.parse.unquote(data))['gupId']
+            data = self._session.cookies["SXMDATA"]
+            return json.loads(urllib.parse.unquote(data))["gupId"]
         except (KeyError, ValueError):
             return None
 
@@ -155,8 +167,7 @@ class SiriusXMClient:
                 for channel in channels:
                     self._channels.append(XMChannel(channel))
                 self._channels = sorted(
-                    self._channels,
-                    key=lambda x: int(x.channel_number)
+                    self._channels, key=lambda x: int(x.channel_number)
                 )
             else:
                 return []
@@ -175,25 +186,25 @@ class SiriusXMClient:
         """ Attempts to log into SiriusXM with stored username/password """
 
         postdata = self._get_device_info()
-        postdata.update({
-            'standardAuth': {
-                'username': self.username,
-                'password': self.password,
-            },
-        })
+        postdata.update(
+            {
+                "standardAuth": {
+                    "username": self.username,
+                    "password": self.password,
+                }
+            }
+        )
 
         data = self._post(
-            'modify/authentication', postdata,
-            authenticate=False
+            "modify/authentication", postdata, authenticate=False
         )
         if not data:
             return False
 
         try:
-            return data['status'] == 1 \
-                and self.is_logged_in
+            return data["status"] == 1 and self.is_logged_in
         except KeyError:
-            self._log.error('Error decoding json response for login')
+            self._log.error("Error decoding json response for login")
             return False
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(10))
@@ -207,29 +218,27 @@ class SiriusXMClient:
         """
 
         if not self.is_logged_in and not self.login():
-            self._log.error('Unable to authenticate because login failed')
+            self._log.error("Unable to authenticate because login failed")
             self._reset_session()
-            raise AuthenticationError('Reset session')
+            raise AuthenticationError("Reset session")
 
         data = self._post(
-            'resume?OAtrial=false',
-            self._get_device_info(),
-            authenticate=False
+            "resume?OAtrial=false", self._get_device_info(), authenticate=False
         )
         if not data:
             return False
 
         try:
-            return data['status'] == 1 \
-                and self.is_session_authenticated
+            return data["status"] == 1 and self.is_session_authenticated
         except KeyError:
-            self._log.error('Error parsing json response for authentication')
+            self._log.error("Error parsing json response for authentication")
             self._log.error(traceback.format_exc())
             return False
 
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
-    def get_playlist(self, channel_id: str,
-                     use_cache: bool = True) -> Union[str, None]:
+    def get_playlist(
+        self, channel_id: str, use_cache: bool = True
+    ) -> Union[str, None]:
         """ Gets playlist of HLS stream URLs for given channel ID
 
         Parameters
@@ -243,7 +252,7 @@ class SiriusXMClient:
         channel = self.get_channel(channel_id)
 
         if channel is None:
-            self._log.info(f'No channel for {channel_id}')
+            self._log.info(f"No channel for {channel_id}")
             return None
 
         url = self._get_playlist_url(channel, use_cache)
@@ -255,28 +264,29 @@ class SiriusXMClient:
 
             if res.status_code == 403:
                 self._log.info(
-                    'Received status code 403 on playlist, renewing session')
+                    "Received status code 403 on playlist, renewing session"
+                )
                 return self.get_playlist(channel_id, False)
 
             if not res.ok:
                 self._log.warn(
-                    f'Received status code {res.status_code} on '
-                    f'playlist variant'
+                    f"Received status code {res.status_code} on "
+                    f"playlist variant"
                 )
                 return None
 
         except requests.exceptions.ConnectionError as e:
-            self._log.error(f'Error getting playlist: {e}')
+            self._log.error(f"Error getting playlist: {e}")
             return None
 
         # add base path to segments
         playlist_entries = []
-        aac_path = re.findall('AAC_Data.*', url)[0]
+        aac_path = re.findall("AAC_Data.*", url)[0]
         for line in res.text.split("\n"):
             line = line.strip()
-            if line.endswith('.aac'):
+            if line.endswith(".aac"):
                 playlist_entries.append(
-                    re.sub(r'[^\/]\w+\.m3u8', line, aac_path)
+                    re.sub(r"[^\/]\w+\.m3u8", line, aac_path)
                 )
             else:
                 playlist_entries.append(line)
@@ -284,8 +294,9 @@ class SiriusXMClient:
         return "\n".join(playlist_entries)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(5))
-    def get_segment(self, path: str,
-                    max_attempts: int = 5) -> Union[bytes, None]:
+    def get_segment(
+        self, path: str, max_attempts: int = 5
+    ) -> Union[bytes, None]:
         """ Gets raw HLS segment for given path
 
         Parameters
@@ -302,7 +313,7 @@ class SiriusXMClient:
             needs reset
         """
 
-        url = f'{LIVE_PRIMARY_HLS}/{path}'
+        url = f"{LIVE_PRIMARY_HLS}/{path}"
         res = self._session.get(url, params=self._token_params())
 
         if res.status_code == 403:
@@ -312,7 +323,8 @@ class SiriusXMClient:
 
         if not res.ok:
             self._log.warn(
-                f'Received status code {res.status_code} on segment')
+                f"Received status code {res.status_code} on segment"
+            )
             return None
 
         return res.content
@@ -325,24 +337,23 @@ class SiriusXMClient:
         channels: List[Dict[str, str]] = []
 
         postdata = {
-            'consumeRequests': [],
-            'resultTemplate': 'responsive',
-            'alerts': [],
-            'profileInfos': []
+            "consumeRequests": [],
+            "resultTemplate": "responsive",
+            "alerts": [],
+            "profileInfos": [],
         }
 
-        data = self._post('get', postdata, channel_list=True)
+        data = self._post("get", postdata, channel_list=True)
         if not data:
-            self._log.warn('Unable to get channel list')
+            self._log.warn("Unable to get channel list")
             return channels
 
         try:
-            channels = (
-                data['moduleList']['modules'][0]['moduleResponse']
-                ['contentData']['channelListing']['channels']
-            )
+            channels = data["moduleList"]["modules"][0]["moduleResponse"][
+                "contentData"
+            ]["channelListing"]["channels"]
         except (KeyError, IndexError):
-            self._log.error('Error parsing json response for channels')
+            self._log.error("Error parsing json response for channels")
             self._log.error(traceback.format_exc())
             return []
         return channels
@@ -358,14 +369,17 @@ class SiriusXMClient:
 
         name = name.lower()
         for x in self.channels:
-            if x.name.lower() == name or \
-                    x.id.lower() == name or \
-                    x.channel_number == name:
+            if (
+                x.name.lower() == name
+                or x.id.lower() == name
+                or x.channel_number == name
+            ):
                 return x
         return None
 
     def get_now_playing(
-            self, channel: XMChannel) -> Union[Dict[str, Any], None]:
+        self, channel: XMChannel
+    ) -> Union[Dict[str, Any], None]:
         """ Gets raw dictionary of response data for the live channel.
 
         `data['messages'][0]['code']`
@@ -399,8 +413,7 @@ class SiriusXMClient:
 
         self._session_start = time.time()
         self._session = requests.Session()
-        self._session.headers.update(
-            {'User-Agent': self._ua['string']})
+        self._session.headers.update({"User-Agent": self._ua["string"]})
 
     def _token_params(self) -> Dict[str, Union[str, None]]:
         return {
@@ -412,32 +425,39 @@ class SiriusXMClient:
     def _get_device_info(self) -> dict:
         """ Generates a dict of device info to pass to SiriusXM """
 
-        browser_version = self._ua['user_agent']['major']
-        if self._ua['user_agent']['minor'] is not None:
-            browser_version = \
+        browser_version = self._ua["user_agent"]["major"]
+        if self._ua["user_agent"]["minor"] is not None:
+            browser_version = (
                 f'{browser_version}.{self._ua["user_agent"]["minor"]}'
-        if self._ua['user_agent']['patch'] is not None:
-            browser_version = \
+            )
+        if self._ua["user_agent"]["patch"] is not None:
+            browser_version = (
                 f'{browser_version}.{self._ua["user_agent"]["patch"]}'
+            )
 
         return {
-            'resultTemplate': 'web',
-            'deviceInfo': {
-                'osVersion': self._ua['os']['family'],
-                'platform': 'Web',
-                'sxmAppVersion': SXM_APP_VERSION,
-                'browser': self._ua['user_agent']['family'],
-                'browserVersion': browser_version,
-                'appRegion': self.region,
-                'deviceModel': SXM_DEVICE_MODEL,
-                'clientDeviceId': 'null',
-                'player': 'html5',
-                'clientDeviceType': 'web',
-            }
+            "resultTemplate": "web",
+            "deviceInfo": {
+                "osVersion": self._ua["os"]["family"],
+                "platform": "Web",
+                "sxmAppVersion": SXM_APP_VERSION,
+                "browser": self._ua["user_agent"]["family"],
+                "browserVersion": browser_version,
+                "appRegion": self.region,
+                "deviceModel": SXM_DEVICE_MODEL,
+                "clientDeviceId": "null",
+                "player": "html5",
+                "clientDeviceType": "web",
+            },
         }
 
-    def _request(self, method: str, path: str, params: Dict[str, str],
-                 authenticate: bool = True) -> Union[Dict[str, Any], None]:
+    def _request(
+        self,
+        method: str,
+        path: str,
+        params: Dict[str, str],
+        authenticate: bool = True,
+    ) -> Union[Dict[str, Any], None]:
         """ Makes a GET or POST request to SiriusXM servers """
 
         method = method.upper()
@@ -445,81 +465,84 @@ class SiriusXMClient:
         if authenticate:
             now = time.time()
             if (now - self._session_start) > SESSION_MAX_LIFE:
-                self._log.info('Session exceed max time, reseting')
+                self._log.info("Session exceed max time, reseting")
                 self._reset_session()
 
-            if not self.is_session_authenticated and \
-                    not self.authenticate():
+            if not self.is_session_authenticated and not self.authenticate():
 
-                self._log.error('Unable to authenticate')
+                self._log.error("Unable to authenticate")
                 return None
 
         try:
             url = REST_FORMAT.format(path)
 
-            if method == 'GET':
+            if method == "GET":
                 res = self._session.get(url, params=params)
-            elif method == 'POST':
+            elif method == "POST":
                 res = self._session.post(
-                    url, data=json.dumps(params).encode('utf8'))
+                    url, data=json.dumps(params).encode("utf8")
+                )
             else:
-                raise requests.RequestException('only GET and POST')
+                raise requests.RequestException("only GET and POST")
         except requests.exceptions.ConnectionError as e:
             self._log.error(
-                f'An Exception occurred when trying to perform '
-                f'the {method} request!'
+                f"An Exception occurred when trying to perform "
+                f"the {method} request!"
             )
-            self._log.error(f'Params: {params}')
-            self._log.error(f'Method: {method}')
-            self._log.error(f'Response: {e.response}')
-            self._log.error(f'Request: {e.request}')
+            self._log.error(f"Params: {params}")
+            self._log.error(f"Method: {method}")
+            self._log.error(f"Response: {e.response}")
+            self._log.error(f"Request: {e.request}")
             raise (e)
 
         if not res.ok:
             self._log.warn(
-                f'Received status code {res.status_code} for path \'{path}\'')
+                f"Received status code {res.status_code} for path '{path}'"
+            )
             return None
 
         try:
-            return res.json()['ModuleListResponse']
+            return res.json()["ModuleListResponse"]
         except (KeyError, ValueError):
-            self._log.error(f'Error decoding json for path \'{path}\'')
+            self._log.error(f"Error decoding json for path '{path}'")
             return None
 
-    def _get(self, path: str, params: Dict[str, str],
-             authenticate: bool = True) -> Union[Dict[str, Any], None]:
+    def _get(
+        self, path: str, params: Dict[str, str], authenticate: bool = True
+    ) -> Union[Dict[str, Any], None]:
         """ Makes a GET request to SiriusXM servers """
 
-        return self._request('GET', path, params, authenticate)
+        return self._request("GET", path, params, authenticate)
 
-    def _post(self, path: str, postdata: dict, channel_list: bool = False,
-              authenticate: bool = True) -> Union[Dict[str, Any], None]:
+    def _post(
+        self,
+        path: str,
+        postdata: dict,
+        channel_list: bool = False,
+        authenticate: bool = True,
+    ) -> Union[Dict[str, Any], None]:
         """ Makes a POST request to SiriusXM servers """
-        postdata = {
-            'moduleList': {
-                'modules': [{
-                    'moduleRequest': postdata,
-                }],
-            },
-        }
+        postdata = {"moduleList": {"modules": [{"moduleRequest": postdata}]}}
 
         if channel_list:
-            postdata['moduleList']['modules'][0].update({
-                'moduleArea': 'Discovery',
-                'moduleType': 'ChannelListing'
-            })
+            postdata["moduleList"]["modules"][0].update(
+                {"moduleArea": "Discovery", "moduleType": "ChannelListing"}
+            )
 
-        return self._request('POST', path, postdata, authenticate)
+        return self._request("POST", path, postdata, authenticate)
 
-    def _get_playlist_url(self, channel: XMChannel, use_cache: bool = True,
-                          max_attempts: int = 5) -> Union[str, None]:
+    def _get_playlist_url(
+        self, channel: XMChannel, use_cache: bool = True, max_attempts: int = 5
+    ) -> Union[str, None]:
         """ Returns HLS live stream URL for a given `XMChannel` """
 
         now = time.time()
 
         if use_cache and channel.id in self._playlists:
-            if self.last_renew is None or \
-                    (now - self.last_renew) > self.update_interval:
+            if (
+                self.last_renew is None
+                or (now - self.last_renew) > self.update_interval
+            ):
 
                 del self._playlists[channel.id]
             else:
@@ -531,11 +554,11 @@ class SiriusXMClient:
 
         # parse response
         try:
-            message = data['messages'][0]['message']
-            message_code = data['messages'][0]['code']
+            message = data["messages"][0]["message"]
+            message_code = data["messages"][0]["code"]
 
         except (KeyError, IndexError):
-            self._log.error('Error parsing json response for playlist')
+            self._log.error("Error parsing json response for playlist")
             self._log.error(traceback.format_exc())
             return None
 
@@ -543,31 +566,35 @@ class SiriusXMClient:
         if message_code == 201 or message_code == 208:
             if max_attempts > 0:
                 self._log.info(
-                    'Session expired, logging in and authenticating')
+                    "Session expired, logging in and authenticating"
+                )
                 if self.authenticate():
-                    self._log.info('Successfully authenticated')
+                    self._log.info("Successfully authenticated")
                     return self._get_playlist_url(
-                        channel, use_cache, max_attempts - 1)
+                        channel, use_cache, max_attempts - 1
+                    )
                 else:
-                    self._log.error('Failed to authenticate')
+                    self._log.error("Failed to authenticate")
                     return None
             else:
-                self._log.warn('Reached max attempts for playlist')
+                self._log.warn("Reached max attempts for playlist")
                 return None
         elif message_code != 100:
-            self._log.warn(f'Received error {message_code} {message}')
+            self._log.warn(f"Received error {message_code} {message}")
             return None
 
-        live_channel_raw = data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']  # noqa
+        live_channel_raw = data["moduleList"]["modules"][0]["moduleResponse"][
+            "liveChannelData"
+        ]
         live_channel = XMLiveChannel(live_channel_raw)
 
         self.update_interval = int(
-            data['moduleList']['modules'][0]['updateFrequency']
+            data["moduleList"]["modules"][0]["updateFrequency"]
         )
 
         # get m3u8 url
         for playlist_info in live_channel.hls_infos:
-            if playlist_info.size == 'LARGE':
+            if playlist_info.size == "LARGE":
                 playlist = self._get_playlist_variant_url(playlist_info.url)
 
                 if playlist is not None:
@@ -584,14 +611,14 @@ class SiriusXMClient:
 
         if not res.ok:
             self._log.warn(
-                f'Received status code {res.status_code} on playlist '
-                f'variant retrieval'
+                f"Received status code {res.status_code} on playlist "
+                f"variant retrieval"
             )
             return None
 
-        for x in res.text.split('\n'):
-            if x.rstrip().endswith('.m3u8'):
+        for x in res.text.split("\n"):
+            if x.rstrip().endswith(".m3u8"):
                 # first variant should be 256k one
-                return '{}/{}'.format(url.rsplit('/', 1)[0], x.rstrip())
+                return "{}/{}".format(url.rsplit("/", 1)[0], x.rstrip())
 
         return None
