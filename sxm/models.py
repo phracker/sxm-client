@@ -55,13 +55,13 @@ class XMImage(XMArt):
 class XMCategory:
     guid: str
     name: str
-    key: str
+    key: Optional[str] = None
     is_primary: bool = True
 
     def __init__(self, category_dict: dict):
         self.guid = category_dict["categoryGuid"]
         self.name = category_dict["name"]
-        self.key = category_dict["key"]
+        self.key = category_dict.get("key")
         self.is_primary = category_dict["isPrimary"]
 
 
