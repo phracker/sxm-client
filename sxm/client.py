@@ -53,6 +53,8 @@ class SiriusXMClient:
         SiriusXM username
     password : :class:`str`
         SiriusXM password
+    region : :class:`str` ("US" or "CA")
+        Sets your SiriusXM account region
     user_agent : Optional[:class:`str`]
         User Agent string to use for making requests to SiriusXM. If `None` is
         passed, it will attempt to generate one based on real browser usage
