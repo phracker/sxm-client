@@ -8,7 +8,9 @@ __all__ = ["make_http_handler", "run_http_server"]
 
 
 def make_http_handler(
-    sxm: SiriusXMClient, logger: logging.Logger
+    sxm: SiriusXMClient,
+    logger: logging.Logger,
+    request_level: int = logging.INFO,
 ) -> Type[BaseHTTPRequestHandler]:
     """
     Creates and returns a configured
@@ -30,7 +32,7 @@ def make_http_handler(
             logger.warn(format % args)
 
         def log_message(self, format, *args):
-            logger.info(format % args)
+            logger.log(request_level, format % args)
 
         def do_GET(self):
             if self.path.endswith(".m3u8"):

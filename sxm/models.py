@@ -283,7 +283,9 @@ class XMLiveChannel:
         self.custom_hls_infos = []
         self.episode_markers = []
         self.cut_markers = []
+        self._populate_data(live_dict)
 
+    def _populate_data(self, live_dict: dict):
         for info in live_dict["hlsAudioInfos"]:
             self.hls_infos.append(XMHLSInfo(info))
 
@@ -299,7 +301,10 @@ class XMLiveChannel:
                 timestamp = hls_info.position.timestamp.timestamp()
                 self.tune_time = int(timestamp * 1000)
 
-        for marker_list in live_dict["markerLists"]:
+        self._populate_markers(live_dict["markerLists"])
+
+    def _populate_markers(self, marker_lists):
+        for marker_list in marker_lists:
             # not including future-episodes as they are missing metadata
             if marker_list["layer"] == "episode":
                 for marker in marker_list["markers"]:
@@ -317,11 +322,13 @@ class XMLiveChannel:
     @property
     def song_cuts(self) -> List[XMCutMarker]:
         """ Returns a list of all `XMCut` objects that are for songs """
+
         if self._song_cuts is None:
             self._song_cuts = []
             for cut in self.cut_markers:
                 if isinstance(cut.cut, XMSong):
                     self._song_cuts.append(cut)
+
         return self._song_cuts
 
     @staticmethod
@@ -333,12 +340,14 @@ class XMLiveChannel:
         self, marker_attr: str, now: Optional[int] = None
     ) -> Union[XMMarker, None]:
         """ Returns the latest `XMMarker` based on type relative to now """
+
         markers = getattr(self, marker_attr)
         if markers is None:
             return None
 
         if now is None:
             now = int(time.time() * 1000)
+
         latest = None
         for marker in markers:
             if now > marker.time:

@@ -162,15 +162,17 @@ class SiriusXMClient:
         if self._channels is None:
             channels = self.get_channels()
 
-            if len(channels) > 0:
-                self._channels = []
-                for channel in channels:
-                    self._channels.append(XMChannel(channel))
-                self._channels = sorted(
-                    self._channels, key=lambda x: int(x.channel_number)
-                )
-            else:
+            if len(channels) == 0:
                 return []
+
+            self._channels = []
+            for channel in channels:
+                self._channels.append(XMChannel(channel))
+
+            self._channels = sorted(
+                self._channels, key=lambda x: int(x.channel_number)
+            )
+
         return self._channels
 
     @property
@@ -249,40 +251,37 @@ class SiriusXMClient:
             Use cached playlists for force new retrival. Defaults to `True`
         """
 
-        channel = self.get_channel(channel_id)
-
-        if channel is None:
-            self._log.info(f"No channel for {channel_id}")
-            return None
-
-        url = self._get_playlist_url(channel, use_cache)
+        url = self._get_playlist_url(channel_id, use_cache)
         if url is None:
             return None
 
+        response = None
         try:
-            res = self._session.get(url, params=self._token_params())
+            response = self._make_request("GET", url, self._token_params())
 
-            if res.status_code == 403:
+            if response.status_code == 403:
                 self._log.info(
                     "Received status code 403 on playlist, renewing session"
                 )
                 return self.get_playlist(channel_id, False)
 
-            if not res.ok:
+            if not response.ok:
                 self._log.warn(
-                    f"Received status code {res.status_code} on "
+                    f"Received status code {response.status_code} on "
                     f"playlist variant"
                 )
-                return None
+                response = None
 
         except requests.exceptions.ConnectionError as e:
             self._log.error(f"Error getting playlist: {e}")
+
+        if response is None:
             return None
 
         # add base path to segments
         playlist_entries = []
         aac_path = re.findall("AAC_Data.*", url)[0]
-        for line in res.text.split("\n"):
+        for line in response.text.split("\n"):
             line = line.strip()
             if line.endswith(".aac"):
                 playlist_entries.append(
@@ -451,6 +450,36 @@ class SiriusXMClient:
             },
         }
 
+    def _make_request(
+        self, method: str, path: str, params: Dict[str, Any]
+    ) -> requests.Response:
+        try:
+            if path.startswith("http"):
+                url = path
+            else:
+                url = REST_FORMAT.format(path)
+
+            if method == "GET":
+                response = self._session.get(url, params=params)
+            elif method == "POST":
+                response = self._session.post(
+                    url, data=json.dumps(params).encode("utf8")
+                )
+            else:
+                raise requests.RequestException("only GET and POST")
+        except requests.exceptions.ConnectionError as e:
+            self._log.error(
+                f"An Exception occurred when trying to perform "
+                f"the {method} request!"
+            )
+            self._log.error(f"Params: {params}")
+            self._log.error(f"Method: {method}")
+            self._log.error(f"Response: {e.response}")
+            self._log.error(f"Request: {e.request}")
+            raise (e)
+
+        return response
+
     def _request(
         self,
         method: str,
@@ -473,36 +502,16 @@ class SiriusXMClient:
                 self._log.error("Unable to authenticate")
                 return None
 
-        try:
-            url = REST_FORMAT.format(path)
+        response = self._make_request(method, path, params)
 
-            if method == "GET":
-                res = self._session.get(url, params=params)
-            elif method == "POST":
-                res = self._session.post(
-                    url, data=json.dumps(params).encode("utf8")
-                )
-            else:
-                raise requests.RequestException("only GET and POST")
-        except requests.exceptions.ConnectionError as e:
-            self._log.error(
-                f"An Exception occurred when trying to perform "
-                f"the {method} request!"
-            )
-            self._log.error(f"Params: {params}")
-            self._log.error(f"Method: {method}")
-            self._log.error(f"Response: {e.response}")
-            self._log.error(f"Request: {e.request}")
-            raise (e)
-
-        if not res.ok:
+        if not response.ok:
             self._log.warn(
-                f"Received status code {res.status_code} for path '{path}'"
+                f"Received status code {response.status_code} for path '{path}'"
             )
             return None
 
         try:
-            return res.json()["ModuleListResponse"]
+            return response.json()["ModuleListResponse"]
         except (KeyError, ValueError):
             self._log.error(f"Error decoding json for path '{path}'")
             return None
@@ -532,9 +541,14 @@ class SiriusXMClient:
         return self._request("POST", path, postdata, authenticate)
 
     def _get_playlist_url(
-        self, channel: XMChannel, use_cache: bool = True, max_attempts: int = 5
+        self, channel_id: str, use_cache: bool = True, max_attempts: int = 5
     ) -> Union[str, None]:
         """ Returns HLS live stream URL for a given `XMChannel` """
+
+        channel = self.get_channel(channel_id)
+        if channel is None:
+            self._log.info(f"No channel for {channel_id}")
+            return None
 
         now = time.time()
 
