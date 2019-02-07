@@ -280,7 +280,6 @@ class XMLiveChannel:
         self.id = live_dict["channelId"]
 
         self.hls_infos = []
-        self.custom_hls_infos = []
         self.episode_markers = []
         self.cut_markers = []
         self._populate_data(live_dict)
@@ -289,7 +288,14 @@ class XMLiveChannel:
         for info in live_dict["hlsAudioInfos"]:
             self.hls_infos.append(XMHLSInfo(info))
 
-        for info in live_dict["customAudioInfos"]:
+        self._populate_custom_hls_infos(live_dict["customAudioInfos"])
+
+        self._populate_markers(live_dict["markerLists"])
+
+    def _populate_custom_hls_infos(self, custom_infos):
+        self.custom_hls_infos = []
+
+        for info in custom_infos:
             self.custom_hls_infos.append(XMHLSInfo(info))
 
         for hls_info in self.custom_hls_infos:
@@ -301,23 +307,31 @@ class XMLiveChannel:
                 timestamp = hls_info.position.timestamp.timestamp()
                 self.tune_time = int(timestamp * 1000)
 
-        self._populate_markers(live_dict["markerLists"])
-
     def _populate_markers(self, marker_lists):
         for marker_list in marker_lists:
             # not including future-episodes as they are missing metadata
             if marker_list["layer"] == "episode":
-                for marker in marker_list["markers"]:
-                    self.episode_markers.append(XMEpisodeMarker(marker))
-
+                self._populate_episodes(marker_list["markers"])
             elif marker_list["layer"] == "cut":
-                for marker in marker_list["markers"]:
-                    self.cut_markers.append(XMCutMarker(marker))
+                self._populate_cuts(marker_list["markers"])
 
-        self.cut_markers = self.sort_markers(self.cut_markers)  # type: ignore
+    def _populate_episodes(self, episode_markers):
+        self.episode_markers = []
+
+        for marker in episode_markers:
+            self.episode_markers.append(XMEpisodeMarker(marker))
+
         self.episode_markers = self.sort_markers(  # type: ignore
             self.episode_markers
         )
+
+    def _populate_cuts(self, cut_markers):
+        self.cut_markers = []
+
+        for marker in cut_markers:
+            self.cut_markers.append(XMCutMarker(marker))
+
+        self.cut_markers = self.sort_markers(self.cut_markers)  # type: ignore
 
     @property
     def song_cuts(self) -> List[XMCutMarker]:

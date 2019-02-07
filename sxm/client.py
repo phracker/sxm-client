@@ -453,12 +453,12 @@ class SiriusXMClient:
     def _make_request(
         self, method: str, path: str, params: Dict[str, Any]
     ) -> requests.Response:
-        try:
-            if path.startswith("http"):
-                url = path
-            else:
-                url = REST_FORMAT.format(path)
+        if path.startswith("http"):
+            url = path
+        else:
+            url = REST_FORMAT.format(path)
 
+        try:
             if method == "GET":
                 response = self._session.get(url, params=params)
             elif method == "POST":
