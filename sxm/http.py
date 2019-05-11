@@ -1,6 +1,7 @@
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Type
+import json
 
 from .client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
 
@@ -67,6 +68,22 @@ def make_http_handler(
                 self.send_header("Content-Type", "text/plain")
                 self.end_headers()
                 self.wfile.write(HLS_AES_KEY)
+            elif self.path.endswith("/channels/"):
+                try:
+                    raw_channels = sxm.get_channels()
+                except Exception:
+                    raw_channels = []
+
+                if len(raw_channels) > 0:
+                    self.send_response(200)
+                    self.send_header(
+                        "Content-Type", "application/json; charset=utf-8"
+                    )
+                    self.end_headers()
+                    self.wfile.write(json.dumps(raw_channels).encode("utf-8"))
+                else:
+                    self.send_response(403)
+                    self.end_headers()
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -75,7 +92,10 @@ def make_http_handler(
 
 
 def run_http_server(
-    sxm: SiriusXMClient, port: int, ip="0.0.0.0", logger: logging.Logger = None
+    sxm: SiriusXMClient,
+    port: int,
+    ip="0.0.0.0",  # nosec
+    logger: logging.Logger = None,
 ) -> None:
     """
     Creates and runs an instance of :class:`http.server.HTTPServer` to proxy

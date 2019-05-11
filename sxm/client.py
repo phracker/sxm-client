@@ -508,7 +508,8 @@ class SiriusXMClient:
 
         if not response.ok:
             self._log.warn(
-                f"Received status code {response.status_code} for path '{path}'"
+                f"Received status code {response.status_code} for "
+                f"path '{path}'"
             )
             return None
 
@@ -587,7 +588,7 @@ class SiriusXMClient:
                 if self.authenticate():
                     self._log.info("Successfully authenticated")
                     return self._get_playlist_url(
-                        channel, use_cache, max_attempts - 1
+                        channel.id, use_cache, max_attempts - 1
                     )
                 else:
                     self._log.error("Failed to authenticate")
