@@ -5,6 +5,15 @@ sxm-client
         :target: https://sxm-client.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
+.. warning:: Designed for PERSONAL USE ONLY
+
+    `sxm` is a 100% unofficial project and you use it at your own risk.
+    It is designed to be used for personal use with a small number of users
+    listening to it at once. Similar to playing music over a speak from the
+    radio directly. Using `sxm-player` in any corporate setting, to
+    attempt to priate music, or to try to make a profit off your subscription
+    may result in you getting in legal trouble.
+
 `sxm-client` is a Python library designed to help write applications for the
 popular XM Radio service.
 
