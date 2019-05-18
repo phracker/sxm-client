@@ -27,10 +27,10 @@ def make_http_handler(
     """
 
     class SiriusHandler(BaseHTTPRequestHandler):
-        def log_error(self, format, *args):
+        def log_error(self, format, *args):  # noqa: A002
             logger.warn(format % args)
 
-        def log_message(self, format, *args):
+        def log_message(self, format, *args):  # noqa: A002
             logger.log(request_level, format % args)
 
         def do_GET(self):

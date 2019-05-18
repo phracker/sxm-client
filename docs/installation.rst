@@ -4,21 +4,24 @@
 Installation
 ============
 
-Requirements
-------------
 
-`sxm` requires Python 3.6+. It will not work on older version or Python
-2 at all.
+Stable release
+--------------
 
-Github
-------
-
-`sxm` is not avaible on PyPi quite yet, as a result, you currently have to
-install it from Github directory. You can do this by running:
+To install sxm-client, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install https://github.com/AngellusMortis/sxm-client/tarball/master#egg=sxm-0.1.0
+    $ pip install sxm
+
+This is the preferred method to install sxm-client, as it will always install the most recent stable release.
+
+If you don't have `pip`_ installed, this `Python installation guide`_ can guide
+you through the process.
+
+.. _pip: https://pip.pypa.io
+.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+
 
 From sources
 ------------
@@ -29,7 +32,7 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/AngellusMortis/sxm-client
+    $ git clone git://github.com/AngellusMortis/sxm
 
 Or download the `tarball`_:
 
@@ -44,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/AngellusMortis/sxm-client
-.. _tarball: https://github.com/AngellusMortis/sxm-client/tarball/master
+.. _Github repo: https://github.com/AngellusMortis/sxm
+.. _tarball: https://github.com/AngellusMortis/sxm/tarball/master
