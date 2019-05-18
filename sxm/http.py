@@ -3,29 +3,27 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Type
 import json
 
-from .client import HLS_AES_KEY, SegmentRetrievalException, SiriusXMClient
+from .client import HLS_AES_KEY, SegmentRetrievalException, SXMClient
 
 __all__ = ["make_http_handler", "run_http_server"]
 
 
 def make_http_handler(
-    sxm: SiriusXMClient,
-    logger: logging.Logger,
-    request_level: int = logging.INFO,
+    sxm: SXMClient, logger: logging.Logger, request_level: int = logging.INFO
 ) -> Type[BaseHTTPRequestHandler]:
     """
     Creates and returns a configured
     :class:`http.server.BaseHTTPRequestHandler` ready to be used
     by a :class:`http.server.HTTPServer` instance with your
-    :class:`SiriusXMClient`.
+    :class:`SXMClient`.
 
     Really useful if you want to create your own HTTP server as part
     of another application.
 
     Parameters
     ----------
-    sxm : :class:`SiriusXMClient`
-        SiriusXM client to use
+    sxm : :class:`SXMClient`
+        SXM client to use
     """
 
     class SiriusHandler(BaseHTTPRequestHandler):
@@ -92,24 +90,24 @@ def make_http_handler(
 
 
 def run_http_server(
-    sxm: SiriusXMClient,
+    sxm: SXMClient,
     port: int,
     ip="0.0.0.0",  # nosec
     logger: logging.Logger = None,
 ) -> None:
     """
     Creates and runs an instance of :class:`http.server.HTTPServer` to proxy
-    SiriusXM requests without authentication.
+    SXM requests without authentication.
 
-    You still need a valid SiriusXM account with streaming rights,
-    via the :class:`SiriusXMClient`.
+    You still need a valid SXM account with streaming rights,
+    via the :class:`SXMClient`.
 
     Parameters
     ----------
     port : :class:`int`
-        Port number to bind SiriusXM Proxy server on
+        Port number to bind SXM Proxy server on
     ip : :class:`str`
-        IP address to bind SiriusXM Proxy server on
+        IP address to bind SXM Proxy server on
     """
 
     if logger is None:
@@ -117,7 +115,7 @@ def run_http_server(
 
     httpd = HTTPServer((ip, port), make_http_handler(sxm, logger))
     try:
-        logger.info(f"running SiriusXM proxy server on http://{ip}:{port}")
+        logger.info(f"running SXM proxy server on http://{ip}:{port}")
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass

@@ -17,14 +17,14 @@ Everything is outlined via command line via the `--help` option:
 HTTP Proxy Server
 -----------------
 
-Create HTTP proxy server to serve HLS streams for SiriusXM channels:
+Create HTTP proxy server to serve HLS streams for SXM channels:
 
 .. code-block:: console
 
     $ sxm --username myuser --password mypassword
 
 This will start a HTTP server that a player that supports HLS (QuickTime,
-VLC, ffmpeg, etc) you can access a SiriusXM channel at
+VLC, ffmpeg, etc) you can access a SXM channel at
 http://127.0.0.1:9999/channel.m3u8 where "channel" is the channel name, ID, or
 Sirius channel number.
 
@@ -44,7 +44,7 @@ Username and password can also be passed via the `SXM_USERNAME` and
     $ export SXM_PASSWORD='mypassword'
     $ sxm
 
-If you are a SiriusXM subscriber in Canada, you will need to change your
+If you are a SXM subscriber in Canada, you will need to change your
 region to `CA`
 
 .. code-block:: console
@@ -57,10 +57,10 @@ By default the HTTP server serves on `http://127.0.0.1:9999`, you can change thi
 
     $ sxm -p 8000 -h 0.0.0.0
 
-SiriusXM Channels
------------------
+SXM Channels
+------------
 
-You can list all of the avaible SiriusXM channels for your account as well:
+You can list all of the avaible SXM channels for your account as well:
 
 .. code-block:: console
 
@@ -470,15 +470,15 @@ Everything that `sxm` can do via command line is provided via a Python
 API as well.
 
 
-SiriusXM Client
----------------
+SXM Client
+----------
 
 .. code-block:: python3
 
-    from sxm import SiriusXMClient
+    from sxm import SXMClient
     from sxm.models import XMLiveChannel
 
-    sxm = SiriusXMClient('username', 'password')
+    sxm = SXMClient('username', 'password')
 
     if sxm.authenticate():
         channels = sxm.channels
@@ -494,10 +494,10 @@ You create your own HTTP proxy server as well:
 
 .. code-block:: python3
 
-    from sxm import SiriusXMClient
+    from sxm import SXMClient
     from sxm import run_http_server
 
-    sxm = SiriusXMClient('username', 'password')
+    sxm = SXMClient('username', 'password')
 
     if sxm.authenticate():
         # runs proxy server on http://127.0.0.1:9000
@@ -512,10 +512,10 @@ a shortcut function:
 
     from http.server import HTTPServer
 
-    from sxm import SiriusXMClient
+    from sxm import SXMClient
     from sxm import make_http_handler
 
-    sxm = SiriusXMClient('username', 'password')
+    sxm = SXMClient('username', 'password')
 
     if sxm.authenticate():
         httpd = HTTPServer((ip, port), make_http_handler(sxm))

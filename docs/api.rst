@@ -17,10 +17,10 @@ Exceptions
 
 .. autoexception:: SegmentRetrievalException
 
-SiriusXMClient
-==============
+SXMClient
+=========
 
-.. autoclass:: SiriusXMClient
+.. autoclass:: SXMClient
     :members:
 
 HTTP Server

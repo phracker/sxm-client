@@ -1,0 +1,6 @@
+click>=7.0
+dataclasses
+fake-useragent
+requests
+tenacity
+ua-parser

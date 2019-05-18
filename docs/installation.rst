@@ -18,24 +18,24 @@ install it from Github directory. You can do this by running:
 
 .. code-block:: console
 
-    $ pip install https://github.com/AngellusMortis/SiriusXM/tarball/master#egg=sxm-0.1.0
+    $ pip install https://github.com/AngellusMortis/sxm-client/tarball/master#egg=sxm-0.1.0
 
 From sources
 ------------
 
-The sources for SiriusXM can be downloaded from the `Github repo`_.
+The sources for sxm-client can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/AngellusMortis/SiriusXM
+    $ git clone git://github.com/AngellusMortis/sxm-client
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/AngellusMortis/SiriusXM/tarball/master
+    $ curl  -OL https://github.com/AngellusMortis/sxm-client/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -44,5 +44,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/AngellusMortis/SiriusXM
-.. _tarball: https://github.com/AngellusMortis/SiriusXM/tarball/master
+.. _Github repo: https://github.com/AngellusMortis/sxm-client
+.. _tarball: https://github.com/AngellusMortis/sxm-client/tarball/master

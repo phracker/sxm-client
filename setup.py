@@ -3,7 +3,14 @@
 
 """The setup script."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
+
+def parse_requirements(filename):
+    """ load requirements from a pip requirements file """
+    lines = (line.strip() for line in open(filename))
+    return [line for line in lines if line and not line.startswith("#")]
+
 
 with open("README.rst") as readme_file:
     readme = readme_file.read()
@@ -11,45 +18,44 @@ with open("README.rst") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-requirements = [
-    "click>=7.0",
-    "dataclasses",
-    "fake-useragent",
-    "requests",
-    "tenacity",
-    "ua-parser",
-]
+req_files = {
+    "dev": "reqs/dev.in",
+    "requirements": "reqs/requirements.in",
+    "setup": "reqs/setup.in",
+}
 
-setup_requirements = ["pytest-runner"]
-
-test_requirements = ["pytest"]
+requirements = {}
+for req, req_file in req_files.items():
+    requirements[req] = parse_requirements(req_file)
 
 setup(
-    author="andrew0",
-    author_email="andrew0@github.com",
+    author="AngellusMortis",
+    author_email="cbailey@mort.is",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    description="SiriusXM live radio playback",
+    description=(
+        "Python library designed to help write applications for the"
+        "popular XM Radio service."
+    ),
     entry_points={"console_scripts": ["sxm=sxm.cli:main"]},
-    install_requires=requirements,
+    install_requires=requirements["requirements"],
     license="MIT license",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     keywords="sxm",
     name="sxm",
     packages=find_packages(include=["sxm"]),
-    setup_requires=setup_requirements,
+    setup_requires=requirements["setup"],
     test_suite="tests",
-    tests_require=test_requirements,
-    url="https://github.com/andrew0/sxm",
+    tests_require=requirements["dev"],
+    url="https://github.com/AngellusMortis/sxm-client",
     version="0.1.0",
     zip_safe=False,
+    extras_require={"dev": requirements["dev"]},
 )

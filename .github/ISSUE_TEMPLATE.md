@@ -1,4 +1,4 @@
-* SiriusXM version:
+* sxm-client version:
 * Python version:
 * Operating System:
 

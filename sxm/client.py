@@ -17,7 +17,7 @@ from .models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
 
 __all__ = [
     "HLS_AES_KEY",
-    "SiriusXMClient",
+    "SXMClient",
     "AuthenticationError",
     "SegmentRetrievalException",
 ]
@@ -32,7 +32,7 @@ SESSION_MAX_LIFE = 14400
 
 
 class AuthenticationError(Exception):
-    """ SiriusXM Authentication failed, renew session """
+    """ SXM Authentication failed, renew session """
 
     pass
 
@@ -43,20 +43,20 @@ class SegmentRetrievalException(Exception):
     pass
 
 
-class SiriusXMClient:
-    """ Class to interface with SiriusXM api and access HLS
+class SXMClient:
+    """ Class to interface with SXM api and access HLS
     live streams of audio
 
     Parameters
     ----------
     username : :class:`str`
-        SiriusXM username
+        SXM username
     password : :class:`str`
-        SiriusXM password
+        SXM password
     region : :class:`str` ("US" or "CA")
-        Sets your SiriusXM account region
+        Sets your SXM account region
     user_agent : Optional[:class:`str`]
-        User Agent string to use for making requests to SiriusXM. If `None` is
+        User Agent string to use for making requests to SXM. If `None` is
         passed, it will attempt to generate one based on real browser usage
         data. Defaults to `None`.
     update_handler : Optional[Callable[[:class:`dict`], `None`]]
@@ -66,7 +66,7 @@ class SiriusXMClient:
     Attributes
     ----------
     is_logged_in : :class:`bool`
-        Returns if account is logged into SiriusXM's servers
+        Returns if account is logged into SXM's servers
     is_session_authenticated : :class:`bool`
         Returns if session is valid and ready to use
     sxmak_token : :class:`str`
@@ -187,7 +187,7 @@ class SiriusXMClient:
         return self._favorite_channels
 
     def login(self) -> bool:
-        """ Attempts to log into SiriusXM with stored username/password """
+        """ Attempts to log into SXM with stored username/password """
 
         postdata = self._get_device_info()
         postdata.update(
@@ -248,7 +248,7 @@ class SiriusXMClient:
         Parameters
         ----------
         channel_id : :class:`str`
-            ID of SiriusXM channel to retrieve playlist for
+            ID of SXM channel to retrieve playlist for
         use_cache : :class:`bool`
             Use cached playlists for force new retrival. Defaults to `True`
         """
@@ -303,7 +303,7 @@ class SiriusXMClient:
         Parameters
         ----------
         path : :class:`str`
-            SiriusXM path
+            SXM path
         max_attempts : :class:`int`
             Number of times to try to get segment. Defaults to 5.
 
@@ -331,7 +331,7 @@ class SiriusXMClient:
         return res.content
 
     def get_channels(self) -> List[dict]:
-        """ Gets raw list of channel dictionaries from SiriusXM. Each channel
+        """ Gets raw list of channel dictionaries from SXM. Each channel
         dict can be pass into the constructor of :class:`XMChannel` to turn it
         into an object """
 
@@ -365,7 +365,7 @@ class SiriusXMClient:
         Parameters
         ----------
         name : :class:`str`
-            name, id, or channel number of SiriusXM channel to get
+            name, id, or channel number of SXM channel to get
         """
 
         name = name.lower()
@@ -384,7 +384,7 @@ class SiriusXMClient:
         """ Gets raw dictionary of response data for the live channel.
 
         `data['messages'][0]['code']`
-            will have the status response code from SiriusXM
+            will have the status response code from SXM
 
         `data['moduleList']['modules'][0]['moduleResponse']['liveChannelData']`
             will have the raw data that can be passed into
@@ -393,7 +393,7 @@ class SiriusXMClient:
         Parameters
         ----------
         channel : :class:`XMChannel`
-            SiriusXM channel to look up live channel data for
+            SXM channel to look up live channel data for
         """
 
         params = {
@@ -424,7 +424,7 @@ class SiriusXMClient:
         }
 
     def _get_device_info(self) -> dict:
-        """ Generates a dict of device info to pass to SiriusXM """
+        """ Generates a dict of device info to pass to SXM """
 
         browser_version = self._ua["user_agent"]["major"]
         if self._ua["user_agent"]["minor"] is not None:
@@ -489,7 +489,7 @@ class SiriusXMClient:
         params: Dict[str, str],
         authenticate: bool = True,
     ) -> Union[Dict[str, Any], None]:
-        """ Makes a GET or POST request to SiriusXM servers """
+        """ Makes a GET or POST request to SXM servers """
 
         method = method.upper()
 
@@ -522,7 +522,7 @@ class SiriusXMClient:
     def _get(
         self, path: str, params: Dict[str, str], authenticate: bool = True
     ) -> Union[Dict[str, Any], None]:
-        """ Makes a GET request to SiriusXM servers """
+        """ Makes a GET request to SXM servers """
 
         return self._request("GET", path, params, authenticate)
 
@@ -533,7 +533,7 @@ class SiriusXMClient:
         channel_list: bool = False,
         authenticate: bool = True,
     ) -> Union[Dict[str, Any], None]:
-        """ Makes a POST request to SiriusXM servers """
+        """ Makes a POST request to SXM servers """
         postdata = {"moduleList": {"modules": [{"moduleRequest": postdata}]}}
 
         if channel_list:

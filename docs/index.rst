@@ -1,4 +1,4 @@
-Welcome to SiriusXM's documentation!
+Welcome to sxm-client's documentation!
 ======================================
 
 .. toctree::
