@@ -33,7 +33,7 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/AngellusMortis/sxm
+    $ git clone git://github.com/AngellusMortis/sxm-client
 
 Or download the `tarball`_:
 
@@ -48,5 +48,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/AngellusMortis/sxm
-.. _tarball: https://github.com/AngellusMortis/sxm/tarball/master
+.. _Github repo: https://github.com/AngellusMortis/sxm-client
+.. _tarball: https://github.com/AngellusMortis/sxm-client/tarball/master
