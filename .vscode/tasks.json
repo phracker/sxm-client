@@ -6,14 +6,14 @@
         {
             "label": "SXM Client: Create Virtual Env",
             "type": "shell",
-            "command": "python3 -m venv ${config:python.venvPath}/${workspaceFolderBasename} && ${config:python.venvPath}/${workspaceFolderBasename}/bin/pip install -U pip wheel",
+            "command": "python3 -m venv ${config:python.venvPath}/sxm-player && ${config:python.venvPath}/sxm-player/bin/pip install -U pip wheel",
             "group": "build",
             "problemMatcher": []
         },
         {
             "label": "SXM Client: Python Setup",
             "type": "shell",
-            "command": "${config:python.venvPath}/${workspaceFolderBasename}/bin/python setup.py develop",
+            "command": "${config:python.venvPath}/sxm-player/bin/python setup.py develop",
             "group": "build",
             "problemMatcher": [],
             "dependsOn": [
@@ -23,7 +23,7 @@
         {
             "label": "SXM Client: Install Requirements",
             "type": "shell",
-            "command": "${config:python.venvPath}/${workspaceFolderBasename}/bin/pip install -e \".[dev]\"",
+            "command": "${config:python.venvPath}/sxm-player/bin/pip install -e \".[dev]\"",
             "group": "build",
             "problemMatcher": [],
             "dependsOn": [
