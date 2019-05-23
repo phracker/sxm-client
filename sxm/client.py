@@ -27,8 +27,11 @@ SXM_APP_VERSION = "5.15.2183"
 SXM_DEVICE_MODEL = "EverestWebClient"
 HLS_AES_KEY = base64.b64decode("0Nsco7MAgxowGvkUT8aYag==")
 FALLBACK_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6"  # noqa
-REST_FORMAT = "https://player.siriusxm.com/rest/v2/experience/modules/{}"
+REST_V2_FORMAT = "https://player.siriusxm.com/rest/v2/experience/modules/{}"
+REST_V4_FORMAT = "https://player.siriusxm.com/rest/v4/experience/modules/{}"
 SESSION_MAX_LIFE = 14400
+
+ENABLE_NEW_CHANNELS = False
 
 
 class AuthenticationError(Exception):
@@ -344,7 +347,16 @@ class SXMClient:
             "profileInfos": [],
         }
 
-        data = self._post("get", postdata, channel_list=True)
+        if ENABLE_NEW_CHANNELS:
+            data = self._post(
+                "get?type=2",
+                postdata,
+                channel_list=True,
+                url_format=REST_V4_FORMAT,
+            )
+        else:
+            data = self._post("get", postdata, channel_list=True)
+
         if not data:
             self._log.warn("Unable to get channel list")
             return channels
@@ -453,12 +465,16 @@ class SXMClient:
         }
 
     def _make_request(
-        self, method: str, path: str, params: Dict[str, Any]
+        self,
+        method: str,
+        path: str,
+        params: Dict[str, Any],
+        url_format: str = REST_V2_FORMAT,
     ) -> requests.Response:
         if path.startswith("http"):
             url = path
         else:
-            url = REST_FORMAT.format(path)
+            url = url_format.format(path)
 
         try:
             if method == "GET":
@@ -488,6 +504,7 @@ class SXMClient:
         path: str,
         params: Dict[str, str],
         authenticate: bool = True,
+        url_format: str = REST_V2_FORMAT,
     ) -> Union[Dict[str, Any], None]:
         """ Makes a GET or POST request to SXM servers """
 
@@ -504,7 +521,9 @@ class SXMClient:
                 self._log.error("Unable to authenticate")
                 return None
 
-        response = self._make_request(method, path, params)
+        response = self._make_request(
+            method, path, params, url_format=url_format
+        )
 
         if not response.ok:
             self._log.warn(
@@ -520,11 +539,17 @@ class SXMClient:
             return None
 
     def _get(
-        self, path: str, params: Dict[str, str], authenticate: bool = True
+        self,
+        path: str,
+        params: Dict[str, str],
+        authenticate: bool = True,
+        url_format: str = REST_V2_FORMAT,
     ) -> Union[Dict[str, Any], None]:
         """ Makes a GET request to SXM servers """
 
-        return self._request("GET", path, params, authenticate)
+        return self._request(
+            "GET", path, params, authenticate, url_format=url_format
+        )
 
     def _post(
         self,
@@ -532,16 +557,23 @@ class SXMClient:
         postdata: dict,
         channel_list: bool = False,
         authenticate: bool = True,
+        url_format: str = REST_V2_FORMAT,
     ) -> Union[Dict[str, Any], None]:
         """ Makes a POST request to SXM servers """
         postdata = {"moduleList": {"modules": [{"moduleRequest": postdata}]}}
 
         if channel_list:
             postdata["moduleList"]["modules"][0].update(
-                {"moduleArea": "Discovery", "moduleType": "ChannelListing"}
+                {
+                    "moduleArea": "Discovery",
+                    "moduleType": "ChannelListing",
+                    "moduleRequest": {"resultTemplate": "responsive"},
+                }
             )
 
-        return self._request("POST", path, postdata, authenticate)
+        return self._request(
+            "POST", path, postdata, authenticate, url_format=url_format
+        )
 
     def _get_playlist_url(
         self, channel_id: str, use_cache: bool = True, max_attempts: int = 5
@@ -595,6 +627,17 @@ class SXMClient:
                     return None
             else:
                 self._log.warn("Reached max attempts for playlist")
+                return None
+        elif message_code == 204:
+            self._log.warn("Multiple login error received, reseting session")
+            self._reset_session()
+            if self.authenticate():
+                self._log.info("Successfully authenticated")
+                return self._get_playlist_url(
+                    channel.id, use_cache, max_attempts - 1
+                )
+            else:
+                self._log.error("Failed to authenticate")
                 return None
         elif message_code != 100:
             self._log.warn(f"Received error {message_code} {message}")

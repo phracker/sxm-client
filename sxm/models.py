@@ -56,13 +56,15 @@ class XMCategory:
     guid: str
     name: str
     key: Optional[str] = None
-    is_primary: bool = True
+    order: Optional[int] = None
+    short_name: Optional[str] = None
 
     def __init__(self, category_dict: dict):
         self.guid = category_dict["categoryGuid"]
         self.name = category_dict["name"]
         self.key = category_dict.get("key")
-        self.is_primary = category_dict["isPrimary"]
+        self.order = category_dict.get("order")
+        self.short_name = category_dict.get("shortName")
 
 
 class XMMarker:
