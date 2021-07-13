@@ -9,7 +9,7 @@ import urllib.parse
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import requests
-from fake_useragent import FakeUserAgent
+from fake_useragent import UserAgent
 from tenacity import retry, stop_after_attempt, wait_fixed
 from ua_parser import user_agent_parser
 
@@ -26,7 +26,7 @@ __all__ = [
 SXM_APP_VERSION = "5.36.514"
 SXM_DEVICE_MODEL = "EverestWebClient"
 HLS_AES_KEY = base64.b64decode("0Nsco7MAgxowGvkUT8aYag==")
-FALLBACK_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/604.5.6 (KHTML, like Gecko) Version/11.0.3 Safari/604.5.6"  # noqa
+FALLBACK_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"  # noqa
 REST_V2_FORMAT = "https://player.siriusxm.com/rest/v2/experience/modules/{}"
 REST_V4_FORMAT = "https://player.siriusxm.com/rest/v4/experience/modules/{}"
 SESSION_MAX_LIFE = 14400
@@ -110,7 +110,9 @@ class SXMClient:
 
         if user_agent is None:
             try:
-                user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"  # FakeUserAgent().data_browsers["chrome"][0]
+                ua = UserAgent(use_cache_server=False)
+                ua.update()
+                user_agent = ua.chrome
             except Exception:
                 user_agent = FALLBACK_UA
         self._ua = user_agent_parser.Parse(user_agent)
