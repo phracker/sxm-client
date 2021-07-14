@@ -11,6 +11,7 @@ home-page = "https://github.com/AngellusMortis/sxm-client"
 requires=[
   'fake-useragent',
   'httpx',
+  'pydantic',
   'python-dotenv',
   'tenacity',
   'typer',
