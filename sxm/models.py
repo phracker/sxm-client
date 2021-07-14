@@ -210,9 +210,7 @@ class XMHLSInfo:
 
     def __init__(self, hls_dict: dict):
         self.name = hls_dict["name"]
-        self.url = hls_dict["url"].replace(
-            "%Live_Primary_HLS%", LIVE_PRIMARY_HLS
-        )
+        self.url = hls_dict["url"].replace("%Live_Primary_HLS%", LIVE_PRIMARY_HLS)
         self.size = hls_dict["size"]
 
         if "position" in hls_dict:
@@ -262,7 +260,7 @@ class XMChannel:
 
     @property
     def pretty_name(self) -> str:
-        """ Returns a formated version of channel number + channel name """
+        """Returns a formated version of channel number + channel name"""
         return f"#{self.channel_number} {self.name}"
 
 
@@ -323,9 +321,7 @@ class XMLiveChannel:
         for marker in episode_markers:
             self.episode_markers.append(XMEpisodeMarker(marker))
 
-        self.episode_markers = self.sort_markers(  # type: ignore
-            self.episode_markers
-        )
+        self.episode_markers = self.sort_markers(self.episode_markers)  # type: ignore
 
     def _populate_cuts(self, cut_markers):
         self.cut_markers = []
@@ -337,7 +333,7 @@ class XMLiveChannel:
 
     @property
     def song_cuts(self) -> List[XMCutMarker]:
-        """ Returns a list of all `XMCut` objects that are for songs """
+        """Returns a list of all `XMCut` objects that are for songs"""
 
         if self._song_cuts is None:
             self._song_cuts = []
@@ -349,13 +345,13 @@ class XMLiveChannel:
 
     @staticmethod
     def sort_markers(markers: List[XMMarker]) -> List[XMMarker]:
-        """ Sorts a list of `XMMarker` objects """
+        """Sorts a list of `XMMarker` objects"""
         return sorted(markers, key=lambda x: x.time)
 
     def _latest_marker(
         self, marker_attr: str, now: Optional[int] = None
     ) -> Union[XMMarker, None]:
-        """ Returns the latest `XMMarker` based on type relative to now """
+        """Returns the latest `XMMarker` based on type relative to now"""
 
         markers = getattr(self, marker_attr)
         if markers is None:
@@ -375,7 +371,7 @@ class XMLiveChannel:
     def get_latest_episode(
         self, now: Optional[int] = None
     ) -> Union[XMEpisodeMarker, None]:
-        """ Returns the latest :class:`XMEpisodeMarker` based
+        """Returns the latest :class:`XMEpisodeMarker` based
         on type relative to now
 
         Parameters
@@ -385,10 +381,8 @@ class XMLiveChannel:
         """
         return self._latest_marker("episode_markers", now)  # type: ignore
 
-    def get_latest_cut(
-        self, now: Optional[int] = None
-    ) -> Union[XMCutMarker, None]:
-        """ Returns the latest :class:`XMCutMarker` based
+    def get_latest_cut(self, now: Optional[int] = None) -> Union[XMCutMarker, None]:
+        """Returns the latest :class:`XMCutMarker` based
         on type relative to now
 
         Parameters

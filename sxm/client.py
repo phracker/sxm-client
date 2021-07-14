@@ -35,19 +35,19 @@ ENABLE_NEW_CHANNELS = False
 
 
 class AuthenticationError(Exception):
-    """ SXM Authentication failed, renew session """
+    """SXM Authentication failed, renew session"""
 
     pass
 
 
 class SegmentRetrievalException(Exception):
-    """ failed to get HLS segment, renew session """
+    """failed to get HLS segment, renew session"""
 
     pass
 
 
 class SXMClient:
-    """ Class to interface with SXM api and access HLS
+    """Class to interface with SXM api and access HLS
     live streams of audio
 
     Parameters
@@ -143,8 +143,7 @@ class SXMClient:
     def is_session_authenticated(self) -> bool:
 
         return (
-            "AWSALB" in self._session.cookies
-            and "JSESSIONID" in self._session.cookies
+            "AWSALB" in self._session.cookies and "JSESSIONID" in self._session.cookies
         )
 
     @property
@@ -176,9 +175,7 @@ class SXMClient:
             for channel in channels:
                 self._channels.append(XMChannel(channel))
 
-            self._channels = sorted(
-                self._channels, key=lambda x: int(x.channel_number)
-            )
+            self._channels = sorted(self._channels, key=lambda x: int(x.channel_number))
 
         return self._channels
 
@@ -186,13 +183,11 @@ class SXMClient:
     def favorite_channels(self) -> List[XMChannel]:
 
         if self._favorite_channels is None:
-            self._favorite_channels = [
-                c for c in self.channels if c.is_favorite
-            ]
+            self._favorite_channels = [c for c in self.channels if c.is_favorite]
         return self._favorite_channels
 
     def login(self) -> bool:
-        """ Attempts to log into SXM with stored username/password """
+        """Attempts to log into SXM with stored username/password"""
 
         postdata = self._get_device_info()
         postdata.update(
@@ -204,9 +199,7 @@ class SXMClient:
             }
         )
 
-        data = self._post(
-            "modify/authentication", postdata, authenticate=False
-        )
+        data = self._post("modify/authentication", postdata, authenticate=False)
         if not data:
             return False
 
@@ -218,7 +211,7 @@ class SXMClient:
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(10))
     def authenticate(self) -> bool:
-        """ Attempts to create a valid session for use with the client
+        """Attempts to create a valid session for use with the client
 
         Raises
         ------
@@ -245,10 +238,8 @@ class SXMClient:
             return False
 
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
-    def get_playlist(
-        self, channel_id: str, use_cache: bool = True
-    ) -> Union[str, None]:
-        """ Gets playlist of HLS stream URLs for given channel ID
+    def get_playlist(self, channel_id: str, use_cache: bool = True) -> Union[str, None]:
+        """Gets playlist of HLS stream URLs for given channel ID
 
         Parameters
         ----------
@@ -267,9 +258,7 @@ class SXMClient:
             response = self._make_request("GET", url, self._token_params())
 
             if response.status_code == 403:
-                self._log.info(
-                    "Received status code 403 on playlist, renewing session"
-                )
+                self._log.info("Received status code 403 on playlist, renewing session")
                 return self.get_playlist(channel_id, False)
 
             if not response.ok:
@@ -291,19 +280,15 @@ class SXMClient:
         for line in response.text.split("\n"):
             line = line.strip()
             if line.endswith(".aac"):
-                playlist_entries.append(
-                    re.sub(r"[^\/]\w+\.m3u8", line, aac_path)
-                )
+                playlist_entries.append(re.sub(r"[^\/]\w+\.m3u8", line, aac_path))
             else:
                 playlist_entries.append(line)
 
         return "\n".join(playlist_entries)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(5))
-    def get_segment(
-        self, path: str, max_attempts: int = 5
-    ) -> Union[bytes, None]:
-        """ Gets raw HLS segment for given path
+    def get_segment(self, path: str, max_attempts: int = 5) -> Union[bytes, None]:
+        """Gets raw HLS segment for given path
 
         Parameters
         ----------
@@ -328,17 +313,15 @@ class SXMClient:
             )
 
         if not res.ok:
-            self._log.warn(
-                f"Received status code {res.status_code} on segment"
-            )
+            self._log.warn(f"Received status code {res.status_code} on segment")
             return None
 
         return res.content
 
     def get_channels(self) -> List[dict]:
-        """ Gets raw list of channel dictionaries from SXM. Each channel
+        """Gets raw list of channel dictionaries from SXM. Each channel
         dict can be pass into the constructor of :class:`XMChannel` to turn it
-        into an object """
+        into an object"""
 
         channels: List[Dict[str, str]] = []
 
@@ -374,7 +357,7 @@ class SXMClient:
         return channels
 
     def get_channel(self, name: str) -> Union[XMChannel, None]:
-        """ Retrieves a specific channel from `self.channels`
+        """Retrieves a specific channel from `self.channels`
 
         Parameters
         ----------
@@ -392,10 +375,8 @@ class SXMClient:
                 return x
         return None
 
-    def get_now_playing(
-        self, channel: XMChannel
-    ) -> Union[Dict[str, Any], None]:
-        """ Gets raw dictionary of response data for the live channel.
+    def get_now_playing(self, channel: XMChannel) -> Union[Dict[str, Any], None]:
+        """Gets raw dictionary of response data for the live channel.
 
         `data['messages'][0]['code']`
             will have the status response code from SXM
@@ -424,7 +405,7 @@ class SXMClient:
         return self._get("tune/now-playing-live", params)
 
     def _reset_session(self) -> None:
-        """ Resets session used by client """
+        """Resets session used by client"""
 
         self._session_start = time.time()
         self._session = requests.Session()
@@ -438,17 +419,13 @@ class SXMClient:
         }
 
     def _get_device_info(self) -> dict:
-        """ Generates a dict of device info to pass to SXM """
+        """Generates a dict of device info to pass to SXM"""
 
         browser_version = self._ua["user_agent"]["major"]
         if self._ua["user_agent"]["minor"] is not None:
-            browser_version = (
-                f'{browser_version}.{self._ua["user_agent"]["minor"]}'
-            )
+            browser_version = f'{browser_version}.{self._ua["user_agent"]["minor"]}'
         if self._ua["user_agent"]["patch"] is not None:
-            browser_version = (
-                f'{browser_version}.{self._ua["user_agent"]["patch"]}'
-            )
+            browser_version = f'{browser_version}.{self._ua["user_agent"]["patch"]}'
 
         return {
             "resultTemplate": "web",
@@ -508,7 +485,7 @@ class SXMClient:
         authenticate: bool = True,
         url_format: str = REST_V2_FORMAT,
     ) -> Union[Dict[str, Any], None]:
-        """ Makes a GET or POST request to SXM servers """
+        """Makes a GET or POST request to SXM servers"""
 
         method = method.upper()
 
@@ -523,14 +500,11 @@ class SXMClient:
                 self._log.error("Unable to authenticate")
                 return None
 
-        response = self._make_request(
-            method, path, params, url_format=url_format
-        )
+        response = self._make_request(method, path, params, url_format=url_format)
 
         if not response.ok:
             self._log.warn(
-                f"Received status code {response.status_code} for "
-                f"path '{path}'"
+                f"Received status code {response.status_code} for " f"path '{path}'"
             )
             self._log.warn(f"Response: {response.text()}")
             return None
@@ -548,11 +522,9 @@ class SXMClient:
         authenticate: bool = True,
         url_format: str = REST_V2_FORMAT,
     ) -> Union[Dict[str, Any], None]:
-        """ Makes a GET request to SXM servers """
+        """Makes a GET request to SXM servers"""
 
-        return self._request(
-            "GET", path, params, authenticate, url_format=url_format
-        )
+        return self._request("GET", path, params, authenticate, url_format=url_format)
 
     def _post(
         self,
@@ -562,7 +534,7 @@ class SXMClient:
         authenticate: bool = True,
         url_format: str = REST_V2_FORMAT,
     ) -> Union[Dict[str, Any], None]:
-        """ Makes a POST request to SXM servers """
+        """Makes a POST request to SXM servers"""
         postdata = {"moduleList": {"modules": [{"moduleRequest": postdata}]}}
 
         if channel_list:
@@ -581,7 +553,7 @@ class SXMClient:
     def _get_playlist_url(
         self, channel_id: str, use_cache: bool = True, max_attempts: int = 5
     ) -> Union[str, None]:
-        """ Returns HLS live stream URL for a given `XMChannel` """
+        """Returns HLS live stream URL for a given `XMChannel`"""
 
         channel = self.get_channel(channel_id)
         if channel is None:
@@ -617,9 +589,7 @@ class SXMClient:
         # login if session expired
         if message_code == 201 or message_code == 208:
             if max_attempts > 0:
-                self._log.info(
-                    "Session expired, logging in and authenticating"
-                )
+                self._log.info("Session expired, logging in and authenticating")
                 if self.authenticate():
                     self._log.info("Successfully authenticated")
                     return self._get_playlist_url(
@@ -636,9 +606,7 @@ class SXMClient:
             self._reset_session()
             if self.authenticate():
                 self._log.info("Successfully authenticated")
-                return self._get_playlist_url(
-                    channel.id, use_cache, max_attempts - 1
-                )
+                return self._get_playlist_url(channel.id, use_cache, max_attempts - 1)
             else:
                 self._log.error("Failed to authenticate")
                 return None
@@ -651,9 +619,7 @@ class SXMClient:
         ]
         live_channel = XMLiveChannel(live_channel_raw)
 
-        self.update_interval = int(
-            data["moduleList"]["modules"][0]["updateFrequency"]
-        )
+        self.update_interval = int(data["moduleList"]["modules"][0]["updateFrequency"])
 
         # get m3u8 url
         for playlist_info in live_channel.hls_infos:

@@ -32,9 +32,7 @@ from . import SXMClient, run_http_server
     is_flag=True,
     help="List all avaiable SXM channels",
 )
-@click.option(
-    "-p", "--port", type=int, default=9999, help="Port to run SXM server on"
-)
+@click.option("-p", "--port", type=int, default=9999, help="Port to run SXM server on")
 @click.option(
     "-h",
     "--host",
@@ -68,9 +66,7 @@ def main(
         l3 = max(len(x.name) for x in sxm.channels)
 
         click.echo(
-            "{} | {} | {}".format(
-                "ID".ljust(l1), "Num".ljust(l2), "Name".ljust(l3)
-            )
+            "{} | {} | {}".format("ID".ljust(l1), "Num".ljust(l2), "Name".ljust(l3))
         )
 
         for channel in sxm.channels:
