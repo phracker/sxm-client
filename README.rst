@@ -29,6 +29,10 @@ Features
 
 For details on usage and installation, see the `documentation`_.
 
+`sxm-client` is designed to be a bare bones library to setup an anonymous HLS
+stream. For a more in-depth applications, check out
+[sxm-player](https://github.com/AngellusMortis/sxm-player).
+
 .. _documentation: http://sxm-client.readthedocs.io/
 
 
