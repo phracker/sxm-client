@@ -1,6 +1,7 @@
 {
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "context": ".."
     },
     "extensions": [
         "ms-python.python",
@@ -27,6 +28,7 @@
         "python.linting.banditEnabled": true,
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
+        "python.linting.flake8Path": "pflake8",
         "python.linting.mypyEnabled": true,
         "python.linting.pylintEnabled": true,
         "python.linting.pylamaEnabled": false,

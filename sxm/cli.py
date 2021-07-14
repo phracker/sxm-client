@@ -2,9 +2,9 @@
 
 """Console script for sxm."""
 import logging
+from enum import Enum
 
 import typer
-from enum import Enum
 
 from sxm import SXMClient, run_http_server
 

@@ -2,13 +2,13 @@
 
 """Top-level package for sxm."""
 
-from sxm.http import make_http_handler, run_http_server
 from sxm.client import (
     HLS_AES_KEY,
-    SXMClient,
     AuthenticationError,
     SegmentRetrievalException,
+    SXMClient,
 )
+from sxm.http import make_http_handler, run_http_server
 
 __author__ = """AngellusMortis"""
 __email__ = "cbailey@mort.is"

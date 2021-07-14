@@ -1,7 +1,7 @@
+import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Type
-import json
 
 from .client import HLS_AES_KEY, SegmentRetrievalException, SXMClient
 

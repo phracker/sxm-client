@@ -43,6 +43,7 @@ test = [
 doc = [
   'sphinx',
   'sphinx-rtd-theme',
+  'snooty-lextudio',
 ]
 dev = [
   'bandit',
