@@ -67,6 +67,19 @@ By default the HTTP server serves on `http://127.0.0.1:9999`, you can change thi
 
     $ sxm -p 8000 -h 0.0.0.0
 
+Testing
+-------
+
+Simple command to test proxy to verify it is working using `ffmpeg`:
+
+.. code-block:: console
+
+    $ sxm
+    $ ffmpeg -y -i http://127.0.0.1:9999/octane.m3u8 -f mp2 output.mp3
+
+
+`output.mp3` should be a valid mp3 file with output from the stream.
+
 SXM Channels
 ------------
 

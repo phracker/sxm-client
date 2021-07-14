@@ -4,7 +4,8 @@
     "python.linting.banditEnabled": true,
     "python.formatting.provider": "black",
     "python.linting.flake8Enabled": true,
+    "python.linting.flake8Path": "pflake8",
     "python.linting.mypyEnabled": true,
-    "python.linting.pylamaEnabled": true,
+    "python.linting.pylamaEnabled": false,
     "editor.formatOnSave": true,
 }

@@ -8,12 +8,12 @@ import traceback
 import urllib.parse
 from typing import Any, Callable, Dict, List, Optional, Union
 
-import requests
+import httpx
 from fake_useragent import UserAgent
 from tenacity import retry, stop_after_attempt, wait_fixed
 from ua_parser import user_agent_parser
 
-from .models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
+from sxm.models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
 
 __all__ = [
     "HLS_AES_KEY",
@@ -189,6 +189,7 @@ class SXMClient:
     def login(self) -> bool:
         """Attempts to log into SXM with stored username/password"""
 
+        self._log.debug(f"Logging in as {self.username}...")
         postdata = self._get_device_info()
         postdata.update(
             {
@@ -261,14 +262,14 @@ class SXMClient:
                 self._log.info("Received status code 403 on playlist, renewing session")
                 return self.get_playlist(channel_id, False)
 
-            if not response.ok:
+            if response.is_error:
                 self._log.warn(
                     f"Received status code {response.status_code} on "
                     f"playlist variant"
                 )
                 response = None
 
-        except requests.exceptions.ConnectionError as e:
+        except httpx.exceptions.ConnectionError as e:
             self._log.error(f"Error getting playlist: {e}")
 
         if response is None:
@@ -312,7 +313,7 @@ class SXMClient:
                 "Received status code 403 on segment, renew session"
             )
 
-        if not res.ok:
+        if res.is_error:
             self._log.warn(f"Received status code {res.status_code} on segment")
             return None
 
@@ -408,7 +409,7 @@ class SXMClient:
         """Resets session used by client"""
 
         self._session_start = time.time()
-        self._session = requests.Session()
+        self._session = httpx.Client()
         self._session.headers.update({"User-Agent": self._ua["string"]})
 
     def _token_params(self) -> Dict[str, Union[str, None]]:
@@ -449,7 +450,7 @@ class SXMClient:
         path: str,
         params: Dict[str, Any],
         url_format: str = REST_V2_FORMAT,
-    ) -> requests.Response:
+    ) -> httpx.Response:
         if path.startswith("http"):
             url = path
         else:
@@ -463,8 +464,8 @@ class SXMClient:
                     url, data=json.dumps(params).encode("utf8")
                 )
             else:
-                raise requests.RequestException("only GET and POST")
-        except requests.exceptions.ConnectionError as e:
+                raise httpx.RequestException("only GET and POST")
+        except httpx.exceptions.ConnectionError as e:
             self._log.error(
                 f"An Exception occurred when trying to perform "
                 f"the {method} request!"
@@ -502,7 +503,7 @@ class SXMClient:
 
         response = self._make_request(method, path, params, url_format=url_format)
 
-        if not response.ok:
+        if response.is_error:
             self._log.warn(
                 f"Received status code {response.status_code} for " f"path '{path}'"
             )
@@ -638,7 +639,7 @@ class SXMClient:
     def _get_playlist_variant_url(self, url: str) -> Union[str, None]:
         res = self._session.get(url, params=self._token_params())
 
-        if not res.ok:
+        if res.is_error:
             self._log.warn(
                 f"Received status code {res.status_code} on playlist "
                 f"variant retrieval"

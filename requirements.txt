@@ -8,8 +8,8 @@ certifi==2021.5.30
     # via requests
 charset-normalizer==2.0.1
     # via requests
-click==8.0.1
-    # via -r reqs/requirements.in
+click==7.1.2
+    # via typer
 dataclasses==0.6
     # via -r reqs/requirements.in
 fake-useragent==0.1.11
@@ -19,6 +19,8 @@ idna==3.2
 requests==2.26.0
     # via -r reqs/requirements.in
 tenacity==8.0.1
+    # via -r reqs/requirements.in
+typer==0.3.2
     # via -r reqs/requirements.in
 ua-parser==0.10.0
     # via -r reqs/requirements.in

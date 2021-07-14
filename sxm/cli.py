@@ -2,62 +2,57 @@
 
 """Console script for sxm."""
 import logging
-import sys
 
-import click
+import typer
+from enum import Enum
 
-from . import SXMClient, run_http_server
+from sxm import SXMClient, run_http_server
 
 
-@click.command()
-@click.option(
-    "--username",
-    type=str,
-    prompt=True,
-    envvar="SXM_USERNAME",
-    help="SiriuxXM username",
-)
-@click.option(
-    "--password",
-    type=str,
-    prompt=True,
-    hide_input=True,
-    envvar="SXM_PASSWORD",
-    help="SiriuxXM password",
-)
-@click.option(
-    "-l",
-    "--list-channels",
-    "do_list",
-    is_flag=True,
-    help="List all avaiable SXM channels",
-)
-@click.option("-p", "--port", type=int, default=9999, help="Port to run SXM server on")
-@click.option(
-    "-h",
-    "--host",
-    type=str,
-    default="127.0.0.1",
-    help="IP address to bind SXM server to",
-)
-@click.option(
-    "-r",
-    "--region",
-    type=click.Choice(["US", "CA"]),
-    default="US",
-    help="Sets the SXM client's region",
-)
+class RegionChoice(str, Enum):
+    US = "US"
+    CA = "CA"
+
+
 def main(
-    username: str,
-    password: str,
-    do_list: bool,
-    port: int,
-    host: str,
-    region: str,
+    username: str = typer.Option(
+        ..., "--username", "-U", help="SXM username", prompt=True, envvar="SXM_USERNAME"
+    ),
+    password: str = typer.Option(
+        ...,
+        "--password",
+        "-P",
+        help="SXM password",
+        prompt=True,
+        hide_input=True,
+        envvar="SXM_PASSWORD",
+    ),
+    do_list: bool = typer.Option(
+        False, "--list-channels", "-l", help="List all available SXM channels and exit"
+    ),
+    port: int = typer.Option(
+        9999, "--port", "-p", help="Port to run SXM server on", envvar="SXM_PORT"
+    ),
+    host: str = typer.Option(
+        "127.0.0.1", "--host", "-h", help="IP to bind SXM server to", envvar="SXM_HOST"
+    ),
+    verbose: bool = typer.Option(
+        False, "--verbose", "-v", help="Enable debug logging", envvar="SXM_DEBUG"
+    ),
+    region: RegionChoice = typer.Option(
+        RegionChoice.US,
+        "--region",
+        "-r",
+        help="Sets the SXM client's region",
+        envvar="SXM_REGION",
+    ),
 ) -> int:
     """SXM proxy command line application."""
 
-    logging.basicConfig(level=logging.INFO)
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     sxm = SXMClient(username, password, region=region)
     if do_list:
@@ -65,19 +60,12 @@ def main(
         l2 = max(len(str(x.channel_number)) for x in sxm.channels)
         l3 = max(len(x.name) for x in sxm.channels)
 
-        click.echo(
-            "{} | {} | {}".format("ID".ljust(l1), "Num".ljust(l2), "Name".ljust(l3))
-        )
-
+        typer.echo(f"{'ID'.ljust(l1)} | {'Num'.ljust(l2)} | {'Name'.ljust(l3)}")
         for channel in sxm.channels:
-            cid = channel.id.ljust(l1)[:l1]
-            cnum = str(channel.channel_number).ljust(l2)[:l2]
-            cname = channel.name.ljust(l3)[:l3]
-            click.echo("{} | {} | {}".format(cid, cnum, cname))
+            channel_id = channel.id.ljust(l1)[:l1]
+            channel_num = str(channel.channel_number).ljust(l2)[:l2]
+            channel_name = channel.name.ljust(l3)[:l3]
+            typer.echo(f"{channel_id} | {channel_num} | {channel_name}")
     else:
         run_http_server(sxm, port, ip=host)
     return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover, pylint: disable=E1120

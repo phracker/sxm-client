@@ -1,3 +1,93 @@
+[build-system]
+requires = ["flit_core >=2,<3"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "sxm"
+author = "AngellusMortis"
+author-email = "cbailey@mort.is"
+home-page = "https://github.com/AngellusMortis/sxm-client"
+
+requires=[
+  'fake-useragent',
+  'httpx',
+  'python-dotenv',
+  'tenacity',
+  'typer',
+  'ua-parser',
+]
+requires-python='>=3.7'
+
+description-file='README.rst'
+classifiers=[
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+]
+license="MIT license"
+
+[tool.flit.metadata.requires-extra]
+test = [
+  'pytest',
+  'pytest-cov',
+  'pytest-django',
+  'tox',
+  'coverage',
+  'coveralls',
+]
+doc = [
+  'sphinx',
+  'sphinx-rtd-theme',
+]
+dev = [
+  'bandit',
+  'black',
+  'flake8',
+  'flake8-bugbear',
+  'flake8-builtins',
+  'flake8-commas',
+  'flake8-comprehensions',
+  'isort',
+  'mypy',
+  'pip-tools',
+  'pylint',
+  'pyproject-flake8',
+]
+
+[tool.flit.metadata.urls]
+Documentation = "https://sxm-client.readthedocs.io/en/latest/"
+
+[tool.flit.scripts]
+sxm = "sxm.__main__:start"
+
+[tool.flit.sdist]
+include = [
+  "AUTHORS.rst",
+  "CONTRIBUTING.rst",
+  "HISTORY.rst",
+  "LICENSE",
+  "README.rst",
+  "sxm/*",
+  "tests/*",
+  "docs/*.rst",
+  "docs/conf.py",
+  "docs/Makefile",
+  "docs/make.bat",
+  "docs/*.jpg",
+  "docs/*.png",
+  "docs/*.gif",
+]
+exclude = [
+  "__pycache__",
+  "*.py",
+  "*.pyc",
+  "*.pyo"
+]
+
 [tool.black]
 line-length = 88
 target-versions = 'py39'
@@ -19,3 +109,14 @@ exclude = '''
   )/
 )
 '''
+
+[tool.flake8]
+exclude = "docs, .eggs"
+ignore = "C812, W503, C816, C815, B008"
+max-line-length = 88
+
+[tool.pylint.format]
+max-line = 88
+
+[tool.isort]
+profile = "black"
