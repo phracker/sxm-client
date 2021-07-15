@@ -1,5 +1,6 @@
-from sxm.models import XMLiveChannel
 from unittest.mock import patch
+
+from sxm.models import XMLiveChannel
 
 
 def test_channel(sxm_client):

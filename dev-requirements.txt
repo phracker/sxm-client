@@ -169,7 +169,7 @@ pylint==2.9.3
     #   sxm (pyproject.toml)
 pylint-plugin-utils==0.6
     # via pylint-pydantic
-pylint-pydantic==0.1.3
+pylint-pydantic==0.1.3 ; python_version >= "3.9"
     # via sxm (pyproject.toml)
 pymongo[srv,tls]==3.11.4
     # via snooty-lextudio

@@ -59,7 +59,7 @@ dev = [
   'mypy',
   'pip-tools',
   'pylint',
-  'pylint-pydantic',
+  'pylint-pydantic;python_version>="3.9"',
   'pyproject-flake8',
   'typing-extensions~=3.7.4.1',
 ]
