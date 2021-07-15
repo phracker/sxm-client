@@ -1,35 +1,44 @@
 #!/bin/bash
 
-set -o errexit
-set -o pipefail
-set -o nounset
-
 BASE_DIR=$( realpath $( dirname "${BASH_SOURCE[0]}" )/../ )
 
 pushd "$BASE_DIR" 2>&1 >/dev/null
 
 echo "Running isort..."
 isort -c .
+exit_code=$?
 echo
 
 echo "Running black..."
 black --check .
+test $? -eq 0 -a $exit_code -eq 0
+exit_code=$?
 echo
 
 echo "Running flake8..."
 pflake8 .
+test $? -eq 0 -a $exit_code -eq 0
+exit_code=$?
 echo
 
 echo "Running mypy..."
 mypy .
+test $? -eq 0 -a $exit_code -eq 0
+exit_code=$?
 echo
 
 echo "Running bandit..."
 bandit -c .bandit.yml -r conftest.py sxm/
+test $? -eq 0 -a $exit_code -eq 0
+exit_code=$?
 echo
 
 echo "Running pylint..."
 pylint sxm tests conftest.py
+test $? -eq 0 -a $exit_code -eq 0
+exit_code=$?
 echo
 
 popd 2>&1 >/dev/null
+
+exit $exit_code

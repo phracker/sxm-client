@@ -52,5 +52,6 @@
     },
     "forwardPorts": [
         9999
-    ]
+    ],
+    "postCreateCommand": "cd /workspaces/sxm-client && flit install --symlink"
 }

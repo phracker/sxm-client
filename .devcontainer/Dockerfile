@@ -1,7 +1,7 @@
 FROM python:3.9.6-slim-buster
 
 RUN apt-get update \
-    && apt-get install -y git ffmpeg build-essential \
+    && apt-get install -y git ffmpeg build-essential vim \
     # cleaning up unused files
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
@@ -14,3 +14,4 @@ RUN pip install --no-cache-dir -U pip \
 
 ENV PATH /workspaces/sxm-client/.bin:$PATH
 ENV PYTHONPATH /workspaces/sxm-client/
+ENV FLIT_ROOT_INSTALL=1

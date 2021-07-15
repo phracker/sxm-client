@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=2,<3"]
+requires = ["flit_core >=3,<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
@@ -61,6 +61,7 @@ dev = [
   'pylint',
   # 'pylint-pydantic',  # 3.9+
   'pyproject-flake8',
+  'rstcheck',
   'typing-extensions~=3.7.4.1',
 ]
 
