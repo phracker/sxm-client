@@ -49,11 +49,12 @@ doc = [
 dev = [
   'bandit',
   'black',
-  'flake8',
   'flake8-bugbear',
   'flake8-builtins',
   'flake8-commas',
   'flake8-comprehensions',
+  'flake8',
+  'flit',
   'isort',
   'mypy',
   'pip-tools',
