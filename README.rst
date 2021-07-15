@@ -17,6 +17,10 @@ sxm-client
         :target: https://codeclimate.com/github/AngellusMortis/sxm-client/test_coverage
         :alt: Test Coverage
 
+.. image:: https://pypip.in/v/sxm/badge.png
+        :target: https://crate.io/packages/$REPO/
+        :alt: Latest PyPI version
+
 
 .. warning:: Designed for PERSONAL USE ONLY
 
