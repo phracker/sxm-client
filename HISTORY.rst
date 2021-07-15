@@ -11,6 +11,8 @@ History
 * Replaces setuptools with filt
 * Replaces click with typer
 * Replaces requests with httpx
+* Updates linting
+* Replaces TravisCI with Github Actions
 
 0.1.0 (2018-12-25)
 ------------------

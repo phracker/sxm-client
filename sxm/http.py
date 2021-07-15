@@ -1,3 +1,4 @@
+"""HTTP Server module for sxm"""
 import json
 import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -26,7 +27,9 @@ def make_http_handler(
         SXM client to use
     """
 
-    class SiriusHandler(BaseHTTPRequestHandler):
+    class SXMHandler(BaseHTTPRequestHandler):
+        """SXM Response handler"""
+
         def log_error(self, format, *args):  # noqa: A002
             logger.warn(format % args)
 
@@ -34,6 +37,8 @@ def make_http_handler(
             logger.log(request_level, format % args)
 
         def do_GET(self):
+            """Main proxy endpoint"""
+
             if self.path.endswith(".m3u8"):
                 data = sxm.get_playlist(self.path.rsplit("/", 1)[1][:-5])
                 if data:
@@ -84,7 +89,7 @@ def make_http_handler(
                 self.send_response(404)
                 self.end_headers()
 
-    return SiriusHandler
+    return SXMHandler
 
 
 def run_http_server(

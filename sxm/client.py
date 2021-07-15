@@ -9,9 +9,9 @@ import urllib.parse
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import httpx
-from fake_useragent import UserAgent
+from fake_useragent import UserAgent  # type: ignore
 from tenacity import retry, stop_after_attempt, wait_fixed
-from ua_parser import user_agent_parser
+from ua_parser import user_agent_parser  # type: ignore
 
 from sxm.models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
 
@@ -26,7 +26,9 @@ __all__ = [
 SXM_APP_VERSION = "5.36.514"
 SXM_DEVICE_MODEL = "EverestWebClient"
 HLS_AES_KEY = base64.b64decode("0Nsco7MAgxowGvkUT8aYag==")
-FALLBACK_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"  # noqa
+FALLBACK_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"
+)
 REST_V2_FORMAT = "https://player.siriusxm.com/rest/v2/experience/modules/{}"
 REST_V4_FORMAT = "https://player.siriusxm.com/rest/v4/experience/modules/{}"
 SESSION_MAX_LIFE = 14400
@@ -269,7 +271,7 @@ class SXMClient:
                 )
                 response = None
 
-        except httpx.exceptions.ConnectionError as e:
+        except httpx.RequestError as e:
             self._log.error(f"Error getting playlist: {e}")
 
         if response is None:
@@ -460,20 +462,20 @@ class SXMClient:
             if method == "GET":
                 response = self._session.get(url, params=params)
             elif method == "POST":
-                response = self._session.post(
-                    url, data=json.dumps(params).encode("utf8")
-                )
+                response = self._session.post(url, json=params)
             else:
-                raise httpx.RequestException("only GET and POST")
-        except httpx.exceptions.ConnectionError as e:
+                raise httpx.RequestError("only GET and POST")
+        except httpx.RequestError as e:
             self._log.error(
                 f"An Exception occurred when trying to perform "
                 f"the {method} request!"
             )
             self._log.error(f"Params: {params}")
             self._log.error(f"Method: {method}")
-            self._log.error(f"Response: {e.response}")
             self._log.error(f"Request: {e.request}")
+
+            if isinstance(e, httpx.HTTPStatusError):
+                self._log.error(f"Response: {e.response}")  # pylint: disable=no-member
             raise (e)
 
         return response
@@ -507,7 +509,7 @@ class SXMClient:
             self._log.warn(
                 f"Received status code {response.status_code} for " f"path '{path}'"
             )
-            self._log.warn(f"Response: {response.text()}")
+            self._log.warn(f"Response: {response.text}")
             return None
 
         try:

@@ -7,6 +7,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY dev-requirements.txt /dev-requirements.txt
-RUN pip install --no-cache-dir -r /dev-requirements.txt && rm /dev-requirements.txt
+RUN pip install --no-cache-dir -r /dev-requirements.txt \
+    && rm /dev-requirements.txt \
+    && echo 'export PS1="\[$(tput setaf 6)\]\w \[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"' >> /root/.bashrc
 
 ENV PATH /workspaces/sxm-client/.bin:$PATH

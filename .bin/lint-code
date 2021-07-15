@@ -8,9 +8,28 @@ BASE_DIR=$( realpath $( dirname "${BASH_SOURCE[0]}" )/../ )
 
 pushd "$BASE_DIR" 2>&1 >/dev/null
 
+echo "Running isort..."
 isort -c .
+echo
+
+echo "Running black..."
 black --check .
-flake8 .
+echo
+
+echo "Running flake8..."
+pflake8 .
+echo
+
+echo "Running mypy..."
+mypy .
+echo
+
+echo "Running bandit..."
+bandit .
+echo
+
+echo "Running pylint..."
 pylint sxm tests
+echo
 
 popd 2>&1 >/dev/null

@@ -221,7 +221,7 @@ class XMChannel:
     """See `tests/sample_data/xm_channel.json` for sample"""
 
     guid: str
-    id: str
+    id: str  # noqa A003
     name: str
     streaming_name: str
     sort_order: int
@@ -267,7 +267,7 @@ class XMChannel:
 class XMLiveChannel:
     """See `tests/sample_data/xm_live_channel.json` for sample"""
 
-    id: str
+    id: str  # noqa A003
     hls_infos: List[XMHLSInfo]
     custom_hls_infos: List[XMHLSInfo]
     episode_markers: List[XMEpisodeMarker]
