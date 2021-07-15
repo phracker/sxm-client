@@ -7,7 +7,7 @@ module = "sxm"
 author = "AngellusMortis"
 author-email = "cbailey@mort.is"
 home-page = "https://github.com/AngellusMortis/sxm-client"
-
+requires-python='>=3.7'
 requires=[
   'fake-useragent',
   'httpx',
@@ -17,7 +17,6 @@ requires=[
   'typer',
   'ua-parser',
 ]
-requires-python='>=3.7'
 
 description-file='README.rst'
 classifiers=[
@@ -154,9 +153,6 @@ commands =
   pip install -U pip
   py.test --basetemp={envtmpdir}
 """
-
-[tool.mypy]
-plugins = "pydantic.mypy"
 
 [tool.pytest.ini_options]
 addopts = "--disable-socket --cov-report=term --cov=sxm --cov-append"

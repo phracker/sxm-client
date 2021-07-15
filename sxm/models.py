@@ -224,12 +224,12 @@ class XMSong(XMCut):
 
 
 class XMCutMarker(XMMarker):
-    cut: Optional[XMCut]
+    cut: XMCut
 
     @staticmethod
     def from_dict(data: dict) -> XMCutMarker:
         if data["cut"].get("cutContentType", None) == "Song":
-            cut = XMSong.from_dict(data["cut"])
+            cut: XMCut = XMSong.from_dict(data["cut"])
         else:
             cut = XMCut.from_dict(data["cut"])
         # other cuts, not done: Exp, Link., maybe more?
@@ -397,23 +397,23 @@ class XMLiveChannel(BaseModel):
 
     @staticmethod
     def _get_episodes(markers) -> List[XMEpisodeMarker]:
-        episode_markers = []
+        episode_markers: List[XMEpisodeMarker] = []
 
         for marker in markers:
             episode_markers.append(XMEpisodeMarker.from_dict(marker))
 
-        episode_markers = XMLiveChannel.sort_markers(episode_markers)
+        episode_markers = XMLiveChannel.sort_markers(episode_markers)  # type: ignore
         return episode_markers
 
     @staticmethod
     def _get_cuts(markers) -> List[XMCutMarker]:
-        cut_markers = []
+        cut_markers: List[XMCutMarker] = []
 
         for marker in markers:
             if "cut" in marker:
                 cut_markers.append(XMCutMarker.from_dict(marker))
 
-        cut_markers = XMLiveChannel.sort_markers(cut_markers)
+        cut_markers = XMLiveChannel.sort_markers(cut_markers)  # type: ignore
         return cut_markers
 
     @property
