@@ -18,7 +18,7 @@ sxm-client
         :alt: Test Coverage
 
 .. image:: https://pypip.in/v/sxm/badge.png
-        :target: https://crate.io/packages/$REPO/
+        :target: https://pypi.org/project/sxm/
         :alt: Latest PyPI version
 
 
