@@ -335,6 +335,7 @@ class XMLiveChannel(BaseModel):
 
     id: str  # noqa A003
     hls_infos: List[XMHLSInfo]
+    primary_hls: XMHLSInfo
     custom_hls_infos: List[XMHLSInfo]
     episode_markers: List[XMEpisodeMarker]
     cut_markers: List[XMCutMarker]
@@ -349,14 +350,18 @@ class XMLiveChannel(BaseModel):
         for info in data["hlsAudioInfos"]:
             hls_infos.append(XMHLSInfo.from_dict(info))
 
-        custom_hls_infos, tune_time = XMLiveChannel._get_custom_hls_infos(
+        custom_hls_infos, primary_hls, tune_time = XMLiveChannel._get_custom_hls_infos(
             data["customAudioInfos"]
         )
         episode_markers, cut_markers = XMLiveChannel._get_markers(data["markerLists"])
 
+        if primary_hls is None:
+            raise ValueError("Missing primarily HLS")
+
         return XMLiveChannel(
             id=data["channelId"],
             hls_infos=hls_infos,
+            primary_hls=primary_hls,
             custom_hls_infos=custom_hls_infos,
             tune_time=tune_time,
             episode_markers=episode_markers,
@@ -364,13 +369,16 @@ class XMLiveChannel(BaseModel):
         )
 
     @staticmethod
-    def _get_custom_hls_infos(custom_infos) -> Tuple[List[XMHLSInfo], Optional[int]]:
+    def _get_custom_hls_infos(
+        custom_infos,
+    ) -> Tuple[List[XMHLSInfo], Optional[XMHLSInfo], Optional[int]]:
         custom_hls_infos: List[XMHLSInfo] = []
         tune_time: Optional[int] = None
 
         for info in custom_infos:
             custom_hls_infos.append(XMHLSInfo.from_dict(info))
 
+        primary_hls: Optional[XMHLSInfo] = None
         for hls_info in custom_hls_infos:
             if (
                 hls_info.position is not None
@@ -379,8 +387,11 @@ class XMLiveChannel(BaseModel):
 
                 timestamp = hls_info.position.timestamp.timestamp()
                 tune_time = int(timestamp * 1000)
+                primary_hls = hls_info
+            elif hls_info.size == "LARGE":
+                primary_hls = hls_info
 
-        return custom_hls_infos, tune_time
+        return custom_hls_infos, primary_hls, tune_time
 
     @staticmethod
     def _get_markers(marker_lists) -> Tuple[List[XMEpisodeMarker], List[XMCutMarker]]:

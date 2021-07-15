@@ -623,17 +623,14 @@ class SXMClient:
         self.update_interval = int(data["moduleList"]["modules"][0]["updateFrequency"])
 
         # get m3u8 url
-        for playlist_info in live_channel.hls_infos:
-            if playlist_info.size == "LARGE":
-                playlist = self._get_playlist_variant_url(playlist_info.url)
+        playlist = self._get_playlist_variant_url(live_channel.primary_hls.url)
+        if playlist is not None:
+            self._playlists[channel.id] = playlist
+            self.last_renew = time.time()
 
-                if playlist is not None:
-                    self._playlists[channel.id] = playlist
-                    self.last_renew = time.time()
-
-                    if self.update_handler is not None:
-                        self.update_handler(live_channel_raw)
-                    return self._playlists[channel.id]
+            if self.update_handler is not None:
+                self.update_handler(live_channel_raw)
+            return self._playlists[channel.id]
         return None
 
     def _get_playlist_variant_url(self, url: str) -> Union[str, None]:
