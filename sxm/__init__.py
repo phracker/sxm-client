@@ -12,7 +12,7 @@ from sxm.http import make_http_handler, run_http_server
 
 __author__ = """AngellusMortis"""
 __email__ = "cbailey@mort.is"
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __all__ = [
     "AuthenticationError",
     "HLS_AES_KEY",
