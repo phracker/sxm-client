@@ -5,6 +5,19 @@ sxm-client
         :target: https://sxm-client.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
+.. image:: https://github.com/AngellusMortis/sxm-client/actions/workflows/ci.yml/badge.svg
+        :target: https://github.com/AngellusMortis/sxm-client/actions/workflows/ci.yml
+        :alt: CI Status
+
+.. image:: https://api.codeclimate.com/v1/badges/ea06824c1732b39d7d0b/maintainability
+        :target: https://codeclimate.com/github/AngellusMortis/sxm-client/maintainability
+        :alt: Maintainability
+
+.. image:: https://api.codeclimate.com/v1/badges/ea06824c1732b39d7d0b/test_coverage
+        :target: https://codeclimate.com/github/AngellusMortis/sxm-client/test_coverage
+        :alt: Test Coverage
+
+
 .. warning:: Designed for PERSONAL USE ONLY
 
     `sxm` is a 100% unofficial project and you use it at your own risk.
