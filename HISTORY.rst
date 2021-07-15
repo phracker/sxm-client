@@ -13,6 +13,7 @@ History
 * Replaces requests with httpx
 * Updates linting
 * Replaces TravisCI with Github Actions
+* Adds Pydantic
 
 0.1.0 (2018-12-25)
 ------------------
