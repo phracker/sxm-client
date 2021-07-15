@@ -2,12 +2,17 @@
 History
 =======
 
-0.2.3 (2021-08-16)
+0.2.4 (2021-08-15)
+------------------
+
+* Fixes pydantic issue in `XMLiveChannel`
+
+0.2.3 (2021-08-15)
 ------------------
 
 * Splits typer params out into seperate variables
 
-0.2.2 (2021-08-16)
+0.2.2 (2021-08-15)
 ------------------
 
 * Adds type stubs

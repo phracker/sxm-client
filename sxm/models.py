@@ -4,7 +4,7 @@ import datetime
 import time
 from typing import List, Optional, Tuple, Union
 
-from pydantic import BaseModel  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, PrivateAttr  # pylint: disable=no-name-in-module
 
 __all__ = [
     "XMArt",
@@ -338,9 +338,10 @@ class XMLiveChannel(BaseModel):
     custom_hls_infos: List[XMHLSInfo]
     episode_markers: List[XMEpisodeMarker]
     cut_markers: List[XMCutMarker]
-    _song_cuts: Optional[List[XMCutMarker]] = None
     tune_time: Optional[int] = None
     # ... plus many unused
+
+    _song_cuts: Optional[List[XMCutMarker]] = PrivateAttr(None)
 
     @staticmethod
     def from_dict(data: dict) -> XMLiveChannel:
