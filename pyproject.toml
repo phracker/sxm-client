@@ -42,9 +42,9 @@ test = [
   'coveralls',
 ]
 doc = [
-  'sphinx',
-  'sphinx-rtd-theme',
+  'furo',
   'snooty-lextudio',
+  'sphinx',
 ]
 dev = [
   'bandit',

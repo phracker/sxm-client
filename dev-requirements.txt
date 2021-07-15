@@ -22,6 +22,8 @@ backports.entry-points-selectable==1.1.0
     # via virtualenv
 bandit==1.7.0
     # via sxm (pyproject.toml)
+beautifulsoup4==4.9.3
+    # via furo
 black==21.6b0
     # via sxm (pyproject.toml)
 certifi==2021.5.30
@@ -61,7 +63,6 @@ docutils==0.16
     #   flit
     #   snooty-lextudio
     #   sphinx
-    #   sphinx-rtd-theme
 fake-useragent==0.1.11
     # via sxm (pyproject.toml)
 fett==0.3.2
@@ -90,6 +91,8 @@ flit==3.2.0
     # via sxm (pyproject.toml)
 flit-core==3.2.0
     # via flit
+furo==2021.7.5b38
+    # via sxm (pyproject.toml)
 gitdb==4.0.7
     # via gitpython
 gitpython==3.1.18
@@ -228,12 +231,12 @@ snooty-lextudio==1.9.2.dev0
     # via sxm (pyproject.toml)
 snowballstemmer==2.1.0
     # via sphinx
+soupsieve==2.2.1
+    # via beautifulsoup4
 sphinx==4.1.1
     # via
-    #   sphinx-rtd-theme
+    #   furo
     #   sxm (pyproject.toml)
-sphinx-rtd-theme==0.5.2
-    # via sxm (pyproject.toml)
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
