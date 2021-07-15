@@ -14,38 +14,47 @@ class RegionChoice(str, Enum):
     CA = "CA"
 
 
+OPTION_USERNAME = typer.Option(
+    ..., "--username", "-U", help="SXM username", prompt=True, envvar="SXM_USERNAME"
+)
+OPTION_PASSWORD = typer.Option(
+    ...,
+    "--password",
+    "-P",
+    help="SXM password",
+    prompt=True,
+    hide_input=True,
+    envvar="SXM_PASSWORD",
+)
+OPTION_LIST_CHANNELS = typer.Option(
+    False, "--list-channels", "-l", help="List all available SXM channels and exit"
+)
+OPTION_PORT = typer.Option(
+    9999, "--port", "-p", help="Port to run SXM server on", envvar="SXM_PORT"
+)
+OPTION_HOST = typer.Option(
+    "127.0.0.1", "--host", "-h", help="IP to bind SXM server to", envvar="SXM_HOST"
+)
+OPTION_VERBOSE = typer.Option(
+    False, "--verbose", "-v", help="Enable debug logging", envvar="SXM_DEBUG"
+)
+OPTION_REGION = typer.Option(
+    RegionChoice.US,
+    "--region",
+    "-r",
+    help="Sets the SXM client's region",
+    envvar="SXM_REGION",
+)
+
+
 def main(
-    username: str = typer.Option(
-        ..., "--username", "-U", help="SXM username", prompt=True, envvar="SXM_USERNAME"
-    ),
-    password: str = typer.Option(
-        ...,
-        "--password",
-        "-P",
-        help="SXM password",
-        prompt=True,
-        hide_input=True,
-        envvar="SXM_PASSWORD",
-    ),
-    do_list: bool = typer.Option(
-        False, "--list-channels", "-l", help="List all available SXM channels and exit"
-    ),
-    port: int = typer.Option(
-        9999, "--port", "-p", help="Port to run SXM server on", envvar="SXM_PORT"
-    ),
-    host: str = typer.Option(
-        "127.0.0.1", "--host", "-h", help="IP to bind SXM server to", envvar="SXM_HOST"
-    ),
-    verbose: bool = typer.Option(
-        False, "--verbose", "-v", help="Enable debug logging", envvar="SXM_DEBUG"
-    ),
-    region: RegionChoice = typer.Option(
-        RegionChoice.US,
-        "--region",
-        "-r",
-        help="Sets the SXM client's region",
-        envvar="SXM_REGION",
-    ),
+    username: str = OPTION_USERNAME,
+    password: str = OPTION_PASSWORD,
+    do_list: bool = OPTION_LIST_CHANNELS,
+    port: int = OPTION_PORT,
+    host: str = OPTION_HOST,
+    verbose: bool = OPTION_VERBOSE,
+    region: RegionChoice = OPTION_REGION,
 ) -> int:
     """SXM proxy command line application."""
 
