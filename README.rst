@@ -2,24 +2,24 @@ sxm-client
 ==========
 
 .. image:: https://readthedocs.org/projects/sxm-client/badge/?version=latest
-        :target: https://sxm-client.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+    :target: https://sxm-client.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 .. image:: https://github.com/AngellusMortis/sxm-client/actions/workflows/ci.yml/badge.svg
-        :target: https://github.com/AngellusMortis/sxm-client/actions/workflows/ci.yml
-        :alt: CI Status
+    :target: https://github.com/AngellusMortis/sxm-client/actions/workflows/ci.yml
+    :alt: CI Status
 
 .. image:: https://api.codeclimate.com/v1/badges/ea06824c1732b39d7d0b/maintainability
-        :target: https://codeclimate.com/github/AngellusMortis/sxm-client/maintainability
-        :alt: Maintainability
+    :target: https://codeclimate.com/github/AngellusMortis/sxm-client/maintainability
+    :alt: Maintainability
 
 .. image:: https://api.codeclimate.com/v1/badges/ea06824c1732b39d7d0b/test_coverage
-        :target: https://codeclimate.com/github/AngellusMortis/sxm-client/test_coverage
-        :alt: Test Coverage
+    :target: https://codeclimate.com/github/AngellusMortis/sxm-client/test_coverage
+    :alt: Test Coverage
 
 .. image:: https://pypip.in/v/sxm/badge.png
-        :target: https://pypi.org/project/sxm/
-        :alt: Latest PyPI version
+    :target: https://pypi.org/project/sxm/
+    :alt: Latest PyPI version
 
 
 .. warning:: Designed for PERSONAL USE ONLY
