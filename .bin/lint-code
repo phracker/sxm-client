@@ -25,11 +25,11 @@ mypy .
 echo
 
 echo "Running bandit..."
-bandit .
+bandit -c .bandit.yml -r conftest.py sxm/
 echo
 
 echo "Running pylint..."
-pylint sxm tests
+pylint sxm tests conftest.py
 echo
 
 popd 2>&1 >/dev/null

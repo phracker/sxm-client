@@ -7,22 +7,26 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  ci:
+    name: "Test and Lint"
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python: [3.7, 3.8, 3.9]
+        include:
+        - python: 3.10
+          experimental: true
 
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python }}
 
     - name: Install Dependencies
       run: |
@@ -30,9 +34,7 @@ jobs:
         pip install -r dev-requirements.txt
 
     - name: Lint Code
-      run: |
-        .bin/lint-code
+      run: .bin/lint-code
 
-    # - name: Test with pytest
-    #   run: |
-    #     pytest
+    - name: Test with pytest
+      run: pytest --force-sugar

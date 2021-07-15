@@ -24,7 +24,7 @@ from typing import Dict
 
 sys.path.insert(0, os.path.abspath(".."))
 
-import sxm
+import sxm  # pylint: disable=import-error  # noqa: E402
 
 # -- General configuration ---------------------------------------------
 
@@ -50,7 +50,7 @@ master_doc = "index"
 
 # General information about the project.
 project = u"sxm-client"
-copyright = u"2018, AngellusMortis"
+copyright = u"2018, AngellusMortis"  # noqa: A001
 author = u"AngellusMortis"
 
 # The version info for the project you're documenting, acts as replacement

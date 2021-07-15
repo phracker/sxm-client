@@ -12,3 +12,4 @@ RUN pip install --no-cache-dir -r /dev-requirements.txt \
     && echo 'export PS1="\[$(tput setaf 6)\]\w \[$(tput setaf 7)\]\\$ \[$(tput sgr0)\]"' >> /root/.bashrc
 
 ENV PATH /workspaces/sxm-client/.bin:$PATH
+ENV PYTHONPATH /workspaces/sxm-client/

@@ -138,12 +138,10 @@ class SXMClient:
 
     @property
     def is_logged_in(self) -> bool:
-
         return "SXMAUTHNEW" in self._session.cookies
 
     @property
     def is_session_authenticated(self) -> bool:
-
         return (
             "AWSALB" in self._session.cookies and "JSESSIONID" in self._session.cookies
         )
@@ -175,7 +173,7 @@ class SXMClient:
 
             self._channels = []
             for channel in channels:
-                self._channels.append(XMChannel(channel))
+                self._channels.append(XMChannel.from_dict(channel))
 
             self._channels = sorted(self._channels, key=lambda x: int(x.channel_number))
 
@@ -620,7 +618,7 @@ class SXMClient:
         live_channel_raw = data["moduleList"]["modules"][0]["moduleResponse"][
             "liveChannelData"
         ]
-        live_channel = XMLiveChannel(live_channel_raw)
+        live_channel = XMLiveChannel.from_dict(live_channel_raw)
 
         self.update_interval = int(data["moduleList"]["modules"][0]["updateFrequency"])
 

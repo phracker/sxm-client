@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import datetime
 import time
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
+
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 __all__ = [
     "XMArt",
@@ -25,15 +29,18 @@ __all__ = [
 LIVE_PRIMARY_HLS = "https://siriusxm-priprodlive.akamaized.net"
 
 
-class XMArt:
+class XMArt(BaseModel):
     name: Optional[str]
     url: str
     art_type: str
 
-    def __init__(self, art_dict: dict):
-        self.name = art_dict.get("name", None)
-        self.url = art_dict["url"]
-        self.art_type = art_dict["type"]
+    @staticmethod
+    def from_dict(data: dict) -> XMArt:
+        return XMArt(
+            name=data.get("name", None),
+            url=data["url"],
+            art_type=data["type"],
+        )
 
 
 class XMImage(XMArt):
@@ -42,43 +49,52 @@ class XMImage(XMArt):
     width: Optional[int] = None
     size: Optional[str] = None
 
-    def __init__(self, image_dict: dict):
-        image_dict["type"] = "IMAGE"
-        super().__init__(image_dict)
+    @staticmethod
+    def from_dict(data: dict) -> XMImage:
+        return XMImage(
+            name=data.get("name", None),
+            url=data["url"],
+            art_type="IMAGE",
+            platform=data.get("platform", None),
+            height=data.get("height", None),
+            width=data.get("width", None),
+            size=data.get("size", None),
+        )
 
-        self.platform = image_dict.get("platform", None)
-        self.height = image_dict.get("height", None)
-        self.width = image_dict.get("width", None)
-        self.size = image_dict.get("size", None)
 
-
-class XMCategory:
+class XMCategory(BaseModel):
     guid: str
     name: str
     key: Optional[str] = None
     order: Optional[int] = None
     short_name: Optional[str] = None
 
-    def __init__(self, category_dict: dict):
-        self.guid = category_dict["categoryGuid"]
-        self.name = category_dict["name"]
-        self.key = category_dict.get("key")
-        self.order = category_dict.get("order")
-        self.short_name = category_dict.get("shortName")
+    @staticmethod
+    def from_dict(data: dict) -> XMCategory:
+        return XMCategory(
+            guid=data["categoryGuid"],
+            name=data["name"],
+            key=data.get("key"),
+            order=data.get("order"),
+            short_name=data.get("shortName"),
+        )
 
 
-class XMMarker:
+class XMMarker(BaseModel):
     guid: str
     time: int
     duration: int
 
-    def __init__(self, marker_dict: dict):
-        self.guid = marker_dict["assetGUID"]
-        self.time = marker_dict["time"]
-        self.duration = marker_dict["duration"]
+    @staticmethod
+    def from_dict(data: dict) -> XMMarker:
+        return XMMarker(
+            guid=data["assetGUID"],
+            time=data["time"],
+            duration=data["duration"],
+        )
 
 
-class XMShow:
+class XMShow(BaseModel):
     guid: str
     medium_title: str
     long_title: str
@@ -87,20 +103,24 @@ class XMShow:
     arts: List[XMArt]
     # ... plus many unused
 
-    def __init__(self, show_dict: dict):
-        self.guid = show_dict["showGUID"]
-        self.medium_title = show_dict["mediumTitle"]
-        self.long_title = show_dict["longTitle"]
-        self.short_description = show_dict["shortDescription"]
-        self.long_description = show_dict["longDescription"]
-
-        self.arts = []
-        for art in show_dict.get("creativeArts", []):
+    @staticmethod
+    def from_dict(data: dict) -> XMShow:
+        arts: List[XMArt] = []
+        for art in data.get("creativeArts", []):
             if art["type"] == "IMAGE":
-                self.arts.append(XMImage(art))
+                arts.append(XMImage.from_dict(art))
+
+        return XMShow(
+            guid=data["showGUID"],
+            medium_title=data["mediumTitle"],
+            long_title=data["longTitle"],
+            short_description=data["shortDescription"],
+            long_description=data["longDescription"],
+            arts=arts,
+        )
 
 
-class XMEpisode:
+class XMEpisode(BaseModel):
     guid: str
     medium_title: str
     long_title: str
@@ -109,115 +129,156 @@ class XMEpisode:
     show: XMShow
     # ... plus many unused
 
-    def __init__(self, episode_dict: dict):
-        self.guid = episode_dict["episodeGUID"]
-        self.medium_title = episode_dict["mediumTitle"]
-        self.long_title = episode_dict["longTitle"]
-        self.short_description = episode_dict["shortDescription"]
-        self.long_description = episode_dict["longDescription"]
-        self.show = XMShow(episode_dict["show"])
+    @staticmethod
+    def from_dict(data: dict) -> XMEpisode:
+        return XMEpisode(
+            guid=data["episodeGUID"],
+            medium_title=data["mediumTitle"],
+            long_title=data["longTitle"],
+            short_description=data["shortDescription"],
+            long_description=data["longDescription"],
+            show=XMShow.from_dict(data["show"]),
+        )
 
 
 class XMEpisodeMarker(XMMarker):
     episode: XMEpisode
 
-    def __init__(self, marker_dict: dict):
-        super().__init__(marker_dict)
+    @staticmethod
+    def from_dict(data: dict) -> XMEpisodeMarker:
+        return XMEpisodeMarker(
+            guid=data["assetGUID"],
+            time=data["time"],
+            duration=data["duration"],
+            episode=XMEpisode.from_dict(data["episode"]),
+        )
 
-        self.episode = XMEpisode(marker_dict["episode"])
 
-
-class XMArtist:
+class XMArtist(BaseModel):
     name: str
 
-    def __init__(self, artist_dict: dict):
-        self.name = artist_dict["name"]
+    @staticmethod
+    def from_dict(data: dict) -> XMArtist:
+        return XMArtist(name=data["name"])
 
 
-class XMAlbum:
+class XMAlbum(BaseModel):
     title: Optional[str] = None
     arts: List[XMArt]
 
-    def __init__(self, album_dict: dict):
-        self.title = album_dict.get("title", None)
-
-        self.arts = []
-        for art in album_dict.get("creativeArts", []):
+    @staticmethod
+    def from_dict(data: dict) -> XMAlbum:
+        arts: List[XMArt] = []
+        for art in data.get("creativeArts", []):
             if art["type"] == "IMAGE":
-                self.arts.append(XMImage(art))
+                arts.append(XMImage.from_dict(art))
+
+        return XMAlbum(title=data.get("title", None), arts=arts)
 
 
-class XMCut:
+class XMCut(BaseModel):
     title: str
     artists: List[XMArtist]
     cut_type: Optional[str] = None
 
-    def __init__(self, cut_dict: dict):
-        self.title = cut_dict["title"]
-        self.cut_type = cut_dict.get("cutContentType", None)
+    @staticmethod
+    def from_dict(data: dict) -> XMCut:
+        artists: List[XMArtist] = []
+        for artist in data["artists"]:
+            artists.append(XMArtist.from_dict(artist))
 
-        self.artists = []
-        for artist in cut_dict["artists"]:
-            self.artists.append(XMArtist(artist))
+        return XMCut(
+            title=data["title"],
+            cut_type=data.get("cutContentType", None),
+            artists=artists,
+        )
 
 
 class XMSong(XMCut):
     album: Optional[XMAlbum] = None
     itunes_id: Optional[str] = None
 
-    def __init__(self, song_dict: dict):
-        super().__init__(song_dict)
+    @staticmethod
+    def from_dict(data: dict) -> XMSong:
+        album: Optional[XMAlbum] = None
+        itunes_id: Optional[str] = None
 
-        if "album" in song_dict:
-            self.album = XMAlbum(song_dict["album"])
+        if "album" in data:
+            album = XMAlbum.from_dict(data["album"])
 
-        for external_id in song_dict.get("externalIds", []):
+        for external_id in data.get("externalIds", []):
             if external_id["id"] == "iTunes":
-                self.itunes_id = external_id["value"]
+                itunes_id = external_id["value"]
+
+        artists: List[XMArtist] = []
+        for artist in data["artists"]:
+            artists.append(XMArtist.from_dict(artist))
+
+        return XMSong(
+            title=data["title"],
+            cut_type=data.get("cutContentType", None),
+            artists=artists,
+            album=album,
+            itunes_id=itunes_id,
+        )
 
 
 class XMCutMarker(XMMarker):
-    cut: XMCut
+    cut: Optional[XMCut]
 
-    def __init__(self, marker_dict: dict):
-        super().__init__(marker_dict)
-
-        if marker_dict["cut"].get("cutContentType", None) == "Song":
-            self.cut = XMSong(marker_dict["cut"])
+    @staticmethod
+    def from_dict(data: dict) -> XMCutMarker:
+        if data["cut"].get("cutContentType", None) == "Song":
+            cut = XMSong.from_dict(data["cut"])
         else:
-            self.cut = XMCut(marker_dict["cut"])
+            cut = XMCut.from_dict(data["cut"])
         # other cuts, not done: Exp, Link., maybe more?
 
+        return XMCutMarker(
+            guid=data["assetGUID"],
+            time=data["time"],
+            duration=data["duration"],
+            cut=cut,
+        )
 
-class XMPosition:
+
+class XMPosition(BaseModel):
     timestamp: datetime.datetime
     position: str
 
-    def __init__(self, pos_dict: dict):
-        dt_string = pos_dict["timestamp"].replace("+0000", "")
+    @staticmethod
+    def from_dict(data: dict) -> XMPosition:
+        dt_string = data["timestamp"].replace("+0000", "")
         dt = datetime.datetime.fromisoformat(dt_string)
 
-        self.timestamp = dt.replace(tzinfo=datetime.timezone.utc)
-        self.position = pos_dict["position"]
+        return XMPosition(
+            timestamp=dt.replace(tzinfo=datetime.timezone.utc),
+            position=data["position"],
+        )
 
 
-class XMHLSInfo:
+class XMHLSInfo(BaseModel):
     name: str
     url: str
     size: str
     position: Optional[XMPosition] = None
     # + unused chunks
 
-    def __init__(self, hls_dict: dict):
-        self.name = hls_dict["name"]
-        self.url = hls_dict["url"].replace("%Live_Primary_HLS%", LIVE_PRIMARY_HLS)
-        self.size = hls_dict["size"]
+    @staticmethod
+    def from_dict(data: dict) -> XMHLSInfo:
+        position: Optional[XMPosition] = None
+        if "position" in data:
+            position = XMPosition.from_dict(data["position"])
 
-        if "position" in hls_dict:
-            self.position = XMPosition(hls_dict["position"])
+        return XMHLSInfo(
+            name=data["name"],
+            url=data["url"].replace("%Live_Primary_HLS%", LIVE_PRIMARY_HLS),
+            size=data["size"],
+            position=position,
+        )
 
 
-class XMChannel:
+class XMChannel(BaseModel):
     """See `tests/sample_data/xm_channel.json` for sample"""
 
     guid: str
@@ -236,27 +297,32 @@ class XMChannel:
     categories: List[XMCategory]
     # ... plus many unused
 
-    def __init__(self, channel_dict: dict):
-        self.guid = channel_dict["channelGuid"]
-        self.id = channel_dict["channelId"]
-        self.name = channel_dict["name"]
-        self.streaming_name = channel_dict["streamingName"]
-        self.sort_order = channel_dict["sortOrder"]
-        self.short_description = channel_dict["shortDescription"]
-        self.medium_description = channel_dict["mediumDescription"]
-        self.url = channel_dict["url"]
-        self.is_available = channel_dict["isAvailable"]
-        self.is_favorite = channel_dict["isFavorite"]
-        self.is_mature = channel_dict["isMature"]
-        self.channel_number = channel_dict["siriusChannelNumber"]
+    @staticmethod
+    def from_dict(data: dict):
+        images: List[XMImage] = []
+        for image in data["images"]["images"]:
+            images.append(XMImage.from_dict(image))
 
-        self.images = []
-        for image in channel_dict["images"]["images"]:
-            self.images.append(XMImage(image))
+        categories: List[XMCategory] = []
+        for category in data["categories"]["categories"]:
+            categories.append(XMCategory.from_dict(category))
 
-        self.categories = []
-        for category in channel_dict["categories"]["categories"]:
-            self.categories.append(XMCategory(category))
+        return XMChannel(
+            guid=data["channelGuid"],
+            id=data["channelId"],
+            name=data["name"],
+            streaming_name=data["streamingName"],
+            sort_order=data["sortOrder"],
+            short_description=data["shortDescription"],
+            medium_description=data["mediumDescription"],
+            url=data["url"],
+            is_available=data["isAvailable"],
+            is_favorite=data["isFavorite"],
+            is_mature=data["isMature"],
+            channel_number=data["siriusChannelNumber"],
+            images=images,
+            categories=categories,
+        )
 
     @property
     def pretty_name(self) -> str:
@@ -264,7 +330,7 @@ class XMChannel:
         return f"#{self.channel_number} {self.name}"
 
 
-class XMLiveChannel:
+class XMLiveChannel(BaseModel):
     """See `tests/sample_data/xm_live_channel.json` for sample"""
 
     id: str  # noqa A003
@@ -276,60 +342,79 @@ class XMLiveChannel:
     tune_time: Optional[int] = None
     # ... plus many unused
 
-    def __init__(self, live_dict: dict):
-        self.id = live_dict["channelId"]
+    @staticmethod
+    def from_dict(data: dict) -> XMLiveChannel:
+        hls_infos: List[XMHLSInfo] = []
+        for info in data["hlsAudioInfos"]:
+            hls_infos.append(XMHLSInfo.from_dict(info))
 
-        self.hls_infos = []
-        self.episode_markers = []
-        self.cut_markers = []
-        self._populate_data(live_dict)
+        custom_hls_infos, tune_time = XMLiveChannel._get_custom_hls_infos(
+            data["customAudioInfos"]
+        )
+        episode_markers, cut_markers = XMLiveChannel._get_markers(data["markerLists"])
 
-    def _populate_data(self, live_dict: dict):
-        for info in live_dict["hlsAudioInfos"]:
-            self.hls_infos.append(XMHLSInfo(info))
+        return XMLiveChannel(
+            id=data["channelId"],
+            hls_infos=hls_infos,
+            custom_hls_infos=custom_hls_infos,
+            tune_time=tune_time,
+            episode_markers=episode_markers,
+            cut_markers=cut_markers,
+        )
 
-        self._populate_custom_hls_infos(live_dict["customAudioInfos"])
-
-        self._populate_markers(live_dict["markerLists"])
-
-    def _populate_custom_hls_infos(self, custom_infos):
-        self.custom_hls_infos = []
+    @staticmethod
+    def _get_custom_hls_infos(custom_infos) -> Tuple[List[XMHLSInfo], Optional[int]]:
+        custom_hls_infos: List[XMHLSInfo] = []
+        tune_time: Optional[int] = None
 
         for info in custom_infos:
-            self.custom_hls_infos.append(XMHLSInfo(info))
+            custom_hls_infos.append(XMHLSInfo.from_dict(info))
 
-        for hls_info in self.custom_hls_infos:
+        for hls_info in custom_hls_infos:
             if (
                 hls_info.position is not None
                 and hls_info.position.position == "TUNE_START"
             ):
 
                 timestamp = hls_info.position.timestamp.timestamp()
-                self.tune_time = int(timestamp * 1000)
+                tune_time = int(timestamp * 1000)
 
-    def _populate_markers(self, marker_lists):
+        return custom_hls_infos, tune_time
+
+    @staticmethod
+    def _get_markers(marker_lists) -> Tuple[List[XMEpisodeMarker], List[XMCutMarker]]:
+        episode_markers: List[XMEpisodeMarker] = []
+        cut_markers: List[XMCutMarker] = []
+
         for marker_list in marker_lists:
             # not including future-episodes as they are missing metadata
             if marker_list["layer"] == "episode":
-                self._populate_episodes(marker_list["markers"])
+                episode_markers = XMLiveChannel._get_episodes(marker_list["markers"])
             elif marker_list["layer"] == "cut":
-                self._populate_cuts(marker_list["markers"])
+                cut_markers = XMLiveChannel._get_cuts(marker_list["markers"])
 
-    def _populate_episodes(self, episode_markers):
-        self.episode_markers = []
+        return episode_markers, cut_markers
 
-        for marker in episode_markers:
-            self.episode_markers.append(XMEpisodeMarker(marker))
+    @staticmethod
+    def _get_episodes(markers) -> List[XMEpisodeMarker]:
+        episode_markers = []
 
-        self.episode_markers = self.sort_markers(self.episode_markers)  # type: ignore
+        for marker in markers:
+            episode_markers.append(XMEpisodeMarker.from_dict(marker))
 
-    def _populate_cuts(self, cut_markers):
-        self.cut_markers = []
+        episode_markers = XMLiveChannel.sort_markers(episode_markers)
+        return episode_markers
 
-        for marker in cut_markers:
-            self.cut_markers.append(XMCutMarker(marker))
+    @staticmethod
+    def _get_cuts(markers) -> List[XMCutMarker]:
+        cut_markers = []
 
-        self.cut_markers = self.sort_markers(self.cut_markers)  # type: ignore
+        for marker in markers:
+            if "cut" in marker:
+                cut_markers.append(XMCutMarker.from_dict(marker))
+
+        cut_markers = XMLiveChannel.sort_markers(cut_markers)
+        return cut_markers
 
     @property
     def song_cuts(self) -> List[XMCutMarker]:

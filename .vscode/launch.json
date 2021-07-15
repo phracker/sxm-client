@@ -10,8 +10,26 @@
             "request": "launch",
             "module": "sxm",
             "args": [
-                "-d",
+                "-v",
             ]
+        },
+        {
+            "name": "SXM Client: List Channels",
+            "type": "python",
+            "request": "launch",
+            "module": "sxm",
+            "args": [
+                "-l",
+            ]
+        },
+        {
+            "name": "Debug Tests",
+            "type": "python",
+            "request": "test",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTEST_ADDOPTS": "--no-cov"
+            }
         }
     ]
 }

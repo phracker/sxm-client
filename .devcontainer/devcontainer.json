@@ -6,7 +6,7 @@
     "extensions": [
         "ms-python.python",
         "eamodio.gitlens",
-        "brainfit.vscode-coverage-highlighter",
+        "ryanluker.vscode-coverage-gutters",
         "bungcip.better-toml",
         "mikestead.dotenv",
         "lextudio.restructuredtext",
@@ -25,6 +25,9 @@
         ],
         "python.formatting.provider": "black",
         "python.linting.banditEnabled": true,
+        "python.linting.banditArgs": [
+            "-c ${workspaceFolder}/.bandit.yml"
+        ],
         "python.linting.enabled": true,
         "python.linting.flake8Enabled": true,
         "python.linting.flake8Path": "pflake8",
@@ -36,11 +39,16 @@
         ],
         "python.testing.promptToConfigure": false,
         "restructuredtext.confPath": "${workspaceFolder}/docs",
-        "vscode-coverage-highlighter.defaultState": "disable",
-        "vscode-coverage-highlighter.wholeLine": true,
-        "python.testing.pytestEnabled": false,
+        "coverage-gutters.xmlname": "coverage.xml",
+        "coverage-gutters.customizable.status-bar-toggler-watchCoverageAndVisibleEditors-enabled": true,
+        "coverage-gutters.showLineCoverage": true,
+        "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false,
         "python.testing.nosetestsEnabled": false,
+        "python.testing.pytestArgs": [
+            "--cov-report=xml",
+            "--color=no",
+        ],
     },
     "forwardPorts": [
         9999
