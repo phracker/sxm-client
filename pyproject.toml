@@ -118,7 +118,7 @@ exclude = '''
 '''
 
 [tool.flake8]
-exclude = ".eggs, .git, .tox"
+exclude = ".eggs, .git, .tox, dist"
 ignore = "C812, W503, C816, C815, B008"
 max-line-length = 88
 
