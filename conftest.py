@@ -1,6 +1,7 @@
 import json
 import pathlib
 from unittest.mock import MagicMock
+import asyncio
 
 import pytest
 
@@ -31,7 +32,10 @@ def xm_live_channel_response():
 @pytest.fixture
 def sxm_client(xm_channels_response, xm_live_channel_response):
     sxm = SXMClient("user", "password", region="US")
-    sxm.get_channels = MagicMock(return_value=xm_channels_response)
+    get_channels = MagicMock(return_value=xm_channels_response)
+
+    sxm.get_channels = get_channels
     sxm.get_now_playing = MagicMock(return_value=xm_live_channel_response)
+    sxm.async_client.get_channels = asyncio.coroutine(get_channels)
 
     return sxm

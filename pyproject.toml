@@ -159,4 +159,4 @@ commands =
 """
 
 [tool.pytest.ini_options]
-addopts = "--disable-socket --cov-report=term --cov=sxm --cov-append"
+addopts = "--disable-socket --allow-unix-socket --cov-report=term --cov=sxm --cov-append"
