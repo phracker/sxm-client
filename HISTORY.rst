@@ -8,6 +8,7 @@ History
 * Pulls `tune_time` from `wallClockRenderTime`
 * Adds `primary_hls` and `seconary_hls`
 * Adds quality selection
+* Overhauls time/datetime management
 
 0.2.4 (2021-08-15)
 ------------------

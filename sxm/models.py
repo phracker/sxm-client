@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import datetime
-import time
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import List, Optional, Tuple, Union
 
@@ -30,6 +29,16 @@ __all__ = [
 
 
 LIVE_PRIMARY_HLS = "https://siriusxm-priprodlive.akamaized.net"
+
+
+def parse_xm_datetime(dt_string: str):
+    dt_string = dt_string.replace("+0000", "")
+    dt = datetime.fromisoformat(dt_string)
+    return dt.replace(tzinfo=timezone.utc)
+
+
+def parse_xm_timestamp(timestamp: int):
+    return datetime.utcfromtimestamp(timestamp / 1000).replace(tzinfo=timezone.utc)
 
 
 class QualitySize(str, Enum):
@@ -96,15 +105,15 @@ class XMCategory(BaseModel):
 
 class XMMarker(BaseModel):
     guid: str
-    time: int
-    duration: int
+    time: datetime
+    duration: timedelta
 
     @staticmethod
     def from_dict(data: dict) -> XMMarker:
         return XMMarker(
             guid=data["assetGUID"],
-            time=data["time"],
-            duration=data["duration"],
+            time=parse_xm_timestamp(data["time"]),
+            duration=timedelta(seconds=data["duration"]),
         )
 
 
@@ -162,8 +171,8 @@ class XMEpisodeMarker(XMMarker):
     def from_dict(data: dict) -> XMEpisodeMarker:
         return XMEpisodeMarker(
             guid=data["assetGUID"],
-            time=data["time"],
-            duration=data["duration"],
+            time=parse_xm_timestamp(data["time"]),
+            duration=timedelta(seconds=data["duration"]),
             episode=XMEpisode.from_dict(data["episode"]),
         )
 
@@ -250,23 +259,20 @@ class XMCutMarker(XMMarker):
 
         return XMCutMarker(
             guid=data["assetGUID"],
-            time=data["time"],
-            duration=data["duration"],
+            time=parse_xm_timestamp(data["time"]),
+            duration=timedelta(seconds=data["duration"]),
             cut=cut,
         )
 
 
 class XMPosition(BaseModel):
-    timestamp: datetime.datetime
+    timestamp: datetime
     position: str
 
     @staticmethod
     def from_dict(data: dict) -> XMPosition:
-        dt_string = data["timestamp"].replace("+0000", "")
-        dt = datetime.datetime.fromisoformat(dt_string)
-
         return XMPosition(
-            timestamp=dt.replace(tzinfo=datetime.timezone.utc),
+            timestamp=parse_xm_datetime(data["timestamp"]),
             position=data["position"],
         )
 
@@ -352,7 +358,7 @@ class XMLiveChannel(BaseModel):
     custom_hls_infos: List[XMHLSInfo]
     episode_markers: List[XMEpisodeMarker]
     cut_markers: List[XMCutMarker]
-    tune_time: Optional[int] = None
+    tune_time: Optional[datetime] = None
     # ... plus many unused
 
     _stream_quality: QualitySize = PrivateAttr(QualitySize.LARGE_256k)
@@ -374,10 +380,10 @@ class XMLiveChannel(BaseModel):
         )
 
         return XMLiveChannel(
-            id=data["channelId"],
+            id=data["moduleResponse"]["liveChannelData"]["channelId"],
             hls_infos=hls_infos,
             custom_hls_infos=custom_hls_infos,
-            tune_time=data["wallClockRenderTime"],
+            tune_time=parse_xm_datetime(data["wallClockRenderTime"]),
             episode_markers=episode_markers,
             cut_markers=cut_markers,
         )
@@ -475,7 +481,7 @@ class XMLiveChannel(BaseModel):
         return sorted(markers, key=lambda x: x.time)
 
     def _latest_marker(
-        self, marker_attr: str, now: Optional[int] = None
+        self, marker_attr: str, now: Optional[datetime] = None
     ) -> Union[XMMarker, None]:
         """Returns the latest `XMMarker` based on type relative to now"""
 
@@ -484,7 +490,7 @@ class XMLiveChannel(BaseModel):
             return None
 
         if now is None:
-            now = int(time.time() * 1000)
+            now = datetime.now(timezone.utc)
 
         latest = None
         for marker in markers:
@@ -495,7 +501,7 @@ class XMLiveChannel(BaseModel):
         return latest
 
     def get_latest_episode(
-        self, now: Optional[int] = None
+        self, now: Optional[datetime] = None
     ) -> Union[XMEpisodeMarker, None]:
         """Returns the latest :class:`XMEpisodeMarker` based
         on type relative to now
@@ -507,7 +513,9 @@ class XMLiveChannel(BaseModel):
         """
         return self._latest_marker("episode_markers", now)  # type: ignore
 
-    def get_latest_cut(self, now: Optional[int] = None) -> Union[XMCutMarker, None]:
+    def get_latest_cut(
+        self, now: Optional[datetime] = None
+    ) -> Union[XMCutMarker, None]:
         """Returns the latest :class:`XMCutMarker` based
         on type relative to now
 

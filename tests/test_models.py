@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 from sxm.models import XMLiveChannel
@@ -46,14 +47,20 @@ def test_channels(sxm_client):
 def test_live_channel(sxm_client):
     data = sxm_client.get_now_playing("octane")
 
-    channel = XMLiveChannel.from_dict(
-        data["moduleList"]["modules"][0]["moduleResponse"]["liveChannelData"]
-    )
+    channel = XMLiveChannel.from_dict(data["moduleList"]["modules"][0])
 
     assert channel.id == "octane"
 
-    with patch("sxm.models.time") as mock_time:
-        mock_time.time.return_value = 1630000000
+    with patch("sxm.models.datetime") as mock_time:
+        mock_time.now.return_value = datetime(
+            year=2021,
+            month=8,
+            day=26,
+            hour=17,
+            minute=40,
+            second=40,
+            tzinfo=timezone.utc,
+        )
         cut = channel.get_latest_cut()
 
     assert cut.cut.title == "Ten Thousand Fists"

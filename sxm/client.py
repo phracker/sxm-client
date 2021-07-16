@@ -407,6 +407,11 @@ class SXMClientAsync:
             SXM channel to look up live channel data for
         """
 
+        now = time.time()
+        now_dt = datetime.datetime.fromtimestamp(now).replace(
+            tzinfo=datetime.timezone.utc
+        )
+
         params = {
             "assetGUID": channel.guid,
             "ccRequestType": "AUDIO_VIDEO",
@@ -414,8 +419,8 @@ class SXMClientAsync:
             "hls_output_mode": "custom",
             "marker_mode": "all_separate_cue_points",
             "result-template": "web",
-            "time": str(int(round(time.time() * 1000.0))),
-            "timestamp": datetime.datetime.utcnow().isoformat("T") + "Z",
+            "time": str(int(round(now * 1000.0))),
+            "timestamp": now_dt.isoformat("T") + "Z",
         }
 
         return await self._get("tune/now-playing-live", params)
@@ -428,7 +433,7 @@ class SXMClientAsync:
     def reset_session(self) -> None:
         """Resets session used by client"""
 
-        self._session_start = time.time()
+        self._session_start = time.monotonic()
         self._session = httpx.AsyncClient()
         self._session.headers.update({"User-Agent": self._ua["string"]})
 
@@ -511,7 +516,7 @@ class SXMClientAsync:
         method = method.upper()
 
         if authenticate:
-            now = time.time()
+            now = time.monotonic()
             if (now - self._session_start) > SESSION_MAX_LIFE:
                 self._log.info("Session exceed max time, reseting")
                 await self.close_session()
@@ -584,7 +589,7 @@ class SXMClientAsync:
             self._log.info(f"No channel for {channel_id}")
             return None
 
-        now = time.time()
+        now = time.monotonic()
 
         if use_cache and channel.id in self._playlists:
             if (
@@ -651,7 +656,7 @@ class SXMClientAsync:
         playlist = await self._get_playlist_variant_url(live_channel.primary_hls.url)
         if playlist is not None:
             self._playlists[channel.id] = playlist
-            self.last_renew = time.time()
+            self.last_renew = time.monotonic()
 
             if self.update_handler is not None:
                 self.update_handler(live_channel_raw)
