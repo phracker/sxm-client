@@ -4,6 +4,8 @@
 #
 #    pip-compile --extra=dev --extra=doc --extra=test --output-file=dev-requirements.txt pyproject.toml
 #
+aiohttp==3.7.4.post0
+    # via sxm (pyproject.toml)
 alabaster==0.7.12
     # via sphinx
 anyio==3.2.1
@@ -12,8 +14,11 @@ appdirs==1.4.4
     # via black
 astroid==2.6.2
     # via pylint
+async-timeout==3.0.1
+    # via aiohttp
 attrs==21.2.0
     # via
+    #   aiohttp
     #   flake8-bugbear
     #   pytest
 babel==2.9.1
@@ -30,6 +35,8 @@ certifi==2021.5.30
     # via
     #   httpx
     #   requests
+chardet==4.0.0
+    # via aiohttp
 charset-normalizer==2.0.2
     # via requests
 click==7.1.2
@@ -104,6 +111,7 @@ idna==3.2
     #   anyio
     #   requests
     #   rfc3986
+    #   yarl
 imagesize==1.2.0
     # via sphinx
 iniconfig==1.1.1
@@ -116,12 +124,18 @@ jinja2==3.0.1
     # via sphinx
 lazy-object-proxy==1.6.0
     # via astroid
+make-it-sync==1.0.0
+    # via sxm (pyproject.toml)
 markupsafe==2.0.1
     # via jinja2
 mccabe==0.6.1
     # via
     #   flake8
     #   pylint
+multidict==5.1.0
+    # via
+    #   aiohttp
+    #   yarl
 mypy==0.910
     # via sxm (pyproject.toml)
 mypy-extensions==0.4.3
@@ -271,6 +285,7 @@ typer==0.3.2
     # via sxm (pyproject.toml)
 typing-extensions==3.7.4.3
     # via
+    #   aiohttp
     #   mypy
     #   pydantic
     #   snooty-lextudio
@@ -289,6 +304,8 @@ wheel==0.36.2
     # via pip-tools
 wrapt==1.12.1
     # via astroid
+yarl==1.6.3
+    # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
