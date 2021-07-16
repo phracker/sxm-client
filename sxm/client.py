@@ -7,6 +7,7 @@ import time
 import traceback
 import urllib.parse
 from typing import Any, Callable, Dict, List, Optional, Union
+from make_it_sync import make_sync
 
 import httpx
 from fake_useragent import UserAgent  # type: ignore
@@ -18,6 +19,7 @@ from sxm.models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
 __all__ = [
     "HLS_AES_KEY",
     "SXMClient",
+    "SXMClientAsync",
     "AuthenticationError",
     "SegmentRetrievalException",
 ]
@@ -48,7 +50,7 @@ class SegmentRetrievalException(Exception):
     pass
 
 
-class SXMClient:
+class SXMClientAsync:
     """Class to interface with SXM api and access HLS
     live streams of audio
 
@@ -98,6 +100,7 @@ class SXMClient:
     _favorite_channels: Optional[List[XMChannel]]
     _playlists: Dict[str, str]
     _ua: Dict[str, Any]
+    _session: httpx.AsyncClient
 
     def __init__(
         self,
@@ -119,7 +122,7 @@ class SXMClient:
                 user_agent = FALLBACK_UA
         self._ua = user_agent_parser.Parse(user_agent)
 
-        self._reset_session()
+        self.reset_session()
 
         self.username = username
         self.password = password
@@ -163,10 +166,10 @@ class SXMClient:
             return None
 
     @property
-    def channels(self) -> List[XMChannel]:
+    async def channels(self) -> List[XMChannel]:
         # download channel list if necessary
         if self._channels is None:
-            channels = self.get_channels()
+            channels = await self.get_channels()
 
             if len(channels) == 0:
                 return []
@@ -180,13 +183,13 @@ class SXMClient:
         return self._channels
 
     @property
-    def favorite_channels(self) -> List[XMChannel]:
+    async def favorite_channels(self) -> List[XMChannel]:
 
         if self._favorite_channels is None:
-            self._favorite_channels = [c for c in self.channels if c.is_favorite]
+            self._favorite_channels = [c for c in await self.channels if c.is_favorite]
         return self._favorite_channels
 
-    def login(self) -> bool:
+    async def login(self) -> bool:
         """Attempts to log into SXM with stored username/password"""
 
         self._log.debug(f"Logging in as {self.username}...")
@@ -200,7 +203,7 @@ class SXMClient:
             }
         )
 
-        data = self._post("modify/authentication", postdata, authenticate=False)
+        data = await self._post("modify/authentication", postdata, authenticate=False)
         if not data:
             return False
 
@@ -211,7 +214,7 @@ class SXMClient:
             return False
 
     @retry(wait=wait_fixed(3), stop=stop_after_attempt(10))
-    def authenticate(self) -> bool:
+    async def authenticate(self) -> bool:
         """Attempts to create a valid session for use with the client
 
         Raises
@@ -220,12 +223,13 @@ class SXMClient:
             If login failed and session now needs to be reset
         """
 
-        if not self.is_logged_in and not self.login():
+        if not self.is_logged_in and not await self.login():
             self._log.error("Unable to authenticate because login failed")
-            self._reset_session()
+            await self.close_session()
+            self.reset_session()
             raise AuthenticationError("Reset session")
 
-        data = self._post(
+        data = await self._post(
             "resume?OAtrial=false", self._get_device_info(), authenticate=False
         )
         if not data:
@@ -239,7 +243,9 @@ class SXMClient:
             return False
 
     @retry(stop=stop_after_attempt(25), wait=wait_fixed(1))
-    def get_playlist(self, channel_id: str, use_cache: bool = True) -> Union[str, None]:
+    async def get_playlist(
+        self, channel_id: str, use_cache: bool = True
+    ) -> Union[str, None]:
         """Gets playlist of HLS stream URLs for given channel ID
 
         Parameters
@@ -250,17 +256,17 @@ class SXMClient:
             Use cached playlists for force new retrival. Defaults to `True`
         """
 
-        url = self._get_playlist_url(channel_id, use_cache)
+        url = await self._get_playlist_url(channel_id, use_cache)
         if url is None:
             return None
 
         response = None
         try:
-            response = self._make_request("GET", url, self._token_params())
+            response = await self._make_request("GET", url, self._token_params())
 
             if response.status_code == 403:
                 self._log.info("Received status code 403 on playlist, renewing session")
-                return self.get_playlist(channel_id, False)
+                return await self.get_playlist(channel_id, False)
 
             if response.is_error:
                 self._log.warn(
@@ -288,7 +294,7 @@ class SXMClient:
         return "\n".join(playlist_entries)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(5))
-    def get_segment(self, path: str, max_attempts: int = 5) -> Union[bytes, None]:
+    async def get_segment(self, path: str, max_attempts: int = 5) -> Union[bytes, None]:
         """Gets raw HLS segment for given path
 
         Parameters
@@ -306,7 +312,7 @@ class SXMClient:
         """
 
         url = f"{LIVE_PRIMARY_HLS}/{path}"
-        res = self._session.get(url, params=self._token_params())
+        res = await self._session.get(url, params=self._token_params())
 
         if res.status_code == 403:
             raise SegmentRetrievalException(
@@ -319,7 +325,7 @@ class SXMClient:
 
         return res.content
 
-    def get_channels(self) -> List[dict]:
+    async def get_channels(self) -> List[dict]:
         """Gets raw list of channel dictionaries from SXM. Each channel
         dict can be pass into the constructor of :class:`XMChannel` to turn it
         into an object"""
@@ -334,14 +340,14 @@ class SXMClient:
         }
 
         if ENABLE_NEW_CHANNELS:
-            data = self._post(
+            data = await self._post(
                 "get?type=2",
                 postdata,
                 channel_list=True,
                 url_format=REST_V4_FORMAT,
             )
         else:
-            data = self._post("get", postdata, channel_list=True)
+            data = await self._post("get", postdata, channel_list=True)
 
         if not data:
             self._log.warn("Unable to get channel list")
@@ -357,7 +363,7 @@ class SXMClient:
             return []
         return channels
 
-    def get_channel(self, name: str) -> Union[XMChannel, None]:
+    async def get_channel(self, name: str) -> Union[XMChannel, None]:
         """Retrieves a specific channel from `self.channels`
 
         Parameters
@@ -367,7 +373,7 @@ class SXMClient:
         """
 
         name = name.lower()
-        for x in self.channels:
+        for x in await self.channels:
             if (
                 x.name.lower() == name
                 or x.id.lower() == name
@@ -376,7 +382,7 @@ class SXMClient:
                 return x
         return None
 
-    def get_now_playing(self, channel: XMChannel) -> Union[Dict[str, Any], None]:
+    async def get_now_playing(self, channel: XMChannel) -> Union[Dict[str, Any], None]:
         """Gets raw dictionary of response data for the live channel.
 
         `data['messages'][0]['code']`
@@ -403,13 +409,18 @@ class SXMClient:
             "timestamp": datetime.datetime.utcnow().isoformat("T") + "Z",
         }
 
-        return self._get("tune/now-playing-live", params)
+        return await self._get("tune/now-playing-live", params)
 
-    def _reset_session(self) -> None:
+    async def close_session(self):
+        if self._session is not None:
+            await self._session.aclose()
+            self._session = None
+
+    def reset_session(self) -> None:
         """Resets session used by client"""
 
         self._session_start = time.time()
-        self._session = httpx.Client()
+        self._session = httpx.AsyncClient()
         self._session.headers.update({"User-Agent": self._ua["string"]})
 
     def _token_params(self) -> Dict[str, Union[str, None]]:
@@ -444,7 +455,7 @@ class SXMClient:
             },
         }
 
-    def _make_request(
+    async def _make_request(
         self,
         method: str,
         path: str,
@@ -458,9 +469,9 @@ class SXMClient:
 
         try:
             if method == "GET":
-                response = self._session.get(url, params=params)
+                response = await self._session.get(url, params=params)
             elif method == "POST":
-                response = self._session.post(url, json=params)
+                response = await self._session.post(url, json=params)
             else:
                 raise httpx.RequestError("only GET and POST")
         except httpx.RequestError as e:
@@ -478,7 +489,7 @@ class SXMClient:
 
         return response
 
-    def _request(
+    async def _request(
         self,
         method: str,
         path: str,
@@ -494,14 +505,15 @@ class SXMClient:
             now = time.time()
             if (now - self._session_start) > SESSION_MAX_LIFE:
                 self._log.info("Session exceed max time, reseting")
-                self._reset_session()
+                await self.close_session()
+                self.reset_session()
 
-            if not self.is_session_authenticated and not self.authenticate():
+            if not self.is_session_authenticated and not await self.authenticate():
 
                 self._log.error("Unable to authenticate")
                 return None
 
-        response = self._make_request(method, path, params, url_format=url_format)
+        response = await self._make_request(method, path, params, url_format=url_format)
 
         if response.is_error:
             self._log.warn(
@@ -516,7 +528,7 @@ class SXMClient:
             self._log.error(f"Error decoding json for path '{path}'")
             return None
 
-    def _get(
+    async def _get(
         self,
         path: str,
         params: Dict[str, str],
@@ -525,9 +537,11 @@ class SXMClient:
     ) -> Union[Dict[str, Any], None]:
         """Makes a GET request to SXM servers"""
 
-        return self._request("GET", path, params, authenticate, url_format=url_format)
+        return await self._request(
+            "GET", path, params, authenticate, url_format=url_format
+        )
 
-    def _post(
+    async def _post(
         self,
         path: str,
         postdata: dict,
@@ -547,16 +561,16 @@ class SXMClient:
                 }
             )
 
-        return self._request(
+        return await self._request(
             "POST", path, postdata, authenticate, url_format=url_format
         )
 
-    def _get_playlist_url(
+    async def _get_playlist_url(
         self, channel_id: str, use_cache: bool = True, max_attempts: int = 5
     ) -> Union[str, None]:
         """Returns HLS live stream URL for a given `XMChannel`"""
 
-        channel = self.get_channel(channel_id)
+        channel = await self.get_channel(channel_id)
         if channel is None:
             self._log.info(f"No channel for {channel_id}")
             return None
@@ -573,7 +587,7 @@ class SXMClient:
             else:
                 return self._playlists[channel.id]
 
-        data = self.get_now_playing(channel)
+        data = await self.get_now_playing(channel)
         if data is None:
             return None
 
@@ -593,7 +607,7 @@ class SXMClient:
                 self._log.info("Session expired, logging in and authenticating")
                 if self.authenticate():
                     self._log.info("Successfully authenticated")
-                    return self._get_playlist_url(
+                    return await self._get_playlist_url(
                         channel.id, use_cache, max_attempts - 1
                     )
                 else:
@@ -604,10 +618,13 @@ class SXMClient:
                 return None
         elif message_code == 204:
             self._log.warn("Multiple login error received, reseting session")
-            self._reset_session()
+            await self.close_session()
+            self.reset_session()
             if self.authenticate():
                 self._log.info("Successfully authenticated")
-                return self._get_playlist_url(channel.id, use_cache, max_attempts - 1)
+                return await self._get_playlist_url(
+                    channel.id, use_cache, max_attempts - 1
+                )
             else:
                 self._log.error("Failed to authenticate")
                 return None
@@ -623,7 +640,7 @@ class SXMClient:
         self.update_interval = int(data["moduleList"]["modules"][0]["updateFrequency"])
 
         # get m3u8 url
-        playlist = self._get_playlist_variant_url(live_channel.primary_hls.url)
+        playlist = await self._get_playlist_variant_url(live_channel.primary_hls.url)
         if playlist is not None:
             self._playlists[channel.id] = playlist
             self.last_renew = time.time()
@@ -633,8 +650,8 @@ class SXMClient:
             return self._playlists[channel.id]
         return None
 
-    def _get_playlist_variant_url(self, url: str) -> Union[str, None]:
-        res = self._session.get(url, params=self._token_params())
+    async def _get_playlist_variant_url(self, url: str) -> Union[str, None]:
+        res = await self._session.get(url, params=self._token_params())
 
         if res.is_error:
             self._log.warn(
@@ -649,3 +666,139 @@ class SXMClient:
                 return "{}/{}".format(url.rsplit("/", 1)[0], x.rstrip())
 
         return None
+
+
+class SXMClient:
+    """Sync wrapper class around SXMClientAsync
+
+    Parameters
+    ----------
+    username : :class:`str`
+        SXM username
+    password : :class:`str`
+        SXM password
+    region : :class:`str` ("US" or "CA")
+        Sets your SXM account region
+    user_agent : Optional[:class:`str`]
+        User Agent string to use for making requests to SXM. If `None` is
+        passed, it will attempt to generate one based on real browser usage
+        data. Defaults to `None`.
+    update_handler : Optional[Callable[[:class:`dict`], `None`]]
+        Callback to be called whenever a playlist updates and new
+        Live Channel data is retrieved. Defaults to `None`.
+
+    Attributes
+    ----------
+    async_client : :class:`SXMClientAsync`
+    is_logged_in : :class:`bool`
+        Returns if account is logged into SXM's servers
+    is_session_authenticated : :class:`bool`
+        Returns if session is valid and ready to use
+    sxmak_token : :class:`str`
+        Needs documentation
+    gup_id : :class:`str`
+        Needs documentation
+    channels : List[:class:`XMChannel`]
+        Retrieves and returns a full list of all :class:`XMChannel`
+        available to the logged in account
+    favorite_channels : List[:class:`XMChannel`]
+        Retrieves and returns a full list of all :class:`XMChannel`
+        available to the logged in account that are marked
+        as favorite
+    """
+
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        region: str = "US",
+        user_agent: Optional[str] = None,
+        update_handler: Optional[Callable[[dict], None]] = None,
+    ):
+
+        self.async_client = SXMClientAsync(
+            username=username,
+            password=password,
+            region=region,
+            user_agent=user_agent,
+            update_handler=update_handler,
+        )
+
+    @property
+    def last_renew(self) -> Optional[float]:
+        return self.async_client.last_renew
+
+    @property
+    def password(self) -> str:
+        return self.async_client.password
+
+    @property
+    def region(self) -> str:
+        return self.async_client.region
+
+    @property
+    def update_handler(self) -> Optional[Callable[[dict], None]]:
+        return self.async_client.update_handler
+
+    @property
+    def update_interval(self) -> int:
+        return self.async_client.update_interval
+
+    @property
+    def username(self) -> str:
+        return self.async_client.username
+
+    @property
+    def is_logged_in(self) -> bool:
+        return self.async_client.is_logged_in
+
+    @property
+    def is_session_authenticated(self) -> bool:
+        return self.async_client.is_session_authenticated
+
+    @property
+    def sxmak_token(self) -> Union[str, None]:
+        return self.async_client.sxmak_token
+
+    @property
+    def gup_id(self) -> Union[str, None]:
+        return self.async_client.gup_id
+
+    @property
+    def channels(self) -> List[XMChannel]:
+        return make_sync(self.async_client.channels)
+
+    @property
+    def favorite_channels(self) -> List[XMChannel]:
+        return make_sync(self.async_client.favorite_channels)
+
+    def login(self) -> bool:
+        return make_sync(self.async_client.is_logged_in)()
+
+    def authenticate(self) -> bool:
+        return make_sync(self.async_client.authenticate)()
+
+    def get_playlist(self, channel_id: str, use_cache: bool = True) -> Union[str, None]:
+        return make_sync(self.async_client.get_playlist)(
+            channel_id=channel_id, use_cache=use_cache
+        )
+
+    def get_segment(self, path: str, max_attempts: int = 5) -> Union[bytes, None]:
+        return make_sync(self.async_client.get_segment)(
+            path=path, max_attempts=max_attempts
+        )
+
+    def get_channels(self) -> List[dict]:
+        return make_sync(self.async_client.get_channels)()
+
+    def get_channel(self, name: str) -> Union[XMChannel, None]:
+        return make_sync(self.async_client.get_channel)(name)
+
+    def get_now_playing(self, channel: XMChannel) -> Union[Dict[str, Any], None]:
+        return make_sync(self.async_client.get_now_playing)(channel)
+
+    def close_session(self):
+        return make_sync(self.async_client.close_session)()
+
+    def reset_session(self):
+        return self.async_client.reset_session()

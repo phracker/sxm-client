@@ -7,6 +7,8 @@ History
 
 * Fixes pydantic issue in `XMLiveChannel`
 * Adjusts selected HLS stream to (hopefully) fix `radio_time`
+* Switches HTTP server to using `aiohttp`
+* Adds `SXMClientAsync`
 
 0.2.3 (2021-08-15)
 ------------------

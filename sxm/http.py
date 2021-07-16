@@ -1,22 +1,21 @@
 """HTTP Server module for sxm"""
 import json
 import logging
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Type
+from typing import Any, Callable, Coroutine
 
-from .client import HLS_AES_KEY, SegmentRetrievalException, SXMClient
+from aiohttp import web
+
+from sxm.client import HLS_AES_KEY, SegmentRetrievalException, SXMClientAsync, SXMClient
 
 __all__ = ["make_http_handler", "run_http_server"]
 
 
 def make_http_handler(
-    sxm: SXMClient, logger: logging.Logger, request_level: int = logging.INFO
-) -> Type[BaseHTTPRequestHandler]:
+    sxm: SXMClientAsync,
+) -> Callable[[web.Request], Coroutine[Any, Any, web.Response]]:
     """
-    Creates and returns a configured
-    :class:`http.server.BaseHTTPRequestHandler` ready to be used
-    by a :class:`http.server.HTTPServer` instance with your
-    :class:`SXMClient`.
+    Creates and returns a configured `aiohttp` request handler ready to be used
+    by a :meth:`aiohttp.web.run_app` instance with your :class:`SXMClient`.
 
     Really useful if you want to create your own HTTP server as part
     of another application.
@@ -27,69 +26,62 @@ def make_http_handler(
         SXM client to use
     """
 
-    class SXMHandler(BaseHTTPRequestHandler):
+    async def sxm_handler(request: web.Request):
         """SXM Response handler"""
 
-        def log_error(self, format, *args):  # noqa: A002
-            logger.warn(format % args)
-
-        def log_message(self, format, *args):  # noqa: A002
-            logger.log(request_level, format % args)
-
-        def do_GET(self):
-            """Main proxy endpoint"""
-
-            if self.path.endswith(".m3u8"):
-                data = sxm.get_playlist(self.path.rsplit("/", 1)[1][:-5])
-                if data:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/x-mpegURL")
-                    self.end_headers()
-                    self.wfile.write(bytes(data, "utf-8"))
-                else:
-                    self.send_response(503)
-                    self.end_headers()
-            elif self.path.endswith(".aac"):
-                segment_path = self.path[1:]
-                try:
-                    data = sxm.get_segment(segment_path)
-                except SegmentRetrievalException:
-                    sxm.reset_session()
-                    sxm.authenticate()
-                    data = sxm.get_segment(segment_path)
-
-                if data:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "audio/x-aac")
-                    self.end_headers()
-                    self.wfile.write(data)
-                else:
-                    self.send_response(503)
-                    self.end_headers()
-            elif self.path.endswith("/key/1"):
-                self.send_response(200)
-                self.send_header("Content-Type", "text/plain")
-                self.end_headers()
-                self.wfile.write(HLS_AES_KEY)
-            elif self.path.endswith("/channels/"):
-                try:
-                    raw_channels = sxm.get_channels()
-                except Exception:
-                    raw_channels = []
-
-                if len(raw_channels) > 0:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "application/json; charset=utf-8")
-                    self.end_headers()
-                    self.wfile.write(json.dumps(raw_channels).encode("utf-8"))
-                else:
-                    self.send_response(403)
-                    self.end_headers()
+        response = web.Response(status=404)
+        if request.path.endswith(".m3u8"):
+            playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
+            if playlist:
+                response = web.Response(
+                    status=200,
+                    body=bytes(playlist, "utf-8"),
+                    headers={"Content-Type": "application/x-mpegURL"},
+                )
             else:
-                self.send_response(404)
-                self.end_headers()
+                response = web.Response(status=503)
+        elif request.path.endswith(".aac"):
+            segment_path = request.path[1:]
+            try:
+                data = await sxm.get_segment(segment_path)
+            except SegmentRetrievalException:
+                await sxm.close_session()
+                sxm.reset_session()
+                await sxm.authenticate()
+                data = await sxm.get_segment(segment_path)
 
-    return SXMHandler
+            if data:
+                response = web.Response(
+                    status=200,
+                    body=data,
+                    headers={"Content-Type": "audio/x-aac"},
+                )
+            else:
+                response = web.Response(status=503)
+        elif request.path.endswith("/key/1"):
+            response = web.Response(
+                status=200,
+                body=HLS_AES_KEY,
+                headers={"Content-Type": "text/plain"},
+            )
+        elif request.path.endswith("/channels/"):
+            try:
+                raw_channels = await sxm.get_channels()
+            except Exception:
+                raw_channels = []
+
+            if len(raw_channels) > 0:
+                response = web.Response(
+                    status=200,
+                    body=json.dumps(raw_channels).encode("utf-8"),
+                    headers={"Content-Type": "application/json; charset=utf-8"},
+                )
+            else:
+                response = web.Response(status=403)
+
+        return response
+
+    return sxm_handler
 
 
 def run_http_server(
@@ -116,10 +108,16 @@ def run_http_server(
     if logger is None:
         logger = logging.getLogger(__file__)
 
-    httpd = HTTPServer((ip, port), make_http_handler(sxm, logger))
+    app = web.Application()
+    app.router.add_get("/{_:.*}", make_http_handler(sxm.async_client))
     try:
         logger.info(f"running SXM proxy server on http://{ip}:{port}")
-        httpd.serve_forever()
+        web.run_app(
+            app,
+            host=ip,
+            port=port,
+            access_log=logger,
+            print=None,  # type: ignore
+        )
     except KeyboardInterrupt:
         pass
-    httpd.server_close()

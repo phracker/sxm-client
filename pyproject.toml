@@ -9,8 +9,10 @@ author-email = "cbailey@mort.is"
 home-page = "https://github.com/AngellusMortis/sxm-client"
 requires-python='>=3.7'
 requires=[
+  'aiohttp',
   'fake-useragent',
   'httpx',
+  'make-it-sync',
   'pydantic',
   'python-dotenv',
   'tenacity',
