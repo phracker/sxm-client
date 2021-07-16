@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import time
+from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 from pydantic import BaseModel, PrivateAttr  # pylint: disable=no-name-in-module
@@ -23,10 +24,23 @@ __all__ = [
     "XMHLSInfo",
     "XMChannel",
     "XMLiveChannel",
+    "QualitySize",
+    "RegionChoice",
 ]
 
 
 LIVE_PRIMARY_HLS = "https://siriusxm-priprodlive.akamaized.net"
+
+
+class QualitySize(str, Enum):
+    SMALL_64k = "SMALL"
+    MEDIUM_128k = "MEDIUM"
+    LARGE_256k = "LARGE"
+
+
+class RegionChoice(str, Enum):
+    US = "US"
+    CA = "CA"
 
 
 class XMArt(BaseModel):
@@ -335,63 +349,78 @@ class XMLiveChannel(BaseModel):
 
     id: str  # noqa A003
     hls_infos: List[XMHLSInfo]
-    primary_hls: XMHLSInfo
     custom_hls_infos: List[XMHLSInfo]
     episode_markers: List[XMEpisodeMarker]
     cut_markers: List[XMCutMarker]
     tune_time: Optional[int] = None
     # ... plus many unused
 
+    _stream_quality: QualitySize = PrivateAttr(QualitySize.LARGE_256k)
     _song_cuts: Optional[List[XMCutMarker]] = PrivateAttr(None)
+    _primary_hls: Optional[XMHLSInfo] = PrivateAttr(None)
+    _secondary_hls: Optional[XMHLSInfo] = PrivateAttr(None)
 
     @staticmethod
     def from_dict(data: dict) -> XMLiveChannel:
         hls_infos: List[XMHLSInfo] = []
-        for info in data["hlsAudioInfos"]:
+        for info in data["moduleResponse"]["liveChannelData"]["hlsAudioInfos"]:
             hls_infos.append(XMHLSInfo.from_dict(info))
 
-        custom_hls_infos, primary_hls, tune_time = XMLiveChannel._get_custom_hls_infos(
-            data["customAudioInfos"]
+        custom_hls_infos = XMLiveChannel._get_custom_hls_infos(
+            data["moduleResponse"]["liveChannelData"]["customAudioInfos"]
         )
-        episode_markers, cut_markers = XMLiveChannel._get_markers(data["markerLists"])
-
-        if primary_hls is None:
-            raise ValueError("Missing primarily HLS")
+        episode_markers, cut_markers = XMLiveChannel._get_markers(
+            data["moduleResponse"]["liveChannelData"]["markerLists"]
+        )
 
         return XMLiveChannel(
             id=data["channelId"],
             hls_infos=hls_infos,
-            primary_hls=primary_hls,
             custom_hls_infos=custom_hls_infos,
-            tune_time=tune_time,
+            tune_time=data["wallClockRenderTime"],
             episode_markers=episode_markers,
             cut_markers=cut_markers,
         )
 
+    def set_stream_quality(self, value: QualitySize):
+        self._stream_quality = value
+        self._primary_hls = None
+        self._secondary_hls = None
+
+    @property
+    def primary_hls(self) -> XMHLSInfo:
+        if self._primary_hls is None:
+            for hls_info in self.hls_infos:
+                if hls_info.name == "primary":
+                    self._primary_hls = hls_info
+                    # found the one we really want
+                    if hls_info.size == self._stream_quality.value:
+                        break
+
+        return self._primary_hls  # type: ignore
+
+    @property
+    def secondary_hls(self) -> XMHLSInfo:
+        if self._secondary_hls is None:
+            for hls_info in self.hls_infos:
+                if hls_info.name == "secondary":
+                    self._secondary_hls = hls_info
+                    # found the one we really want
+                    if hls_info.size == self._stream_quality:
+                        break
+
+        return self._secondary_hls  # type: ignore
+
     @staticmethod
     def _get_custom_hls_infos(
         custom_infos,
-    ) -> Tuple[List[XMHLSInfo], Optional[XMHLSInfo], Optional[int]]:
+    ) -> List[XMHLSInfo]:
         custom_hls_infos: List[XMHLSInfo] = []
-        tune_time: Optional[int] = None
 
         for info in custom_infos:
             custom_hls_infos.append(XMHLSInfo.from_dict(info))
 
-        primary_hls: Optional[XMHLSInfo] = None
-        for hls_info in custom_hls_infos:
-            if (
-                hls_info.position is not None
-                and hls_info.position.position == "TUNE_START"
-            ):
-
-                timestamp = hls_info.position.timestamp.timestamp()
-                tune_time = int(timestamp * 1000)
-                primary_hls = hls_info
-            elif hls_info.size == "LARGE":
-                primary_hls = hls_info
-
-        return custom_hls_infos, primary_hls, tune_time
+        return custom_hls_infos
 
     @staticmethod
     def _get_markers(marker_lists) -> Tuple[List[XMEpisodeMarker], List[XMCutMarker]]:

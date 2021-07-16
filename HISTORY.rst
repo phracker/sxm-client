@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.5 (2021-08-16)
+------------------
+
+* Pulls `tune_time` from `wallClockRenderTime`
+* Adds `primary_hls` and `seconary_hls`
+* Adds quality selection
+
 0.2.4 (2021-08-15)
 ------------------
 

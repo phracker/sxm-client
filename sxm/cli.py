@@ -2,17 +2,10 @@
 
 """Console script for sxm."""
 import logging
-from enum import Enum
 
 import typer
 
-from sxm import SXMClient, run_http_server
-
-
-class RegionChoice(str, Enum):
-    US = "US"
-    CA = "CA"
-
+from sxm import QualitySize, RegionChoice, SXMClient, run_http_server
 
 OPTION_USERNAME = typer.Option(
     ..., "--username", "-U", help="SXM username", prompt=True, envvar="SXM_USERNAME"
@@ -45,6 +38,13 @@ OPTION_REGION = typer.Option(
     help="Sets the SXM client's region",
     envvar="SXM_REGION",
 )
+OPTION_QUALITY = typer.Option(
+    QualitySize.LARGE_256k,
+    "--quality",
+    "-q",
+    help="Sets stream qualuty.",
+    envvar="SXM_REGION",
+)
 
 
 def main(
@@ -55,6 +55,7 @@ def main(
     host: str = OPTION_HOST,
     verbose: bool = OPTION_VERBOSE,
     region: RegionChoice = OPTION_REGION,
+    quality: QualitySize = OPTION_QUALITY,
 ) -> int:
     """SXM proxy command line application."""
 
@@ -63,7 +64,7 @@ def main(
     else:
         logging.basicConfig(level=logging.INFO)
 
-    sxm = SXMClient(username, password, region=region)
+    sxm = SXMClient(username, password, region=region, quality=quality)
     if do_list:
         l1 = max(len(x.id) for x in sxm.channels)
         l2 = max(len(str(x.channel_number)) for x in sxm.channels)

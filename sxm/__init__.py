@@ -7,12 +7,14 @@ from sxm.client import (
     AuthenticationError,
     SegmentRetrievalException,
     SXMClient,
+    SXMClientAsync,
 )
 from sxm.http import make_http_handler, run_http_server
+from sxm.models import QualitySize, RegionChoice
 
 __author__ = """AngellusMortis"""
 __email__ = "cbailey@mort.is"
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 __all__ = [
     "AuthenticationError",
     "HLS_AES_KEY",
@@ -20,4 +22,7 @@ __all__ = [
     "run_http_server",
     "SegmentRetrievalException",
     "SXMClient",
+    "SXMClientAsync",
+    "RegionChoice",
+    "QualitySize",
 ]

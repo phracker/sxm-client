@@ -14,7 +14,13 @@ from make_it_sync import make_sync  # type: ignore
 from tenacity import retry, stop_after_attempt, wait_fixed
 from ua_parser import user_agent_parser  # type: ignore
 
-from sxm.models import LIVE_PRIMARY_HLS, XMChannel, XMLiveChannel
+from sxm.models import (
+    LIVE_PRIMARY_HLS,
+    QualitySize,
+    RegionChoice,
+    XMChannel,
+    XMLiveChannel,
+)
 
 __all__ = [
     "HLS_AES_KEY",
@@ -91,10 +97,11 @@ class SXMClientAsync:
 
     last_renew: Optional[float]
     password: str
-    region: str
+    region: RegionChoice
     update_handler: Optional[Callable[[dict], None]]
     update_interval: int
     username: str
+    stream_quality: QualitySize
 
     _channels: Optional[List[XMChannel]]
     _favorite_channels: Optional[List[XMChannel]]
@@ -106,7 +113,8 @@ class SXMClientAsync:
         self,
         username: str,
         password: str,
-        region: str = "US",
+        region: RegionChoice = RegionChoice.US,
+        quality: QualitySize = QualitySize.LARGE_256k,
         user_agent: Optional[str] = None,
         update_handler: Optional[Callable[[dict], None]] = None,
     ):
@@ -127,6 +135,7 @@ class SXMClientAsync:
         self.username = username
         self.password = password
         self.region = region
+        self.stream_quality = quality
 
         self._playlists = {}
         self._channels = None
@@ -632,10 +641,9 @@ class SXMClientAsync:
             self._log.warn(f"Received error {message_code} {message}")
             return None
 
-        live_channel_raw = data["moduleList"]["modules"][0]["moduleResponse"][
-            "liveChannelData"
-        ]
+        live_channel_raw = data["moduleList"]["modules"][0]
         live_channel = XMLiveChannel.from_dict(live_channel_raw)
+        live_channel.set_stream_quality(self.stream_quality)
 
         self.update_interval = int(data["moduleList"]["modules"][0]["updateFrequency"])
 
@@ -711,7 +719,8 @@ class SXMClient:
         self,
         username: str,
         password: str,
-        region: str = "US",
+        region: RegionChoice = RegionChoice.US,
+        quality: QualitySize = QualitySize.LARGE_256k,
         user_agent: Optional[str] = None,
         update_handler: Optional[Callable[[dict], None]] = None,
     ):
@@ -720,6 +729,7 @@ class SXMClient:
             username=username,
             password=password,
             region=region,
+            quality=quality,
             user_agent=user_agent,
             update_handler=update_handler,
         )
