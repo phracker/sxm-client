@@ -1,0 +1,1740 @@
+{
+    "ModuleListResponse": {
+        "messages": [
+            {
+                "message": "Successful",
+                "code": 100
+            }
+        ],
+        "status": 1,
+        "moduleList": {
+            "modules": [
+                {
+                    "moduleArea": "Configuration",
+                    "moduleType": "Localization",
+                    "moduleResponse": {
+                        "configuration": {
+                            "components": [
+                                {
+                                    "name": "Default",
+                                    "locale": "en"
+                                },
+                                {
+                                    "name": "ResourceBundle",
+                                    "settings": [
+                                        {
+                                            "resourceURLs": [
+                                                {
+                                                    "url": "https://player.siriusxm.com/Resource/web/locales_all",
+                                                    "locale": "en"
+                                                },
+                                                {
+                                                    "url": "https://player.siriusxm.com/Resource/web/locales_all",
+                                                    "locale": "es"
+                                                }
+                                            ],
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "OnBoarding",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "FLEPZ",
+                                                    "value": "https://streaming.siriusxm.com/?src=everestplayer"
+                                                },
+                                                {
+                                                    "name": "Recovery",
+                                                    "value": "https://streaming.siriusxm.com/?src=everestplayer&recoverlogin=true"
+                                                }
+                                            ],
+                                            "disableOnboarding": false,
+                                            "platform": "WEB",
+                                            "locale": "en"
+                                        }
+                                    ],
+                                    "errors": [
+                                        {
+                                            "errors": [
+                                                {
+                                                    "code": "5200",
+                                                    "message": "https://care.siriusxm.com/nonpay"
+                                                },
+                                                {
+                                                    "code": "5230",
+                                                    "message": "https://care.siriusxm.com/expiredsxir"
+                                                },
+                                                {
+                                                    "code": "103",
+                                                    "message": "https://care.siriusxm.com/expiredsxir"
+                                                },
+                                                {
+                                                    "code": "default",
+                                                    "message": "https://care.siriusxm.com/login_view.action"
+                                                },
+                                                {
+                                                    "code": "5260",
+                                                    "message": "https://www.siriusxm.com/siriusxmforbusiness"
+                                                },
+                                                {
+                                                    "code": "5140",
+                                                    "message": "https://www.siriusxm.com/expiredtriallogin"
+                                                }
+                                            ],
+                                            "locale": "en"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "ForgotLink",
+                                    "settings": [
+                                        {
+                                            "enableForgotLink": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "FAQURL",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://listenercare.siriusxm.com/app/answers/list/p/908",
+                                                    "type": "PAGE"
+                                                }
+                                            ],
+                                            "platform": "WEB",
+                                            "locale": "en"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "AppDownloadUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://play.google.com/store/apps/details?id=com.sirius"
+                                                }
+                                            ],
+                                            "platform": "ANDROID"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://www.microsoft.com/store/apps/9nblggh67pjk?ocid=badge"
+                                                }
+                                            ],
+                                            "platform": "WINDOWS"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://itunes.apple.com/us/app/siriusxm-internet-radio/id317951436?mt=8"
+                                                }
+                                            ],
+                                            "platform": "IOS"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "FacebookAppId",
+                                    "settings": [
+                                        {
+                                            "facebookAppIds": [
+                                                {
+                                                    "id": "1408209929443929"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "SplashScreen"
+                                },
+                                {
+                                    "name": "FeedbackUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://listenercare.siriusxm.com/app/feedback/incidents.c$media_player_version/620"
+                                                }
+                                            ],
+                                            "locale": "en"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://listenercare.siriusxm.com/app/feedback/incidents.c$media_player_version/620"
+                                                }
+                                            ],
+                                            "locale": "es"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "MiniPlayer",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "http://www.siriusxm.com"
+                                                }
+                                            ],
+                                            "stringSetting": {
+                                                "name": "miniPlayerEnabled",
+                                                "value": "true"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "relativeUrls",
+                                    "settings": [
+                                        {
+                                            "relativeUrls": [
+                                                {
+                                                    "name": "Image",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "Album_Art",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "Live_Primary_HLS",
+                                                    "url": "https://siriusxm-priprodlive.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "Live_Secondary_HLS",
+                                                    "url": "https://siriusxm-secprodlive.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "Sa_Live_Primary_HLS",
+                                                    "url": "https://priprodais.mountain.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "Sa_Live_Secondary_HLS",
+                                                    "url": "https://secprodais.mountain.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "OnDemand_Primary_HLS",
+                                                    "url": "https://siriusxm-priprodaod.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "OnDemand_Secondary_HLS",
+                                                    "url": "https://siriusxm-priprodaod.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "VIDEO_LIVE_HA_HOST",
+                                                    "url": "https://siriusxm-priprodlivevideo.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "AR_Image",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "AIC_Primary_HLS",
+                                                    "url": "https://priprodtracks.mountain.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "AIC_Secondary_HLS"
+                                                },
+                                                {
+                                                    "name": "AIC_Image",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "SR_Primary_AAC",
+                                                    "url": "https://priprodtracks-seeded.mountain.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "SR_Image",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "SR_Album_Image",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                },
+                                                {
+                                                    "name": "PP_Image_Static",
+                                                    "url": "https://content-images.p-cdn.com"
+                                                },
+                                                {
+                                                    "name": "PP_Image_Dynamic",
+                                                    "url": "https://dyn-images.p-cdn.com?l="
+                                                },
+                                                {
+                                                    "name": "SR_Dyn_Image",
+                                                    "url": "https://siriusxm-priprodart.akamaized.net"
+                                                }
+                                            ],
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "UpSellUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "http://www.siriusxm.com/upgradetoallaccess"
+                                                }
+                                            ],
+                                            "platform": "WEB",
+                                            "locale": "en"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "ITUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://api-360L-ext-pdev.siriusxm.com",
+                                                    "uri": [
+                                                        {
+                                                            "name": "GetDeviceCalls_v2_0",
+                                                            "endpoint": "rest/v1/subscription/devices/device/account/event/ivsm"
+                                                        },
+                                                        {
+                                                            "name": "getDeviceDisplayProfileV2_0",
+                                                            "endpoint": "/rest/v1/subscription/devices/device/account/profile/ivsm"
+                                                        },
+                                                        {
+                                                            "name": "getDeviceInformationNonPII",
+                                                            "endpoint": "/rest/v1/subscription/devices/device/nonpii"
+                                                        },
+                                                        {
+                                                            "name": "GetDeviceIVSMCalls",
+                                                            "endpoint": "/rest/v1/vehicle/ivsm/device"
+                                                        },
+                                                        {
+                                                            "name": "UpdateDeviceCapabilities",
+                                                            "endpoint": "/rest/v1/subscription/devices/device/capabilities"
+                                                        },
+                                                        {
+                                                            "name": "UpdateDeviceProvisionInfo",
+                                                            "endpoint": "/rest/v1/vehicle/ivsm/device/refresh"
+                                                        },
+                                                        {
+                                                            "name": "TokenDeviceAuthenticate",
+                                                            "endpoint": "/rest/v2/authenticate/deviceTokenAuthenticate"
+                                                        },
+                                                        {
+                                                            "name": "GetChallenge",
+                                                            "endpoint": "/rest/v2/authenticate/getChallenge"
+                                                        },
+                                                        {
+                                                            "name": "VerifyChallenge",
+                                                            "endpoint": "/rest/v2/authenticate/verifyChallenge"
+                                                        },
+                                                        {
+                                                            "name": "StreamingAuthorize",
+                                                            "endpoint": "/rest/v1/authorize/streamingAuthorize"
+                                                        },
+                                                        {
+                                                            "name": "StreamingValidate",
+                                                            "endpoint": "/rest/v1/authorize/streamingValidate"
+                                                        },
+                                                        {
+                                                            "name": "AddGuestProfile",
+                                                            "endpoint": "/rest/v1/profiles/addGuestProfiles"
+                                                        },
+                                                        {
+                                                            "name": "CreateProfile",
+                                                            "endpoint": "/rest/v1/profiles/createProfile"
+                                                        },
+                                                        {
+                                                            "name": "DeleteProfile",
+                                                            "endpoint": "/rest/v1/profiles/deleteProfile"
+                                                        },
+                                                        {
+                                                            "name": "GetAllProfiles",
+                                                            "endpoint": "/rest/v4/profiles/getAllProfiles"
+                                                        },
+                                                        {
+                                                            "name": "ModifyProfile",
+                                                            "endpoint": "/rest/v1/profiles/modifyProfile"
+                                                        },
+                                                        {
+                                                            "name": "RemoveGuestProfile",
+                                                            "endpoint": "/rest/v1/profiles/removeGuestProfiles"
+                                                        },
+                                                        {
+                                                            "name": "ResetProfiles",
+                                                            "endpoint": "/rest/v1/profiles/resetProfiles"
+                                                        },
+                                                        {
+                                                            "name": "GetRadioAuthorizationContainer_v1_0",
+                                                            "endpoint": "/rest/v1/radioAuthorization/getRadioAuthorizationContainer"
+                                                        },
+                                                        {
+                                                            "name": "VerifyRadioAuthorizationState_v2_0",
+                                                            "endpoint": "/rest/v2/authenticate/verifyRadioAuthorizationState"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "name": "SECURE_URL",
+                                                    "value": "https://api-360L-extp-pdev.siriusxm.com",
+                                                    "uri": [
+                                                        {
+                                                            "name": "CreateAccount",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/new"
+                                                        },
+                                                        {
+                                                            "name": "createAccountDeferredTransaction",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/event/transaction/data/new"
+                                                        },
+                                                        {
+                                                            "name": "CreatePaymentCollectByCC",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/event/payment/cc"
+                                                        },
+                                                        {
+                                                            "name": "CreateSubscription",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/plans/plan/new"
+                                                        },
+                                                        {
+                                                            "name": "GetAccount",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account"
+                                                        },
+                                                        {
+                                                            "name": "GetAccountDeferredTransaction",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/events/event/transaction/data"
+                                                        },
+                                                        {
+                                                            "name": "GetAccountV1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account"
+                                                        },
+                                                        {
+                                                            "name": "GetSubscriptionQuotes_V1_0",
+                                                            "endpoint": "/rest/v1/subscription/devices/device/plans/plan/quote"
+                                                        },
+                                                        {
+                                                            "name": "GetSubscriptionQuotes_V2_0",
+                                                            "endpoint": "/rest/v2/subscription/devices/device/plans/plan/quote"
+                                                        },
+                                                        {
+                                                            "name": "updateAccountCredentials",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/profile/credential"
+                                                        },
+                                                        {
+                                                            "name": "UpdateAccountForACSC",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/acsc"
+                                                        },
+                                                        {
+                                                            "name": "UpdateAccountManageSubscription_v1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/plan"
+                                                        },
+                                                        {
+                                                            "name": "UpdateCNA_v1_1",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/cna"
+                                                        },
+                                                        {
+                                                            "name": "UpdatePaymentDetails",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/payments/payinfo"
+                                                        },
+                                                        {
+                                                            "name": "UpdateSubscriptionPlan_v1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/plans/plan"
+                                                        },
+                                                        {
+                                                            "name": "CreateAccountForgotCredentialsEmail_v1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/notification/email/credential"
+                                                        },
+                                                        {
+                                                            "name": "LPZAuthenticate",
+                                                            "endpoint": "/rest/v2/authenticate/lpzAuthenticate"
+                                                        },
+                                                        {
+                                                            "name": "UN-PWAuthenticate",
+                                                            "endpoint": "/rest/v2/authenticate/usernameAuthenticate"
+                                                        },
+                                                        {
+                                                            "name": "GetSubscriptionSCEligible",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/servicecontinuity"
+                                                        },
+                                                        {
+                                                            "name": "CreateDeviceCall_v2_0",
+                                                            "endpoint": "/rest/v1/subscription/devices/device/account/event/ivsm/phone/new"
+                                                        },
+                                                        {
+                                                            "name": "GetAccountEligibleSCPlans_V1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/servicecontinuity"
+                                                        },
+                                                        {
+                                                            "name": "CreateAccountInteractions_v1_0",
+                                                            "endpoint": "/rest/v1/accounts/ivsm/interactions/new"
+                                                        },
+                                                        {
+                                                            "name": "GetAccountEligibleAddOnPlans_V1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/plans/addon"
+                                                        },
+                                                        {
+                                                            "name": "GetAccountEligiblePlans_V1_0",
+                                                            "endpoint": "/rest/v1/subscription/accounts/account/device/plans/eligible"
+                                                        },
+                                                        {
+                                                            "name": "GetAccountEligiblePlans_V2_0",
+                                                            "endpoint": "/rest/v2/subscription/accounts/account/device/plans/eligible"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Encryption",
+                                    "settings": [
+                                        {
+                                            "encryptionElements": [
+                                                {
+                                                    "encryptedElement": "accountNumber"
+                                                },
+                                                {
+                                                    "encryptedElement": "accountPassword"
+                                                },
+                                                {
+                                                    "encryptedElement": "accountUsername"
+                                                },
+                                                {
+                                                    "encryptedElement": "cardName"
+                                                },
+                                                {
+                                                    "encryptedElement": "cardNumber"
+                                                },
+                                                {
+                                                    "encryptedElement": "cardType"
+                                                },
+                                                {
+                                                    "encryptedElement": "city"
+                                                },
+                                                {
+                                                    "encryptedElement": "country"
+                                                },
+                                                {
+                                                    "encryptedElement": "deviceId"
+                                                },
+                                                {
+                                                    "encryptedElement": "email"
+                                                },
+                                                {
+                                                    "encryptedElement": "emailAddress"
+                                                },
+                                                {
+                                                    "encryptedElement": "expiryMonth"
+                                                },
+                                                {
+                                                    "encryptedElement": "expiryYear"
+                                                },
+                                                {
+                                                    "encryptedElement": "firstName"
+                                                },
+                                                {
+                                                    "encryptedElement": "last4DigitsOfCc"
+                                                },
+                                                {
+                                                    "encryptedElement": "lastName"
+                                                },
+                                                {
+                                                    "encryptedElement": "newPassword"
+                                                },
+                                                {
+                                                    "encryptedElement": "newUsername"
+                                                },
+                                                {
+                                                    "encryptedElement": "nickname"
+                                                },
+                                                {
+                                                    "encryptedElement": "oldUsername"
+                                                },
+                                                {
+                                                    "encryptedElement": "paymentLabel"
+                                                },
+                                                {
+                                                    "encryptedElement": "phone"
+                                                },
+                                                {
+                                                    "encryptedElement": "phoneNumber"
+                                                },
+                                                {
+                                                    "encryptedElement": "postalCode"
+                                                },
+                                                {
+                                                    "encryptedElement": "selectedSubscriptionDeviceId"
+                                                },
+                                                {
+                                                    "encryptedElement": "selfPaidAccountNumber"
+                                                },
+                                                {
+                                                    "encryptedElement": "serviceAddress"
+                                                },
+                                                {
+                                                    "encryptedElement": "serviceEmailAddress"
+                                                },
+                                                {
+                                                    "encryptedElement": "serviceFirstName"
+                                                },
+                                                {
+                                                    "encryptedElement": "serviceLastName"
+                                                },
+                                                {
+                                                    "encryptedElement": "serviceLogin"
+                                                },
+                                                {
+                                                    "encryptedElement": "servicePassword"
+                                                },
+                                                {
+                                                    "encryptedElement": "state"
+                                                },
+                                                {
+                                                    "encryptedElement": "streetAddress"
+                                                },
+                                                {
+                                                    "encryptedElement": "subscriptionDeviceId"
+                                                }
+                                            ],
+                                            "encryptionKey": [
+                                                {
+                                                    "name": "PublicKey",
+                                                    "value": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUE4TkdlYWM1dU80blFLTlBTSXBmSwo4dHIweFNvbFNFNjQ2Z3lMbFFGdUFiQm1YejhXRnlLajdrWHpGdVBjOVBER2xmM1ZiVzB4TEtBRFFVVGpGdk9jClBYZVpzaUxzRnZQMk51VmlkVnUrcng0NUNJQ1AwZXo1SVNxMU03STVmTEtHdlMxYkhRK0ROTHJ2TGZCWEU0cTkKM0FxKzJLUHF2aE1pNHp6a0FzNG9Sbmoybm9mMUo5TGMxRzlMYkxjbklGTWRmNmJETHpaYzNTeUwrWitTRWhhUAoyODMwQnBWcGJxcXplRXJ4eWxGUksyUlZrZFVkTDVlN0NPWjRXQ2xBNWRJYk9lQ0FYa1IrUDFoTzJYQzVuZEZhCmdrU3p2c0t4aFNWeTRzVGNQaXN3NnBsNkFrdVdEaEtDM2NGOXprN3RtekFnTTd6TTBFQVF0YXBSNmpvcVFGQXIKa1FJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==",
+                                                    "index": "1009"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "APIEncryption",
+                                    "settings": [
+                                        {
+                                            "encryptionKey": [
+                                                {
+                                                    "name": "PublicKey",
+                                                    "value": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFyOW5uZldWM3ZYYkRLTER2UlpVOVVQOUoxUE1XdzVzRVFyVnNNMW83S21QUGpqMGMxMk1sOHlaQWlIbGpFc1U4eXJFV0ppZ1RiekJyNU9pajR0anp4ZzNYUWRTQmx5VVBCMUF2b00wR1ptcmRyZ05RTElmTThVNjJZeDdZa0lFMk1hK0ZKR0hkQStTY3pFSmo3T1NybUttZGZsYTdDdUplZGNCOVdzbVZKN2NZeFByS2JyMEVTdDZ2cVA5Z1QwMlFYOEwwc1hmMXcvaTVSYk85ZmJEVlg5ZGJwOGpMNnpwNDYrRnZBNDloVVphd2lzNGM3cHU1cXdVVTJ6dk91UFRkZElpNG90bytNa3plb2J3bkl3TjIxREpBMEdtRnBaUkM1OUU3K1ZMN2lQN3pWNGFrdTV2VCtJdjJjT1gzRWYwQ1NDR3ppU3lnNlJya01RSWVhaUJmeFFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t",
+                                                    "index": "1"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "AuthUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://player.siriusxm.com"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "FordSyncFAQUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://www.siriusxm.com/FordSYNC"
+                                                }
+                                            ],
+                                            "locale": "en"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "SocialLogin",
+                                    "settings": [
+                                        {
+                                            "booleanSettings": [
+                                                {
+                                                    "name": "US",
+                                                    "value": false
+                                                }
+                                            ],
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "OAC",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://care.siriusxm.com/login_view.action"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "maxProfiles",
+                                                "value": "5"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "PrivacyPolicy",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "http://www.siriusxm.com/pdf/siriusxm_privacypolicy_eng.pdf",
+                                                    "type": "PDF"
+                                                }
+                                            ],
+                                            "platform": "WEB",
+                                            "locale": "en"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "http://www.siriusxm.com/pdf/siriusxm_privacypolicy_span.pdf",
+                                                    "type": "PDF"
+                                                }
+                                            ],
+                                            "platform": "WEB",
+                                            "locale": "es"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "CustomerAgreement",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "http://www.siriusxm.com/pdf/siriusxm_customeragreement_eng.pdf",
+                                                    "type": "PDF"
+                                                }
+                                            ],
+                                            "platform": "WEB",
+                                            "locale": "en"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "http://www.siriusxm.com/pdf/siriusxm_customeragreement_span.pdf",
+                                                    "type": "PDF"
+                                                }
+                                            ],
+                                            "platform": "WEB",
+                                            "locale": "es"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "audibleWarnings",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "enabled",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "beepCount",
+                                                "value": "2"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "beepType",
+                                                "value": "NA"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "voume",
+                                                "value": "10"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "FordSyncInCar",
+                                    "settings": [
+                                        {
+                                            "fordSyncInCar": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "freeTierFeature",
+                                    "settings": [
+                                        {
+                                            "availability": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "deepLink",
+                                    "settings": [
+                                        {
+                                            "availability": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "maxymiser",
+                                    "settings": [
+                                        {
+                                            "availability": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "openAccessPeriod",
+                                    "settings": [
+                                        {
+                                            "availability": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "myAccountLink",
+                                    "settings": [
+                                        {
+                                            "availability": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "oacUrlStatus",
+                                    "settings": [
+                                        {
+                                            "availability": true,
+                                            "platform": "ANDROID"
+                                        },
+                                        {
+                                            "availability": true,
+                                            "platform": "IOS"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "VoiceSearch",
+                                    "settings": [
+                                        {
+                                            "silenceDetectTime": "1",
+                                            "maximumListeningTime": "10",
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "audioRecoveryTimeout",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 60
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "SatConsumptionCachingPeriod",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 30
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "delayAutoplayNextEpisode",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 10
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "ClientAudioBufferDurationMs",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 160000
+                                            },
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Crashlytics",
+                                    "settings": [
+                                        {
+                                            "enableCrashlytics": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Nudetect",
+                                    "settings": [
+                                        {
+                                            "nuDetect": {
+                                                "websiteId": "w-724862",
+                                                "url": "https://api-siriusxm.nd.nudatasecurity.com"
+                                            },
+                                            "enableNudetect": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Consume",
+                                    "settings": [
+                                        {
+                                            "enableV4Consume": false,
+                                            "enableV2Consume": true,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Kochava",
+                                    "settings": [
+                                        {
+                                            "enableKochava": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "AirPlay",
+                                    "settings": [
+                                        {
+                                            "enableAirPlay": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Chromecast",
+                                    "settings": [
+                                        {
+                                            "enableChromecast": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Bitly",
+                                    "settings": [
+                                        {
+                                            "enableBitly": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Youbora",
+                                    "settings": [
+                                        {
+                                            "enableYoubora": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Apptentive",
+                                    "settings": [
+                                        {
+                                            "enableApptentive": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "LiveVideo",
+                                    "settings": [
+                                        {
+                                            "enableLiveVideo": false,
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "LiveChat",
+                                    "settings": [
+                                        {
+                                            "booleanSettings": [
+                                                {
+                                                    "name": "enabled",
+                                                    "value": true
+                                                }
+                                            ],
+                                            "stringSetting": {
+                                                "name": "liveChatEndpoint",
+                                                "value": "https://www.livechat.placeholder.com/web"
+                                            },
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "settingsPanel",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "whiteList",
+                                                "value": "siriusxm.com,facebook.com,twitter.com,soundcloud.com,youtube.com,vimeo.com"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "MLTServiceEnabled",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "YMALServiceEnabled",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "HostBioEnabled",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "EnableTransactionLogging",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "EnableUserFeedback",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "EnableFordInCar",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "MoreLikeThisOnNowPlayingLive",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "SkipModalPlayHead",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "YouMayAlsoLikeRecentlyPlayed",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "YouMayAlsoLikeChannelList",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "moreLikeThisChannelEDP",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "moreLikeThisShowEDP",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "skipRecommendation",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "isOmniture",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "isProd",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "enableAppleCarPlay",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "enableAndroidAuto",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "un-authenticateRetry",
+                                                "value": "4"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "startupRecommendFrequencyMins",
+                                                "value": "480"
+                                            },
+                                            "intSetting": {
+                                                "name": "startupRecommendFrequencyMins",
+                                                "value": 480
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "MetricsConfigurationUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://player.siriusxm.com/rest/v3/experience/modules/client/configuration/"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "MetricsBaseUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://player.siriusxm.com/rest/v3/experience/modules/"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "MetricsBaseUrlv2",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://player.siriusxm.com/rest/v4/experience/modules/"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "contactPhoneNumber",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "contactPhoneNumber",
+                                                "value": "1-888-927-7465"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "adobeTagManager",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "adobeTagManager",
+                                                "value": "assets.adobedtm.com/53d6e9c58fd382410d41763ae3dd5a3a5884b6e0/satelliteLib-5c8591b0c703708c45d8a064fe093d2eee10a670.js"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "LogTriggers",
+                                    "settings": [
+                                        {
+                                            "logTriggers": {
+                                                "duration": 12
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "ExternalOnlineCheck",
+                                    "settings": [
+                                        {
+                                            "specialPlatform": "everest",
+                                            "externalOnlineCheck": true
+                                        },
+                                        {
+                                            "specialPlatform": "360l",
+                                            "externalOnlineCheck": false
+                                        },
+                                        {
+                                            "specialPlatform": "k2",
+                                            "externalOnlineCheck": false
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "homepage",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "value": "App:carousel:for_you"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "iapLoadingTimeout",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 10
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "resetPassword"
+                                },
+                                {
+                                    "name": "CCPA",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://www.siriusxm.com/ccparequest_DoNotSellMyInfo",
+                                                    "type": "PAGE"
+                                                }
+                                            ],
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "OpenAccessParameters",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "welcomeScreenCopy",
+                                                "value": "Welcome to SiriusXM. Whatever you're into. It's on right now."
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "watchAndListenNowButtonCopy",
+                                                "value": "Watch and Listen Now"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "privacyPolicy",
+                                                "value": "Privacy Policy"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "locatingYou",
+                                                "value": "Locating You"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "appStoreBadges",
+                                                "value": "ios,android,windows"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "appStoreBadgesCopy",
+                                                "value": "Download our app and enjoy SiriusXM anywhere."
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "disclaimerTextCopy",
+                                                "value": "By selecting “Get Started” I agree to the following:"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "loginMessageButton",
+                                                "value": "Sign In"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "loginMessageCopy",
+                                                "value": "Already have a login?"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "npOpenAccessSignInButtonCopy",
+                                                "value": "Sign In"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "npOpenAccessSignUpButtonCopy",
+                                                "value": "Get Started"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "onBoardSubscribeButtonCopy",
+                                                "value": "Subscribe"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "npShowButtons",
+                                                "value": "BOTH"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "freeListeningInterstitialMessage",
+                                                "value": "Welcome to SiriusXM. Whatever you're into. It's on right now."
+                                            }
+                                        }
+                                    ],
+                                    "locale": "en"
+                                },
+                                {
+                                    "name": "AdobeAnalytics",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "reportSuiteId",
+                                                "value": "sxmrsxmr.sxm17"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "dataCollectionDomain",
+                                                "value": "siriusxm.sc.omtrdc.net"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "secureDataCollectionDomain",
+                                                "value": "siriusxm.sc.omtrdc.net"
+                                            }
+                                        },
+                                        {
+                                            "booleanSettings": [
+                                                {
+                                                    "name": "enableAdobeAnalytics",
+                                                    "value": false
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "audioRecoveryOfflineTimeout",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 0
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "accountSignupURL",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "samsung",
+                                                    "value": "http://www.siriusxm.com/samsung"
+                                                },
+                                                {
+                                                    "name": "lg",
+                                                    "value": "http://www.siriusxm.com/lg"
+                                                },
+                                                {
+                                                    "name": "sony",
+                                                    "value": "http://www.siriusxm.com/sony"
+                                                },
+                                                {
+                                                    "name": "roku",
+                                                    "value": "http://www.siriusxm.com/roku"
+                                                },
+                                                {
+                                                    "name": "apple",
+                                                    "value": "http://www.siriusxm.com/appletv"
+                                                },
+                                                {
+                                                    "name": "microsoft",
+                                                    "value": "http://www.siriusxm.com/xbox"
+                                                },
+                                                {
+                                                    "name": "amazon",
+                                                    "value": "http://www.siriusxm.com/amazon"
+                                                },
+                                                {
+                                                    "name": "androidtv",
+                                                    "value": "http://www.siriusxm.com/androidtv"
+                                                },
+                                                {
+                                                    "name": "sonos",
+                                                    "value": "http://www.siriusxm.com/sonos"
+                                                },
+                                                {
+                                                    "name": "grace",
+                                                    "value": "http://streaming.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "control4",
+                                                    "value": "http://streaming.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "siriusxm",
+                                                    "value": "http://streaming.siriusxm.com"
+                                                },
+                                                {
+                                                    "name": "ford360l_subscribed",
+                                                    "value": "https://www.siriusxm.com/360l/invehicleaccountcenter/ford/acct-mgmt"
+                                                },
+                                                {
+                                                    "name": "ford360l_unsubscribed",
+                                                    "value": "https://www.siriusxm.com/360l/invehicleaccountcenter/ford/sign-up"
+                                                }
+                                            ],
+                                            "language": "en",
+                                            "region": "us"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "apple",
+                                                    "value": "siriusxm.ca/appletv"
+                                                },
+                                                {
+                                                    "name": "amazon",
+                                                    "value": "player.siriusxm.ca/#/trial"
+                                                },
+                                                {
+                                                    "name": "android",
+                                                    "value": "player.siriusxm.ca/#/trial"
+                                                },
+                                                {
+                                                    "name": "ford360l_subscribed",
+                                                    "value": "https://www.siriusxm.com/360l/ca/invehicleaccountcenter/ford/acct-mgmt"
+                                                },
+                                                {
+                                                    "name": "ford360l_unsubscribed",
+                                                    "value": "https://www.siriusxm.com/360l/ca/invehicleaccountcenter/ford/sign-up"
+                                                }
+                                            ],
+                                            "language": "en",
+                                            "region": "ca"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "apple",
+                                                    "value": "siriusxm.ca/fr/appletv"
+                                                },
+                                                {
+                                                    "name": "amazon",
+                                                    "value": "player.siriusxm.ca/#/trial"
+                                                },
+                                                {
+                                                    "name": "android",
+                                                    "value": "player.siriusxm.ca/#/trial"
+                                                },
+                                                {
+                                                    "name": "ford360l_subscribed",
+                                                    "value": "https://www.siriusxm.com/360l/ca/invehicleaccountcenter/ford/acct-mgmt"
+                                                },
+                                                {
+                                                    "name": "ford360l_unsubscribed",
+                                                    "value": "https://www.siriusxm.com/360l/ca/invehicleaccountcenter/ford/sign-up"
+                                                }
+                                            ],
+                                            "language": "fr",
+                                            "region": "ca"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "accountConsolidation",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "primary",
+                                                    "value": "https://www.siriusxm.com/SSPJsonService"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "AppDynamics",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "web",
+                                                "value": "AD-AAB-AAJ-ACB"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "win",
+                                                "value": "AD-AAB-AAJ-AAF"
+                                            }
+                                        },
+                                        {
+                                            "stringSetting": {
+                                                "name": "mobile",
+                                                "value": "AD-AAB-AAJ-SFN"
+                                            }
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "https://iot-col.eum-appdynamics.com/eumcollector/iot/v1/application"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "booleanSettings": [
+                                                {
+                                                    "name": "enableAppDynamics",
+                                                    "value": false
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "appVersion",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "value": "Mountain_1.1.00c697"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "ivsmMessagingSwitchPeriod",
+                                    "settings": [
+                                        {
+                                            "intSetting": {
+                                                "value": 14
+                                            },
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "ArtistRadioBackgroundUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "%AR_Image%/images/chan/7e/1eb716-dae9-aae8-2569-ae64a12bb9d9.jpg"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "NuDetect",
+                                    "settings": [
+                                        {
+                                            "nuDetect": {
+                                                "websiteId": "w-440133",
+                                                "url": "https://api-siriusxm.nd.nudatasecurity.com"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "SeededRadioFallbackUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "%AR_Image%/images/chan/pandora.png"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "SeededRadioBackgroundUrl",
+                                    "settings": [
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "%AR_Image%/images/chan/pandora-1103.png"
+                                                }
+                                            ],
+                                            "platform": "TABLET"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "%AR_Image%/images/chan/pandora-1101.png"
+                                                }
+                                            ],
+                                            "platform": "MOBILE"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "%AR_Image%/images/chan/pandora-1105.png"
+                                                }
+                                            ],
+                                            "platform": "WEB"
+                                        },
+                                        {
+                                            "urlSettings": [
+                                                {
+                                                    "name": "URL",
+                                                    "value": "%AR_Image%/images/chan/pandora-1108.png"
+                                                }
+                                            ],
+                                            "platform": "TENFOOT"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "enableLocalDevices",
+                                    "settings": [
+                                        {
+                                            "booleanSettings": [
+                                                {
+                                                    "name": "US",
+                                                    "value": true
+                                                }
+                                            ],
+                                            "platform": "WEB"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "customerCareContactNumber",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "FCA",
+                                                "value": "18552906593"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "accountManageLPZErrorNumber",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "FCA",
+                                                "value": "18552906593"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "accountManageUserPassErrorNumber",
+                                    "settings": [
+                                        {
+                                            "stringSetting": {
+                                                "name": "FCA",
+                                                "value": "18552906593"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "profiles",
+                                    "settings": [
+                                        {
+                                            "booleanSettings": [
+                                                {
+                                                    "name": "enableOemIdPrefix",
+                                                    "value": false
+                                                },
+                                                {
+                                                    "name": "enableStreamingProfiles",
+                                                    "value": false
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

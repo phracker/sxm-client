@@ -9,6 +9,7 @@ History
 * Adds `primary_hls` and `seconary_hls`
 * Adds quality selection
 * Overhauls time/datetime management
+* Automatic failover to secondary HLS
 
 0.2.4 (2021-08-15)
 ------------------

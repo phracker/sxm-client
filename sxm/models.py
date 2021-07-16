@@ -29,6 +29,7 @@ __all__ = [
 
 
 LIVE_PRIMARY_HLS = "https://siriusxm-priprodlive.akamaized.net"
+LIVE_SECONDARY_HLS = "https://siriusxm-secprodlive.akamaized.net"
 
 
 def parse_xm_datetime(dt_string: str):
@@ -279,10 +280,14 @@ class XMPosition(BaseModel):
 
 class XMHLSInfo(BaseModel):
     name: str
-    url: str
     size: str
     position: Optional[XMPosition] = None
+    _url: str = PrivateAttr(...)
+    _primary_root: str = PrivateAttr(LIVE_PRIMARY_HLS)
+    _secondary_root: str = PrivateAttr(LIVE_SECONDARY_HLS)
     # + unused chunks
+
+    _url_cache: Optional[str] = PrivateAttr(None)
 
     @staticmethod
     def from_dict(data: dict) -> XMHLSInfo:
@@ -290,12 +295,31 @@ class XMHLSInfo(BaseModel):
         if "position" in data:
             position = XMPosition.from_dict(data["position"])
 
-        return XMHLSInfo(
+        hls_info = XMHLSInfo(
             name=data["name"],
-            url=data["url"].replace("%Live_Primary_HLS%", LIVE_PRIMARY_HLS),
             size=data["size"],
             position=position,
         )
+        hls_info._url = data["url"]
+        return hls_info
+
+    @property
+    def url(self):
+        if self._url_cache is None:
+            if self.name == "primary":
+                self._url_cache = self._url.replace(
+                    "%Live_Primary_HLS%", self._primary_root
+                )
+            else:
+                self._url_cache = self._url.replace(
+                    "%Live_Primary_HLS%", self._secondary_root
+                )
+        return self._url_cache
+
+    def set_hls_roots(self, primary: str, secondary: str):
+        self._primary_root = primary
+        self._secondary_root = secondary
+        self._url_cache = None
 
 
 class XMChannel(BaseModel):
@@ -367,7 +391,9 @@ class XMLiveChannel(BaseModel):
     _secondary_hls: Optional[XMHLSInfo] = PrivateAttr(None)
 
     @staticmethod
-    def from_dict(data: dict) -> XMLiveChannel:
+    def from_dict(
+        data: dict,
+    ) -> XMLiveChannel:
         hls_infos: List[XMHLSInfo] = []
         for info in data["moduleResponse"]["liveChannelData"]["hlsAudioInfos"]:
             hls_infos.append(XMHLSInfo.from_dict(info))
@@ -392,6 +418,13 @@ class XMLiveChannel(BaseModel):
         self._stream_quality = value
         self._primary_hls = None
         self._secondary_hls = None
+
+    def set_hls_roots(self, primary: str, secondary: str):
+        for hls_info in self.hls_infos:
+            hls_info.set_hls_roots(primary, secondary)
+
+        for hls_info in self.custom_hls_infos:
+            hls_info.set_hls_roots(primary, secondary)
 
     @property
     def primary_hls(self) -> XMHLSInfo:

@@ -31,7 +31,14 @@ def make_http_handler(
 
         response = web.Response(status=404)
         if request.path.endswith(".m3u8"):
+            if not sxm.primary:
+                sxm.set_primary(True)
             playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
+
+            if not playlist:
+                sxm.set_primary(False)
+                playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
+
             if playlist:
                 response = web.Response(
                     status=200,
@@ -107,6 +114,14 @@ def run_http_server(
 
     if logger is None:
         logger = logging.getLogger(__file__)
+
+    if not sxm.authenticate():
+        logging.fatal("Could not log into SXM")
+        exit(1)
+
+    if not sxm.configuration:
+        logging.fatal("Could not get SXM configuration")
+        exit(1)
 
     app = web.Application()
     app.router.add_get("/{_:.*}", make_http_handler(sxm.async_client))
