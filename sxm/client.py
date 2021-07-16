@@ -456,7 +456,7 @@ class SXMClientAsync:
                 "sxmAppVersion": SXM_APP_VERSION,
                 "browser": self._ua["user_agent"]["family"],
                 "browserVersion": browser_version,
-                "appRegion": self.region,
+                "appRegion": self.region.value,
                 "deviceModel": SXM_DEVICE_MODEL,
                 "clientDeviceId": "null",
                 "player": "html5",
@@ -743,7 +743,7 @@ class SXMClient:
         return self.async_client.password
 
     @property
-    def region(self) -> str:
+    def region(self) -> RegionChoice:
         return self.async_client.region
 
     @property
