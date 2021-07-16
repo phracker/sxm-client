@@ -5,7 +5,7 @@ from typing import Any, Callable, Coroutine
 
 from aiohttp import web
 
-from sxm.client import HLS_AES_KEY, SegmentRetrievalException, SXMClientAsync, SXMClient
+from sxm.client import HLS_AES_KEY, SegmentRetrievalException, SXMClient, SXMClientAsync
 
 __all__ = ["make_http_handler", "run_http_server"]
 

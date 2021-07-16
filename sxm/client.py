@@ -7,10 +7,10 @@ import time
 import traceback
 import urllib.parse
 from typing import Any, Callable, Dict, List, Optional, Union
-from make_it_sync import make_sync
 
 import httpx
 from fake_useragent import UserAgent  # type: ignore
+from make_it_sync import make_sync  # type: ignore
 from tenacity import retry, stop_after_attempt, wait_fixed
 from ua_parser import user_agent_parser  # type: ignore
 
@@ -766,11 +766,31 @@ class SXMClient:
 
     @property
     def channels(self) -> List[XMChannel]:
-        return make_sync(self.async_client.channels)
+        # download channel list if necessary
+        if self.async_client._channels is None:
+            channels = self.get_channels()
+
+            if len(channels) == 0:
+                return []
+
+            self.async_client._channels = []
+            for channel in channels:
+                self.async_client._channels.append(XMChannel.from_dict(channel))
+
+            self.async_client._channels = sorted(
+                self.async_client._channels, key=lambda x: int(x.channel_number)
+            )
+
+        return self.async_client._channels
 
     @property
     def favorite_channels(self) -> List[XMChannel]:
-        return make_sync(self.async_client.favorite_channels)
+
+        if self.async_client._favorite_channels is None:
+            self.async_client._favorite_channels = [
+                c for c in self.channels if c.is_favorite
+            ]
+        return self.async_client._favorite_channels
 
     def login(self) -> bool:
         return make_sync(self.async_client.is_logged_in)()
