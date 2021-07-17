@@ -13,6 +13,7 @@ pushd "$BASE_DIR" 2>&1 >/dev/null
 pip-compile --upgrade --output-file=requirements.txt pyproject.toml
 pip-compile --upgrade --extra=dev --extra=doc --extra=test --output-file=dev-requirements.txt pyproject.toml
 
+pip install -r dev-requirements.txt
 flit install --symlink
 
 popd 2>&1 >/dev/null
