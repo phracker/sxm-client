@@ -312,7 +312,7 @@ class XMHLSInfo(BaseModel):
                 )
             else:
                 self._url_cache = self._url.replace(
-                    "%Live_Primary_HLS%", self._secondary_root
+                    "%Live_Secondary_HLS%", self._secondary_root
                 )
         return self._url_cache
 
