@@ -24,14 +24,14 @@ sxm-client
 
 .. warning:: Designed for PERSONAL USE ONLY
 
-    `sxm` is a 100% unofficial project and you use it at your own risk.
+    ``sxm`` is a 100% unofficial project and you use it at your own risk.
     It is designed to be used for personal use with a small number of users
     listening to it at once. Similar to playing music over a speak from the
-    radio directly. Using `sxm-player` in any corporate setting, to
-    attempt to priate music, or to try to make a profit off your subscription
+    radio directly. Using ``sxm-player`` in any corporate setting, to
+    attempt to pirate music, or to try to make a profit off your subscription
     may result in you getting in legal trouble.
 
-`sxm-client` is a Python library designed to help write applications for the
+``sxm-client`` is a Python library designed to help write applications for the
 popular XM Radio service.
 
 * Free software: MIT license
@@ -46,7 +46,7 @@ Features
 
 For details on usage and installation, see the `documentation`_.
 
-`sxm-client` is designed to be a bare bones library to setup an anonymous HLS
+``sxm-client`` is designed to be a bare bones library to setup an anonymous HLS
 stream. For a more in-depth applications, check out
 `sxm-player`_.
 
