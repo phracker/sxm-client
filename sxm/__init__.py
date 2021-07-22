@@ -14,7 +14,7 @@ from sxm.models import QualitySize, RegionChoice
 
 __author__ = """AngellusMortis"""
 __email__ = "cbailey@mort.is"
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 __all__ = [
     "AuthenticationError",
     "HLS_AES_KEY",
