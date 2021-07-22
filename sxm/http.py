@@ -35,10 +35,6 @@ def make_http_handler(
                 sxm.set_primary(True)
             playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
 
-            if not playlist:
-                sxm.set_primary(False)
-                playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
-
             if playlist:
                 response = web.Response(
                     status=200,
