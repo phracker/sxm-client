@@ -8,11 +8,11 @@ aiohttp==3.7.4.post0
     # via sxm (pyproject.toml)
 alabaster==0.7.12
     # via sphinx
-anyio==3.2.1
+anyio==3.3.0
     # via httpcore
 appdirs==1.4.4
     # via black
-astroid==2.6.2
+astroid==2.6.5
     # via pylint
 async-timeout==3.0.1
     # via aiohttp
@@ -150,11 +150,11 @@ packaging==21.0
     #   pytest-sugar
     #   sphinx
     #   tox
-pathspec==0.8.1
+pathspec==0.9.0
     # via black
 pbr==5.6.0
     # via stevedore
-pep517==0.10.0
+pep517==0.11.0
     # via pip-tools
 pip-tools==6.2.0
     # via sxm (pyproject.toml)
@@ -180,7 +180,7 @@ pygments==2.9.0
     # via
     #   rich
     #   sphinx
-pylint==2.9.3
+pylint==2.9.5
     # via sxm (pyproject.toml)
 pymongo[srv,tls]==3.11.4
     # via snooty-lextudio
@@ -271,15 +271,16 @@ toml==0.10.2
     #   flit
     #   flit-core
     #   mypy
-    #   pep517
     #   pylint
     #   pyproject-flake8
     #   pytest
     #   pytest-cov
     #   snooty-lextudio
     #   tox
-tomli==1.0.4
-    # via black
+tomli==1.1.0
+    # via
+    #   black
+    #   pep517
 tox==3.24.0
     # via sxm (pyproject.toml)
 typer==0.3.2
