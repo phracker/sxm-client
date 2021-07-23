@@ -107,13 +107,16 @@ class XMCategory(BaseModel):
 class XMMarker(BaseModel):
     guid: str
     time: datetime
+    time_seconds: int
     duration: timedelta
 
     @staticmethod
     def from_dict(data: dict) -> XMMarker:
+        time = parse_xm_timestamp(data["time"])
         return XMMarker(
             guid=data["assetGUID"],
-            time=parse_xm_timestamp(data["time"]),
+            time=time,
+            time_seconds=int(time.timestamp()),
             duration=timedelta(seconds=data["duration"]),
         )
 
@@ -170,9 +173,11 @@ class XMEpisodeMarker(XMMarker):
 
     @staticmethod
     def from_dict(data: dict) -> XMEpisodeMarker:
+        time = parse_xm_timestamp(data["time"])
         return XMEpisodeMarker(
             guid=data["assetGUID"],
-            time=parse_xm_timestamp(data["time"]),
+            time=time,
+            time_seconds=int(time.timestamp()),
             duration=timedelta(seconds=data["duration"]),
             episode=XMEpisode.from_dict(data["episode"]),
         )
@@ -258,9 +263,12 @@ class XMCutMarker(XMMarker):
             cut = XMCut.from_dict(data["cut"])
         # other cuts, not done: Exp, Link., maybe more?
 
+        time = parse_xm_timestamp(data["time"])
+
         return XMCutMarker(
             guid=data["assetGUID"],
-            time=parse_xm_timestamp(data["time"]),
+            time=time,
+            time_seconds=int(time.timestamp()),
             duration=timedelta(seconds=data["duration"]),
             cut=cut,
         )
@@ -518,19 +526,19 @@ class XMLiveChannel(BaseModel):
     ) -> Union[XMMarker, None]:
         """Returns the latest `XMMarker` based on type relative to now"""
 
-        markers = getattr(self, marker_attr)
+        markers: Optional[List[XMMarker]] = getattr(self, marker_attr)
         if markers is None:
             return None
 
         if now is None:
             now = datetime.now(timezone.utc)
 
+        now_sec = int(now.timestamp())
         latest = None
         for marker in markers:
-            if now > marker.time:
-                latest = marker
-            else:
+            if now_sec <= marker.time_seconds:
                 break
+            latest = marker
         return latest
 
     def get_latest_episode(
@@ -541,8 +549,7 @@ class XMLiveChannel(BaseModel):
 
         Parameters
         ----------
-        now : Optional[:class:`int`]
-            Timestamp in milliseconds from Epoch to be considered `now`
+        now : Optional[:class:`datetime`]
         """
         return self._latest_marker("episode_markers", now)  # type: ignore
 
@@ -554,7 +561,6 @@ class XMLiveChannel(BaseModel):
 
         Parameters
         ----------
-        now : Optional[:class:`int`]
-            Timestamp in milliseconds from Epoch to be considered `now`
+        now : Optional[:class:`datetime`]
         """
         return self._latest_marker("cut_markers", now)  # type: ignore

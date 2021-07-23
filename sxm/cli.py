@@ -45,6 +45,13 @@ OPTION_QUALITY = typer.Option(
     help="Sets stream qualuty.",
     envvar="SXM_REGION",
 )
+OPTION_PRECACHE = typer.Option(
+    True,
+    "--no-precache",
+    "-n",
+    help="Turn off precaching AAC chunks",
+    envvar="SXM_PRECACHE",
+)
 
 
 def main(
@@ -56,6 +63,7 @@ def main(
     verbose: bool = OPTION_VERBOSE,
     region: RegionChoice = OPTION_REGION,
     quality: QualitySize = OPTION_QUALITY,
+    precache: bool = OPTION_PRECACHE,
 ) -> int:
     """SXM proxy command line application."""
 
@@ -77,5 +85,5 @@ def main(
             channel_name = channel.name.ljust(l3)[:l3]
             typer.echo(f"{channel_id} | {channel_num} | {channel_name}")
     else:
-        run_http_server(sxm, port, ip=host)
+        run_http_server(sxm, port, ip=host, cache_aac_chunks=precache)
     return 0

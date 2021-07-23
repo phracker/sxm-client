@@ -2,6 +2,13 @@
 History
 =======
 
+0.2.7 (WIP)
+------------------
+
+* Adds caching of HLS chunks to HLS proxy to make it more resilient to network issues
+* HLS chunk caching can be disabled with `-n` or `--no-precache`
+* Speeds up `XMLiveChannel.get_latest_cut`
+
 0.2.6 (2021-08-17)
 ------------------
 

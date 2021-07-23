@@ -1,7 +1,8 @@
 """HTTP Server module for sxm"""
 import json
 import logging
-from typing import Any, Callable, Coroutine
+from asyncio import get_event_loop, sleep
+from typing import Any, Callable, Coroutine, Dict, List
 
 from aiohttp import web
 
@@ -11,7 +12,7 @@ __all__ = ["make_http_handler", "run_http_server"]
 
 
 def make_http_handler(
-    sxm: SXMClientAsync,
+    sxm: SXMClientAsync, cache_aac_chunks: bool = True
 ) -> Callable[[web.Request], Coroutine[Any, Any, web.Response]]:
     """
     Creates and returns a configured `aiohttp` request handler ready to be used
@@ -26,6 +27,32 @@ def make_http_handler(
         SXM client to use
     """
 
+    aac_cache: Dict[str, bytes] = {}
+
+    async def get_segment(path: str):
+        try:
+            data = await sxm.get_segment(path)
+        except SegmentRetrievalException:
+            await sxm.close_session()
+            sxm.reset_session()
+            await sxm.authenticate()
+            data = await sxm.get_segment(path)
+
+        return data
+
+    async def cache_playlist(playlist: List[str]):
+        for item in playlist:
+            while len(aac_cache) > 10:
+                await sleep(1)
+
+            if not item.startswith("AAC_Data"):
+                continue
+
+            data = await get_segment(item)
+            if data is not None:
+                aac_cache[item] = data
+            await sleep(1)
+
     async def sxm_handler(request: web.Request):
         """SXM Response handler"""
 
@@ -36,6 +63,9 @@ def make_http_handler(
             playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
 
             if playlist:
+                if cache_aac_chunks:
+                    loop = get_event_loop()
+                    loop.create_task(cache_playlist(playlist.split("\n")))
                 response = web.Response(
                     status=200,
                     body=bytes(playlist, "utf-8"),
@@ -45,13 +75,11 @@ def make_http_handler(
                 response = web.Response(status=503)
         elif request.path.endswith(".aac"):
             segment_path = request.path[1:]
-            try:
-                data = await sxm.get_segment(segment_path)
-            except SegmentRetrievalException:
-                await sxm.close_session()
-                sxm.reset_session()
-                await sxm.authenticate()
-                data = await sxm.get_segment(segment_path)
+            if segment_path in aac_cache:
+                data = aac_cache[segment_path]
+                del aac_cache[segment_path]
+            else:
+                data = await get_segment(segment_path)
 
             if data:
                 response = web.Response(
@@ -92,6 +120,7 @@ def run_http_server(
     port: int,
     ip="0.0.0.0",  # nosec
     logger: logging.Logger = None,
+    cache_aac_chunks: bool = True,
 ) -> None:
     """
     Creates and runs an instance of :class:`http.server.HTTPServer` to proxy
