@@ -697,7 +697,7 @@ class SXMClientAsync:
         if message_code == 201 or message_code == 208:
             if max_attempts > 0:
                 self._log.info("Session expired, logging in and authenticating")
-                if self.authenticate():
+                if await self.authenticate():
                     self._log.info("Successfully authenticated")
                     return await self._get_playlist_url(
                         channel.id, use_cache, max_attempts - 1
@@ -712,7 +712,7 @@ class SXMClientAsync:
             self._log.warn("Multiple login error received, reseting session")
             await self.close_session()
             self.reset_session()
-            if self.authenticate():
+            if await self.authenticate():
                 self._log.info("Successfully authenticated")
                 return await self._get_playlist_url(
                     channel.id, use_cache, max_attempts - 1
