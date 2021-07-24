@@ -2,7 +2,8 @@
 import json
 import logging
 from asyncio import get_event_loop, sleep
-from typing import Any, Callable, Coroutine, Dict, List
+from time import monotonic
+from typing import Any, Callable, Coroutine, Dict, List, Optional
 
 from aiohttp import web
 
@@ -12,7 +13,7 @@ __all__ = ["make_http_handler", "run_http_server"]
 
 
 def make_http_handler(
-    sxm: SXMClientAsync, cache_aac_chunks: bool = True
+    sxm: SXMClientAsync, precache: bool = True
 ) -> Callable[[web.Request], Coroutine[Any, Any, web.Response]]:
     """
     Creates and returns a configured `aiohttp` request handler ready to be used
@@ -28,6 +29,15 @@ def make_http_handler(
     """
 
     aac_cache: Dict[str, bytes] = {}
+    playlist_cache: Dict[str, str] = {}
+    active_channel_id: Optional[str] = None
+
+    def set_active(channel_id: Optional[str], initial_playlist: Optional[str] = None):
+        active_channel_id = channel_id  # pylint: disable=unused-variable  # noqa
+
+        if precache and channel_id is not None and initial_playlist is not None:
+            loop = get_event_loop()
+            loop.create_task(cache_playlist(channel_id, initial_playlist.split("\n")))
 
     async def get_segment(path: str):
         try:
@@ -40,8 +50,11 @@ def make_http_handler(
 
         return data
 
-    async def cache_playlist(playlist: List[str]):
+    async def cache_playlist_chunks(end: float, playlist: List[str]):
         for item in playlist:
+            if monotonic() >= end:
+                return
+
             while len(aac_cache) > 10:
                 await sleep(1)
 
@@ -53,33 +66,61 @@ def make_http_handler(
                 aac_cache[item] = data
             await sleep(1)
 
+    async def cache_playlist(channel_id: str, playlist: List[str]):
+        start = monotonic() - 3
+
+        while active_channel_id == channel_id:
+            await cache_playlist_chunks(start + 5, playlist)
+
+            new_playlist: Optional[str] = None
+            while new_playlist is None:
+                new_playlist = await sxm.get_playlist(channel_id)
+
+            playlist_cache[channel_id] = new_playlist
+            playlist = new_playlist.split("\n")
+            start = monotonic()
+
+    async def get_playlist_chunk(segment_path: str):
+        if segment_path in aac_cache:
+            data = aac_cache[segment_path]
+            del aac_cache[segment_path]
+        else:
+            data = await get_segment(segment_path)
+
+        return data
+
+    async def get_playlist(channel_id: str):
+        if channel_id in playlist_cache:
+            playlist: Optional[str] = playlist_cache[channel_id]
+            del playlist_cache[channel_id]
+        else:
+            playlist = await sxm.get_playlist(channel_id)
+
+        if active_channel_id != channel_id and playlist is not None:
+            set_active(channel_id, playlist)
+
+        return playlist
+
     async def sxm_handler(request: web.Request):
         """SXM Response handler"""
 
         response = web.Response(status=404)
         if request.path.endswith(".m3u8"):
-            if not sxm.primary:
-                sxm.set_primary(True)
-            playlist = await sxm.get_playlist(request.path.rsplit("/", 1)[1][:-5])
+            channel_id = request.path.rsplit("/", 1)[1][:-5]
+            playlist = await get_playlist(channel_id)
 
             if playlist:
-                if cache_aac_chunks:
-                    loop = get_event_loop()
-                    loop.create_task(cache_playlist(playlist.split("\n")))
                 response = web.Response(
                     status=200,
                     body=bytes(playlist, "utf-8"),
                     headers={"Content-Type": "application/x-mpegURL"},
                 )
             else:
+                set_active(None)
                 response = web.Response(status=503)
         elif request.path.endswith(".aac"):
             segment_path = request.path[1:]
-            if segment_path in aac_cache:
-                data = aac_cache[segment_path]
-                del aac_cache[segment_path]
-            else:
-                data = await get_segment(segment_path)
+            data = await get_playlist_chunk(segment_path)
 
             if data:
                 response = web.Response(
@@ -120,7 +161,7 @@ def run_http_server(
     port: int,
     ip="0.0.0.0",  # nosec
     logger: logging.Logger = None,
-    cache_aac_chunks: bool = True,
+    precache: bool = True,
 ) -> None:
     """
     Creates and runs an instance of :class:`http.server.HTTPServer` to proxy

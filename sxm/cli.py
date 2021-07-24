@@ -85,5 +85,5 @@ def main(
             channel_name = channel.name.ljust(l3)[:l3]
             typer.echo(f"{channel_id} | {channel_num} | {channel_name}")
     else:
-        run_http_server(sxm, port, ip=host, cache_aac_chunks=precache)
+        run_http_server(sxm, port, ip=host, precache=precache)
     return 0
