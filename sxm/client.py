@@ -159,7 +159,7 @@ class SXMClientAsync:
 
     @property
     def is_logged_in(self) -> bool:
-        return "SXMAUTHNEW" in self._session.cookies
+        return "SXMDATA" in self._session.cookies
 
     @property
     def is_session_authenticated(self) -> bool:
